@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33103.201
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp", "WpfApp\WpfApp.csproj", "{5DE76ED2-C96F-4D5B-85FF-5BC9850C11AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp.Tests", "WpfApp.Tests\WpfApp.Tests.csproj", "{75C75A76-E608-41BB-AEC2-80A1C95B7B62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp.Tests", "WpfApp.Tests\WpfApp.Tests.csproj", "{75C75A76-E608-41BB-AEC2-80A1C95B7B62}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{50AAD861-2EF1-4EAB-80EB-20FECB15232C}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		Directory.Packages.props = Directory.Packages.props
+		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
 Global

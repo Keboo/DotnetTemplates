@@ -3,19 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:WpfApp"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Inherit" 
-                                             PrimaryColor="Purple" 
-                                             SecondaryColor="LightGreen" />
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <materialDesign:BundledTheme BaseTheme="Inherit" 
+                                     PrimaryColor="Purple" 
+                                     SecondaryColor="LightGreen" />
 
-                <ResourceDictionary
+        <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
 
-            </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary.MergedDictionaries>
 
-            <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignAccentCheckBox}" />
-        </ResourceDictionary>
-    </Application.Resources>
+      <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignAccentCheckBox}" />
+    </ResourceDictionary>
+  </Application.Resources>
 </Application>
