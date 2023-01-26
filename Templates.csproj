@@ -9,7 +9,8 @@
     <Description>.NET Templates built by Keboo</Description>
     <PackageTags>dotnet-new;templates;wpf</PackageTags>
     <TargetFramework>net7.0</TargetFramework>
-
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
