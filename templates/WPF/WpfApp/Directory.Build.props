@@ -20,7 +20,7 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
   See: https://learn.microsoft.com/dotnet/architecture/microservices/secure-net-microservices-web-applications/developer-app-secrets-storage
   -->
   <PropertyGroup Label="User Secrets">
-    <UserSecretsId>92a5a3b7-7ea0-4796-a23d-6d4b1547e1db</UserSecretsId>
+    <UserSecretsId>12345678-9abc-0123-4567-890abcdef123</UserSecretsId>
   </PropertyGroup>
 
 </Project>
