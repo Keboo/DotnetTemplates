@@ -5,12 +5,12 @@
 
 version: 2
 updates:
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "nuget" 
+    directory: "/templates/WPF/WpfApp" 
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "github-actions" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "github-actions" 
+    directory: "/"
     schedule:
       interval: "weekly" 
