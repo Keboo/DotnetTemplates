@@ -22,6 +22,34 @@
       "parameters": {
         "defaultFormat":"d"
       }
+    },
+    "no-sln": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false"
+    },
+    "no-tests": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false"
     }
-  }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(no-sln)",
+          "exclude": [
+            "WpfApp.sln"
+          ]
+        },
+        {
+          "condition": "(no-tests)",
+          "exclude": [
+            "WpfApp.Tests/*"
+          ]
+        }
+      ]
+    }
+  ]
 }
