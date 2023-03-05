@@ -23,7 +23,7 @@ public partial class MainWindowViewModelTests
     }
 
     [Fact]
-    public void ClearCounterCommand_Execute_IncrementsCount()
+    public void ClearCounterCommand_Execute_ClearsCount()
     {
         //Arrange
         AutoMocker mocker = new();
