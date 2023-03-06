@@ -6,7 +6,7 @@
     "WPF"
   ],
   "identity": "Keboo.WpfTemplates.FullApp",
-  "name": "Keboo's Full WPF Application",
+  "name": "Keboo Full WPF Application",
   "shortName": "keboo.wpf",
   "tags": {
     "language": "C#",
