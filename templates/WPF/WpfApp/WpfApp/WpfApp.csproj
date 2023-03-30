@@ -15,7 +15,11 @@
   <!--
   <PropertyGroup>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishSingleFile>true</PublishSingleFile>
+    <!--
+      Many debugging tools (Snoop, Visual Studio's UI debugging tools for XAML) will not function with PublishSingleFile set to true.
+      https://github.com/dotnet/runtime/issues/3773
+    -->
+    <PublishSingleFile Condition="'$(Configuration)' != 'Debug'">true</PublishSingleFile>
     <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
