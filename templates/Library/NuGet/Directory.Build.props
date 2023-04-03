@@ -28,6 +28,7 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
     <UserSecretsId>12345678-9abc-0123-4567-890abcdef123</UserSecretsId>
   </PropertyGroup>
 
+  <!-- Many of these properties can be found here: https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#package-metadata -->
   <PropertyGroup Label="NuGet Details">
     <Title>CHANGEME: Keboo.NuGet</Title>
     <Description>CHANGEME: A library generated from Keboo's template. https://github.com/Keboo/DotnetTemplates</Description>
@@ -36,7 +37,9 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
     <!-- The recommended size for the icon is 128x128: https://learn.microsoft.com/nuget/reference/msbuild-targets#packing-an-icon-image-file -->
     <PackageIcon>NuGetIcon.png</PackageIcon>
     <RepositoryUrl>https://github.com/CHANGEME_RepoOwner/CHANGEME_RepoName</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/CHANGEME_RepoOwner/CHANGEME_RepoName</PackageProjectUrl>
     <Authors>CHANGEME: Keboo.Template</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Label="SourceLink">
@@ -48,11 +51,14 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
     
     <!-- 
     To produce a deterministic build, you will want to enable ContinuousIntegrationBuild as part of the pipeline build, but not for local development.
-    https://learn.microsoft.com/dotnet/core/project-sdk/msbuild-props#continuousintegrationbuild
+    https://learn.microsoft.com/dotnet/core/project-sdk/msbuild-props#continuousintegrationbuild.
+    The condition enables this property automatically when using Github Actions for the build, but can be removed if unused.
     This can be enabled on the command line by including the following as part of the build.
     dotnet build -p:ContinuousIntegrationBuild=true 
     -->
-    <!--<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>-->
+    <!-- <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+  	  <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup> ->
     
     <!--
     These are optional, though typically recommended. See the docs for more details
