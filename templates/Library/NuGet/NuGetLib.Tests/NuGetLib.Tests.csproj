@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 
     <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WpfApp\WpfApp.csproj" />
+    <ProjectReference Include="..\NuGetLib\NuGetLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

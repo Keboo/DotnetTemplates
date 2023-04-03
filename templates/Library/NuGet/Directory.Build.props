@@ -1,0 +1,66 @@
+<!-- 
+This file allow for customizing your build process.
+See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
+-->
+<Project>
+  <!--
+  Uncomment if you need to enable inclusion of another Directory.Build.props file from a parent directory
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  -->
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>11</LangVersion>
+    <!-- 
+    If you you like to see source generated files saved to disk you can enable the following:
+    https://learn.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview
+    -->
+    <!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
+  </PropertyGroup>
+
+  <!--
+  This allows all projects to share the same user secrets file. 
+  If you want project to have their own, set it to a different GUID on each project.
+  See: https://learn.microsoft.com/dotnet/architecture/microservices/secure-net-microservices-web-applications/developer-app-secrets-storage
+  -->
+  <PropertyGroup Label="User Secrets">
+    <UserSecretsId>12345678-9abc-0123-4567-890abcdef123</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet Details">
+    <Title>CHANGEME: Keboo.NuGet</Title>
+    <Description>CHANGEME: A library generated from Keboo's template. https://github.com/Keboo/DotnetTemplates</Description>
+    <Copyright>Copyright © 1970-$([System.DateTime]::Now.ToString("yyyy"))</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!-- The recommended size for the icon is 128x128: https://learn.microsoft.com/nuget/reference/msbuild-targets#packing-an-icon-image-file -->
+    <PackageIcon>NuGetIcon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/CHANGEME_RepoOwner/CHANGEME_RepoName</RepositoryUrl>
+    <Authors>CHANGEME: Keboo.Template</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup Label="SourceLink">
+    <!--
+    You will also need to ensure that the appropriate Microsoft.SourceLink.* package is referenced.
+    https://github.com/dotnet/sourcelink
+    -->
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    
+    <!-- 
+    To produce a deterministic build, you will want to enable ContinuousIntegrationBuild as part of the pipeline build, but not for local development.
+    https://learn.microsoft.com/dotnet/core/project-sdk/msbuild-props#continuousintegrationbuild
+    This can be enabled on the command line by including the following as part of the build.
+    dotnet build -p:ContinuousIntegrationBuild=true 
+    -->
+    <!--<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>-->
+    
+    <!--
+    These are optional, though typically recommended. See the docs for more details
+    https://github.com/dotnet/sourcelink
+    -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+
+</Project>

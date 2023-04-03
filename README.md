@@ -15,5 +15,35 @@ If you have previously installed the templates and want to install the latest ve
 > dotnet new update
 ```
 
+# Uninstalling
+```cli
+> dotnet new uninstall Keboo.Dotnet.Templates
+```
+
 ## Included Templates 
 - [Full WPF Project](./templates/WPF/WpfApp/README.md)
+
+
+# Local testing 
+Build the template package:
+```cli
+> dotnet pack --configuration Release -o .
+```
+
+Install the locally built template package
+```cli
+> dotnet new install . --force
+```
+
+You can now test the template by running:
+```cli
+> dotnet new keboo.wpf
+> dotnet build
+> dotent test --no-build
+> dotnet publish --no-build
+```
+
+When done, you can remove the local install of the template package by running:
+```cli
+> dotnet new uninstall .
+```
