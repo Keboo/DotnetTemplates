@@ -28,15 +28,23 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
     <UserSecretsId>12345678-9abc-0123-4567-890abcdef123</UserSecretsId>
   </PropertyGroup>
 
+    <!-- 
+    See the docs for all of the available options:
+    https://learn.microsoft.com/nuget/create-packages/package-authoring-best-practices#package-metadata
+   -->
   <PropertyGroup Label="NuGet Details">
     <Title>CHANGEME: Keboo.NuGet</Title>
+    <Authors>CHANGEME: Keboo.Template</Authors>
     <Description>CHANGEME: A library generated from Keboo's template. https://github.com/Keboo/DotnetTemplates</Description>
     <Copyright>Copyright © 1970-$([System.DateTime]::Now.ToString("yyyy"))</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <!-- The recommended size for the icon is 128x128: https://learn.microsoft.com/nuget/reference/msbuild-targets#packing-an-icon-image-file -->
     <PackageIcon>NuGetIcon.png</PackageIcon>
     <RepositoryUrl>https://github.com/CHANGEME_RepoOwner/CHANGEME_RepoName</RepositoryUrl>
-    <Authors>CHANGEME: Keboo.Template</Authors>
+    <!-- If you project has a website set that value here; optionally this can also point to the repo -->
+    <!-- <PackageProjectUrl>https://github.com/CHANGEME_RepoOwner/CHANGEME_RepoName</PackageProjectUrl> -->
+    <PackageReadmeFile>NuGetPackageReadme.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Label="SourceLink">
@@ -48,11 +56,23 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
     
     <!-- 
     To produce a deterministic build, you will want to enable ContinuousIntegrationBuild as part of the pipeline build, but not for local development.
-    https://learn.microsoft.com/dotnet/core/project-sdk/msbuild-props#continuousintegrationbuild
+    https://learn.microsoft.com/dotnet/core/project-sdk/msbuild-props#continuousintegrationbuild.
     This can be enabled on the command line by including the following as part of the build.
     dotnet build -p:ContinuousIntegrationBuild=true 
     -->
-    <!--<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>-->
+
+    <!--
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    -->
+    <!--
+    If using Github Actions, you can automatically set this when running under the agent.the condition enables this property automatically for the build.
+    Most build systems have a similar mechanism.
+    -->
+    <!-- 
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+  	  <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup> 
+    -->
     
     <!--
     These are optional, though typically recommended. See the docs for more details
