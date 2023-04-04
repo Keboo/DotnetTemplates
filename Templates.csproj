@@ -2,15 +2,17 @@
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageVersion>1.2.0</PackageVersion>
+    <PackageVersion>1.2.1</PackageVersion>
     <PackageId>Keboo.Dotnet.Templates</PackageId>
     <Title>Keboo's .NET Templates</Title>
     <Authors>Keboo</Authors>
     <Description>.NET Templates built by Keboo</Description>
-    <PackageTags>dotnet-new;templates;wpf</PackageTags>
+    <PackageTags>dotnet-new;templates;wpf;nuget</PackageTags>
     <TargetFramework>net7.0</TargetFramework>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    
+    <RepositoryUrl>https://github.com/Keboo/DotnetTemplates</RepositoryUrl>
+    <PackageIcon>NuGetIcon.png</PackageIcon>
+
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
@@ -20,6 +22,8 @@
   <ItemGroup>
     <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
     <Compile Remove="**\*" />
+
+    <None Include="NuGetIcon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
