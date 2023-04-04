@@ -2,10 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Deterministic>true</Deterministic>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup Label="NuGet">
