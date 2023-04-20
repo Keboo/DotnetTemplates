@@ -21,7 +21,9 @@ If you have previously installed the templates and want to install the latest ve
 ```
 
 ## Included Templates 
-- [Full WPF Project](./templates/WPF/WpfApp/README.md)
+- [WPF Solution](./templates/WPF/WpfApp/README.md)
+- [NuGet Package Solution](./templates/Library/NuGet/README.md)
+- [System.CommandLine Solution](./templates/Console/ConsoleApp/README.md)
 
 
 # Local testing 
