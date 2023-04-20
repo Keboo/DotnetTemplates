@@ -1,6 +1,5 @@
-# Full WPF App template
+# WPF app template
 This template creates a full WPF application, along with unit tests.
-
 
 ## Template
 Create a new app in your current directory by running.
