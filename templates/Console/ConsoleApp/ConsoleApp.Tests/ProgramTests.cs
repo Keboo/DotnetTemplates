@@ -1,6 +1,4 @@
 using System.CommandLine;
-using System.CommandLine.IO;
-using System.CommandLine.Parsing;
 
 namespace ConsoleApp.Tests;
 
@@ -9,23 +7,27 @@ public class ProgramTests
     [Fact]
     public async Task Invoke_WithHelpOption_DisplaysHelp()
     {
-        TestConsole console = new();
-        int exitCode = await Invoke("--help", console);
-
+        using StringWriter stdOut = new();
+        int exitCode = await Invoke("--help", stdOut);
+        
         Assert.Equal(0, exitCode);
-        Assert.Contains("--help", console.Out.ToString());
+        Assert.Contains("--help", stdOut.ToString());
     }
 
     [Fact]
     public async Task Invoke_AddWithTwoNumbers_DisplaysResult()
     {
-        TestConsole console = new();
-        int exitCode = await Invoke("add 4 2", console);
+        using StringWriter stdOut = new();
+        int exitCode = await Invoke("add 4 2", stdOut);
 
         Assert.Equal(0, exitCode);
-        Assert.Contains("The result is 6", console.Out.ToString());
+        Assert.Contains("The result is 6", stdOut.ToString());
     }
 
-    private static Task<int> Invoke(string commandLine, IConsole console) 
-        => Program.Invoke(CommandLineStringSplitter.Instance.Split(commandLine).ToArray(), console);
+    private static Task<int> Invoke(string commandLine, StringWriter console)
+    {
+        CliConfiguration configuration = Program.GetConfiguration();
+        configuration.Output = console;
+        return configuration.InvokeAsync(commandLine);
+    }
 }

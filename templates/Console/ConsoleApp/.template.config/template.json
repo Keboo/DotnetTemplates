@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Keboo",
+  "classifications": [
+    "Common",
+    "CommandLine"
+  ],
+  "identity": "Keboo.Console.ConsoleApp",
+  "name": "Keboo CLI Application",
+  "shortName": "keboo.console",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "preferNameDirectory":true,
+  "sourceName": "ConsoleApp",
+  "symbols":{
+    "createdDate": {
+      "type": "generated",
+      "generator": "now",
+      "parameters": {
+      "format": "yyyy"
+      },
+      "replaces":"1970"
+    },
+    "user_secrets_id":{
+      "type": "generated",
+      "generator": "guid",
+      "replaces": "12345678-9abc-0123-4567-890abcdef123",
+      "parameters": {
+        "defaultFormat":"d"
+      }
+    },
+    "no-sln": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false"
+    },
+    "no-tests": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(no-sln)",
+          "exclude": [
+            "ConsoleApp.sln"
+          ]
+        },
+        {
+          "condition": "(no-tests)",
+          "exclude": [
+            "ConsoleApp.Tests/*"
+          ]
+        }
+      ]
+    }
+  ]
+}
