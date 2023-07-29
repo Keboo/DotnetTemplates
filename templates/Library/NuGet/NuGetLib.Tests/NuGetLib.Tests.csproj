@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <Using Include="Moq" />
     <Using Include="Moq.AutoMock" />
   </ItemGroup>
 </Project>
