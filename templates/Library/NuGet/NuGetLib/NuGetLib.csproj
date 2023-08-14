@@ -10,6 +10,12 @@
     https://learn.microsoft.com/nuget/reference/msbuild-targets#packing-an-icon-image-file
     -->
     <None Include="NuGetIcon.png" Pack="true" PackagePath="\" />
+
+    <!-- 
+    Ensure the README is included in the NuGet package
+    https://learn.microsoft.com/nuget/reference/msbuild-targets#packagereadmefile
+    -->
+    <None Include="..\NuGetPackageReadme.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>

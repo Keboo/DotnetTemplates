@@ -11,16 +11,6 @@ defaults:
   run:
     shell: pwsh
 
-env:
-  configuration: Release
-  baseVersion: 1.0.0
-  preRelease: true
-
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy
-
 on:
   push:
     branches: [ main ]
@@ -46,9 +36,30 @@ jobs:
 
       - name: dotnet build
         run: dotnet build --configuration Release --no-restore 
-
+#if (!no-tests)
       - name: dotnet test
-        run: dotnet test --configuration Release --no-build 
+        run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ./code-coverage
+
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.24
+        with:
+          reports: coverage/**/coverage.cobertura.xml
+          targetdir: coveragereport
+          reporttypes: Html;MarkdownSummaryGithub
+          title: 'Code Coverage'
+  
+      - name: Write PR Number
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo ${{ github.event.number }} > ./coveragereport/PullRequestNumber
+  
+      - name: Upload Code Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: CodeCoverage
+          path: coveragereport/
+          if-no-files-found: error
+#endif
 
       - name: dotnet pack
         run: dotnet pack --configuration Release --no-build -o .${{env.DOTNET_ROOT}}/NuGet
