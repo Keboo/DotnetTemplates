@@ -55,11 +55,11 @@ jobs:
           Push-Location TestConsoleApp
           dotnet new keboo.console
           dotnet test
-          dotnet pack --configuration Release -o ${{env.DOTNET_ROOT}}/NuGet
+          dotnet pack --configuration Release -o ./NuGet
 
   test-wpf:
     if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
 
     steps:
@@ -94,7 +94,7 @@ jobs:
           Push-Location TestLibrary
           dotnet new keboo.nuget
           dotnet test
-          dotnet pack --configuration Release -o ${{env.DOTNET_ROOT}}/NuGet
+          dotnet pack --configuration Release -o ./NuGet
 
   automerge:
     if: ${{ github.event_name == 'pull_request' }}
