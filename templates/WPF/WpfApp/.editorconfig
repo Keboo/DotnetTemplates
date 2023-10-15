@@ -181,6 +181,7 @@ csharp_preserve_single_line_statements = true
 csharp_style_namespace_declarations = block_scoped:silent
 csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
+csharp_style_prefer_primary_constructors = false:suggestion
 
 #### Naming styles ####
 [*.{cs,vb}]
@@ -376,3 +377,13 @@ tab_width = 4
 indent_size = 4
 end_of_line = crlf
 
+############################### 
+# Spell Check                 # 
+###############################
+# https://learn.microsoft.com/visualstudio/ide/text-spell-checker
+spelling_exclusion_path = .\exclusions.dic
+spelling_checkable_types = strings,identifiers,comments
+# Update this to match your prefered language, you will need to ensure you have the language pack installed for the language
+spelling_languages = en-us
+# This is only the level that spelling errors occur in the Error List, it is not actually a compile-time warning/error
+spelling_error_severity = information
