@@ -64,7 +64,6 @@ jobs:
   automerge:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
-    needs: build
 
     permissions:
       pull-requests: write
