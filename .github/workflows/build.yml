@@ -37,10 +37,70 @@ jobs:
       with:
         name: NuGet
         path: ${{ github.workspace }}\*.nupkg
-      
+
+  test-console:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download NuGet Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: NuGet
+
+      - name: Test Template
+        run: |
+          dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
+          mkdir TestConsoleApp
+          Push-Location TestConsoleApp
+          dotnet new keboo.console
+          dotnet test
+          dotnet pack --configuration Release -o ${{env.DOTNET_ROOT}}/NuGet
+
+  test-wpf:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download NuGet Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: NuGet
+
+      - name: Test Template
+        run: |
+          dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
+          mkdir TestWpfApp
+          Push-Location TestWpfApp
+          dotnet new keboo.wpf
+          dotnet test
+
+  test-library:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download NuGet Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: NuGet
+
+      - name: Test Template
+        run: |
+          dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
+          mkdir TestLibrary
+          Push-Location TestLibrary
+          dotnet new keboo.nuget
+          dotnet test
+          dotnet pack --configuration Release -o ${{env.DOTNET_ROOT}}/NuGet
+
   automerge:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
+    needs: [build, test-console, test-wpf, test-library]
 
     permissions:
       pull-requests: write
