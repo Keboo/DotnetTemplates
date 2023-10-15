@@ -1,0 +1,90 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+
+      - name: dotnet restore
+        run: dotnet restore
+
+      - name: dotnet build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: dotnet test
+        run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ./code-coverage
+
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.25
+        with:
+          reports: code-coverage/**/coverage.cobertura.xml
+          targetdir: coveragereport
+          reporttypes: Html;MarkdownSummaryGithub
+          title: 'Code Coverage'
+  
+      - name: Write PR Number
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo ${{ github.event.number }} > ./coveragereport/PullRequestNumber
+  
+      - name: Upload Code Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: CodeCoverage
+          path: coveragereport/
+          if-no-files-found: error
+
+      - name: dotnet pack
+        run: dotnet pack --configuration Release --no-build -o ./NuGet
+
+      - name: Upload NuGet artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: NuGet
+          path: ./NuGet
+
+  automerge:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v3.9.1
+        with:
+          use-github-auto-merge: true
+
+  deploy-nuget:
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: NuGet
+
+      - name: Push NuGet
+        run: dotnet nuget push ${{ github.workspace }}/*nupkg --source https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
