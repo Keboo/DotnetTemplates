@@ -32,7 +32,6 @@ jobs:
       run: dotnet pack --configuration Release -o . 
     
     - name: Upload Artifacts
-      if: ${{ github.event_name != 'pull_request' }}
       uses: actions/upload-artifact@v3
       with:
         name: NuGet
@@ -112,10 +111,10 @@ jobs:
           use-github-auto-merge: true
 
   push_nugets:
-    needs: build
     if: ${{ github.event_name != 'pull_request' }}
-    runs-on: ubuntu-latest
     name: Push NuGets
+    runs-on: ubuntu-latest
+    needs: [build, test-console, test-wpf, test-library]
 
     steps:
       - name: Download NuGet Artifacts
