@@ -5,17 +5,26 @@
 
 version: 2
 updates:
-  - package-ecosystem: "nuget" 
-    directory: "/templates/WPF/WpfApp" 
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "nuget" 
-    directory: "/templates/console/ConsoleApp" 
-    schedule:
-      interval: "weekly"
-
   - package-ecosystem: "github-actions" 
     directory: "/"
+    schedule:
+      interval: "weekly" 
+
+  - package-ecosystem: "nuget" 
+    directory: "/templates/WPF/WpfApp"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "nuget" 
+    directory: "/templates/Console/ConsoleApp"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "nuget" 
+    directory: "/templates/Library/NuGet"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions" 
+    directory: "/templates/Library/NuGet"
     schedule:
       interval: "weekly" 

@@ -3,7 +3,20 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
+    <Version>0.0.1</Version>
   </PropertyGroup>
+
+  <!-- 
+    For packaging as a dotnet global tool 
+    https://learn.microsoft.com/dotnet/core/tools/global-tools-how-to-create
+  -->
+  <!--
+  <PropertyGroup>
+    <PackageId>ConsoleApp</PackageId>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>ConsoleApp</ToolCommandName>
+  </PropertyGroup>
+  -->
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" />

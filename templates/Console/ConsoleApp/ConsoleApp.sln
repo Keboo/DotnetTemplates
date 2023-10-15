@@ -13,7 +13,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		Directory.Packages.props = Directory.Packages.props
+		exclusions.dic = exclusions.dic
 		NuGet.config = NuGet.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{6E32D310-8A68-4061-82C9-4A0040537448}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{D73E76B4-8613-4EF2-A925-0766B9E8B02C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-and-deploy.yml = .github\workflows\build-and-deploy.yml
+		.github\workflows\pr-code-coverage-comment.yml = .github\workflows\pr-code-coverage-comment.yml
 	EndProjectSection
 EndProject
 Global
@@ -33,6 +45,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6E32D310-8A68-4061-82C9-4A0040537448} = {D88D7F20-19C5-42B4-8561-874CC78B134A}
+		{D73E76B4-8613-4EF2-A925-0766B9E8B02C} = {6E32D310-8A68-4061-82C9-4A0040537448}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF353750-2089-4072-9508-65E9DC66DF2D}
