@@ -22,6 +22,29 @@ public partial class MainWindowViewModelTests
         Assert.Equal(initialCount + 1, viewModel.Count);
     }
 
+    [Theory]
+    [InlineData(1, true)]
+    [InlineData(2, true)]
+    [InlineData(3, true)]
+    [InlineData(4, true)]
+    [InlineData(5, false)]
+    [InlineData(6, false)]
+    public void IncrementCounterCommand_CanExecute_IndicatesIfCountIsLessThanFive(int count, bool expected)
+    {
+        //Arrange
+        AutoMocker mocker = new();
+
+        MainWindowViewModel viewModel = mocker.CreateInstance<MainWindowViewModel>();
+
+        viewModel.Count = count;
+
+        //Act
+        bool canExecute = viewModel.IncrementCountCommand.CanExecute(null);
+
+        //Assert
+        Assert.Equal(expected, canExecute);
+    }
+
     [Fact]
     public void ClearCounterCommand_Execute_ClearsCount()
     {
