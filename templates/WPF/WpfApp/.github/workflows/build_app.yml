@@ -1,0 +1,86 @@
+name: Build WpfApp
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: pwsh
+    
+env:
+  version: "1.0.${{ github.run_number }}"
+  
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.x'
+
+      - name: dotnet build
+        run: dotnet build --configuration Release -p:Version="${{ env.version }}"
+
+      - name: dotnet test
+        run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ${{github.workspace}}/.build/coverage
+        
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.26
+        with:
+          reports: ${{github.workspace}}/.build/coverage/**/coverage.cobertura.xml
+          targetdir: ${{github.workspace}}/.build/coveragereport/
+          reporttypes: Html;MarkdownSummaryGithub
+          title: 'Code Coverage'
+
+      - name: Write PR Number
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          New-Item -Type File -Value "${{ github.event.number }}" -Force -Path "${{github.workspace}}/.build/coveragereport/PullRequestNumber"
+
+      - name: Upload Code Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: CodeCoverage
+          path: ${{github.workspace}}/.build/coveragereport/
+          if-no-files-found: error
+        
+      - name: dotnet publish
+        if: ${{ github.event_name != 'pull_request' }}
+        run: dotnet publish --configuration Release --no-build -p:Version="${{ env.version }}" -p:PublishDir=${{github.workspace}}/.build/publish
+
+      - name: Upload artifact for deployment job
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: ${{github.workspace}}/.build/publish
+
+  # This will automatically mark PRs from dependabot with auto merge.
+  # This allows them to automatically complete if they pass the rest of the CI
+  auto-merge:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v3.9.1
+        with:
+          # For GitHub Auto Merge to work it must be enabled on the repo.
+          # This can be done with the script here:
+          # https://github.com/Keboo/DotnetTemplates/blob/main/SetupRepo.ps1
+          # See documentation here:
+          # https://docs.github.com/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/automatically-merging-a-pull-request
+          use-github-auto-merge: true
