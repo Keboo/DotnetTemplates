@@ -23,6 +23,7 @@ public partial class MainWindowViewModelTests
     }
 
     [Theory]
+    [InlineData(0, true)]
     [InlineData(1, true)]
     [InlineData(2, true)]
     [InlineData(3, true)]
