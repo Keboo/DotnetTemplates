@@ -1,0 +1,42 @@
+name: Code Coverage PR Comment
+
+on:
+  workflow_run:
+    workflows: [Build WpfApp]
+    types:
+      - completed
+
+defaults:
+  run:
+    shell: pwsh
+
+# This is required by marocchino/sticky-pull-request-comment
+# You must enable read/write permissions to allow workflows to create comments on the PR.
+# On your repo navigate to: Settings > Actions > General > Workflow permissions, and make sure to enable read and write permissions.
+# https://github.com/marocchino/sticky-pull-request-comment#error-resource-not-accessible-by-integration
+permissions:
+  pull-requests: write
+
+jobs:
+  post-code-coverage:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Download artifacts
+        run: gh run download ${{ github.event.workflow_run.id }} -n CodeCoverage --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: 'Get PR Number'
+        id: get-pr-number
+        run: |
+          $pr_number = (cat PullRequestNumber)
+          "pr_number=$pr_number" >> $env:GITHUB_OUTPUT
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          number: ${{ steps.get-pr-number.outputs.pr_number }}
+          path: SummaryGithub.md
