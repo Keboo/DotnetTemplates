@@ -6,6 +6,7 @@
 
     <UseWPF>true</UseWPF>
     <StartupObject>WpfApp.App</StartupObject>
+    <ApplicationIcon>Resources\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <!--
@@ -29,11 +30,12 @@
 
   <ItemGroup>
     <ApplicationDefinition Remove="App.xaml" />
+    <Content Include="Resources\AppIcon.ico" />
     <Page Include="App.xaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm"/>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="MaterialDesignThemes" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
