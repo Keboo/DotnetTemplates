@@ -14,16 +14,23 @@ namespace WpfApp;
 public partial class App : Application
 {
     [STAThread]
-    public static void Main(string[] args)
+    private static void Main(string[] args)
+    {
+        MainAsync(args).GetAwaiter().GetResult();
+    }
+
+    private static async Task MainAsync(string[] args)
     {
         using IHost host = CreateHostBuilder(args).Build();
-        host.Start();
+        await host.StartAsync().ConfigureAwait(true);
 
         App app = new();
         app.InitializeComponent();
         app.MainWindow = host.Services.GetRequiredService<MainWindow>();
         app.MainWindow.Visibility = Visibility.Visible;
         app.Run();
+
+        await host.StopAsync().ConfigureAwait(true);
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
