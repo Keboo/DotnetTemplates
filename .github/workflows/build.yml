@@ -14,6 +14,9 @@ defaults:
   run:
     shell: pwsh
 
+env:
+  DOTNET_VERSION: 8.x
+
 jobs:
   build:
     runs-on: windows-latest
@@ -25,8 +28,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: |
-          7.x
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Build
       run: dotnet pack --configuration Release -o . 
@@ -46,6 +48,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: NuGet
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Test Template
         run: |
@@ -66,6 +73,11 @@ jobs:
         with:
           name: NuGet
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
       - name: Test Template
         run: |
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
@@ -83,6 +95,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: NuGet
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Test Template
         run: |
