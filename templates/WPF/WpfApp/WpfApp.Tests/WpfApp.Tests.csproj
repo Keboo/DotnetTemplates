@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 
     <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
