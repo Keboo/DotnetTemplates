@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 
     <UseWPF>true</UseWPF>
     <StartupObject>WpfApp.App</StartupObject>

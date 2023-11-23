@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageVersion>1.5.0</PackageVersion>
+    <PackageVersion>1.6.0</PackageVersion>
     <PackageId>Keboo.Dotnet.Templates</PackageId>
     <Title>Keboo's .NET Templates</Title>
     <Authors>Keboo</Authors>
     <Description>.NET Templates built by Keboo</Description>
     <PackageTags>dotnet-new;templates;wpf;nuget</PackageTags>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Keboo/DotnetTemplates</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>

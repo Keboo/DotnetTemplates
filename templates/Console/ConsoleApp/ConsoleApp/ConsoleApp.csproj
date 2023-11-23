@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+    
     <Version>0.0.1</Version>
   </PropertyGroup>
 
