@@ -11,8 +11,14 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>11</LangVersion>
+    <LangVersion>12</LangVersion>
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+
+    <!-- 
+    If you you like to see source generated files saved to disk you can enable the following:
+    https://learn.microsoft.com/dotnet/csharp/roslyn-sdk/source-generators-overview?WT.mc_id=DT-MVP-5003472
+    -->
+    <!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
   </PropertyGroup>
 
   <!--
