@@ -1,7 +1,7 @@
 <!--
   This enabled central package management. 
   This allows for controling all NuGet packages within the Directory.Packages.props file
-  See https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management
+  See https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472
   -->
 <Project>
   <!--
@@ -12,6 +12,8 @@
   <!-- This property enables the Central Package Management feature -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472#transitive-pinning -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
   <!--
