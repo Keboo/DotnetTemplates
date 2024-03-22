@@ -7,7 +7,7 @@
     <Title>Keboo's .NET Templates</Title>
     <Authors>Keboo</Authors>
     <Description>.NET Templates built by Keboo</Description>
-    <PackageTags>dotnet-new;templates;wpf;nuget</PackageTags>
+    <PackageTags>Template;WPF;NuGet;Console</PackageTags>
     <TargetFramework>net8.0</TargetFramework>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Keboo/DotnetTemplates</RepositoryUrl>
