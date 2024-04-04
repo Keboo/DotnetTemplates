@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Keboo",
+  "classifications": [
+    "Common",
+    "Avalonia"
+  ],
+  "identity": "Keboo.Avalonia.Solution",
+  "name": "Keboo Avalonia Application",
+  "shortName": "keboo.avalonia",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "preferNameDirectory":true,
+  "sourceName": "SampleAvaloniaApplication",
+  "symbols":{
+    "user_secrets_id":{
+      "type": "generated",
+      "generator": "guid",
+      "replaces": "12345678-9abc-0123-4567-890abcdef123",
+      "parameters": {
+        "defaultFormat":"d"
+      }
+    },
+    "no-sln": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false"
+    },
+    "no-tests": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(no-sln)",
+          "exclude": [
+            "SampleAvaloniaApplication.sln"
+          ]
+        },
+        {
+          "condition": "(no-tests)",
+          "exclude": [
+            "SampleAvaloniaApplication.Tests/*"
+          ]
+        }
+      ]
+    }
+  ]
+}

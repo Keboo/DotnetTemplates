@@ -15,7 +15,7 @@
     <!-- https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472#transitive-pinning -->
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     
-    <AvaloniaVersion>11.0.2</AvaloniaVersion>
+    <AvaloniaVersion>11.0.10</AvaloniaVersion>
   </PropertyGroup>
 
   <!--
@@ -32,10 +32,8 @@
     <PackageVersion Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
 
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.0" />
-    
-
-    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.6" />
   </ItemGroup>
 </Project>
