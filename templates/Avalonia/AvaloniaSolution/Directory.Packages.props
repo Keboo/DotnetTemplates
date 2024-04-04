@@ -1,0 +1,39 @@
+<!--
+  This enabled central package management. 
+  This allows for controling all NuGet packages within the Directory.Packages.props file
+  See https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472
+  -->
+<Project>
+  <!--
+  Uncomment if you need to enable inclusion of another Directory.Packages.props file from a parent directory
+  <Import Project="$([MSBuild]::GetPathOfFileAbove(Directory.Packages.props, $(MSBuildThisFileDirectory)..))" />
+  -->
+
+  <!-- This property enables the Central Package Management feature -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472#transitive-pinning -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    
+    <AvaloniaVersion>11.0.10</AvaloniaVersion>
+  </PropertyGroup>
+
+  <!--
+  This defines the set of centrally managed packages.
+  This would typically list all NuGet packages used within this solution.
+  -->
+  <ItemGroup>
+    <PackageVersion Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Android" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+
+    <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.6" />
+  </ItemGroup>
+</Project>

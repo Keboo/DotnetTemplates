@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34707.107
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAvaloniaApplication", "SampleAvaloniaApplication\SampleAvaloniaApplication.csproj", "{468FB281-79A9-4C1F-9EA7-080DF4E4ECAF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAvaloniaApplication.Android", "SampleAvaloniaApplication.Android\SampleAvaloniaApplication.Android.csproj", "{1B4914BF-CE72-4BA5-B7B4-C41C09E74F51}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAvaloniaApplication.Desktop", "SampleAvaloniaApplication.Desktop\SampleAvaloniaApplication.Desktop.csproj", "{E44C3839-DDFE-4DA3-BC06-796CEC9AC8B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAvaloniaApplication.iOS", "SampleAvaloniaApplication.iOS\SampleAvaloniaApplication.iOS.csproj", "{F9460ABD-ED52-4001-A2F1-03FFCF915C47}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAvaloniaApplication.Browser", "SampleAvaloniaApplication.Browser\SampleAvaloniaApplication.Browser.csproj", "{76A3BFA3-4B1E-46B5-8BAA-BA558B258EAD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2805EDF0-22F4-4F54-BE47-1212AB3BC273}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
+		exclusions.dic = exclusions.dic
+		NuGet.config = NuGet.config
+		Settings.XamlStyler = Settings.XamlStyler
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{468FB281-79A9-4C1F-9EA7-080DF4E4ECAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{468FB281-79A9-4C1F-9EA7-080DF4E4ECAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{468FB281-79A9-4C1F-9EA7-080DF4E4ECAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{468FB281-79A9-4C1F-9EA7-080DF4E4ECAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B4914BF-CE72-4BA5-B7B4-C41C09E74F51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B4914BF-CE72-4BA5-B7B4-C41C09E74F51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B4914BF-CE72-4BA5-B7B4-C41C09E74F51}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1B4914BF-CE72-4BA5-B7B4-C41C09E74F51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B4914BF-CE72-4BA5-B7B4-C41C09E74F51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B4914BF-CE72-4BA5-B7B4-C41C09E74F51}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E44C3839-DDFE-4DA3-BC06-796CEC9AC8B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E44C3839-DDFE-4DA3-BC06-796CEC9AC8B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E44C3839-DDFE-4DA3-BC06-796CEC9AC8B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E44C3839-DDFE-4DA3-BC06-796CEC9AC8B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9460ABD-ED52-4001-A2F1-03FFCF915C47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9460ABD-ED52-4001-A2F1-03FFCF915C47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9460ABD-ED52-4001-A2F1-03FFCF915C47}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F9460ABD-ED52-4001-A2F1-03FFCF915C47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9460ABD-ED52-4001-A2F1-03FFCF915C47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9460ABD-ED52-4001-A2F1-03FFCF915C47}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{76A3BFA3-4B1E-46B5-8BAA-BA558B258EAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76A3BFA3-4B1E-46B5-8BAA-BA558B258EAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76A3BFA3-4B1E-46B5-8BAA-BA558B258EAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76A3BFA3-4B1E-46B5-8BAA-BA558B258EAD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7005BBD9-1CF6-41F6-AA5D-DF3918043818}
+	EndGlobalSection
+EndGlobal
