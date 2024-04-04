@@ -15,12 +15,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAvaloniaApplication.B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2805EDF0-22F4-4F54-BE47-1212AB3BC273}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\WPF\WpfApp\.editorconfig = ..\..\WPF\WpfApp\.editorconfig
-		..\..\WPF\WpfApp\.gitignore = ..\..\WPF\WpfApp\.gitignore
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
-		..\..\WPF\WpfApp\exclusions.dic = ..\..\WPF\WpfApp\exclusions.dic
-		..\..\WPF\WpfApp\NuGet.config = ..\..\WPF\WpfApp\NuGet.config
-		..\..\WPF\WpfApp\Settings.XamlStyler = ..\..\WPF\WpfApp\Settings.XamlStyler
+		Directory.Build.targets = Directory.Build.targets
+		Directory.Packages.props = Directory.Packages.props
+		exclusions.dic = exclusions.dic
+		NuGet.config = NuGet.config
+		Settings.XamlStyler = Settings.XamlStyler
 	EndProjectSection
 EndProject
 Global

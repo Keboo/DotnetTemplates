@@ -2,6 +2,5 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
-    <AvaloniaVersion>11.0.2</AvaloniaVersion>
   </PropertyGroup>
 </Project>
