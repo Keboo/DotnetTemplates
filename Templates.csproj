@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageVersion>1.6.1</PackageVersion>
+    <PackageVersion>1.7.0</PackageVersion>
     <PackageId>Keboo.Dotnet.Templates</PackageId>
     <Title>Keboo's .NET Templates</Title>
     <Authors>Keboo</Authors>
