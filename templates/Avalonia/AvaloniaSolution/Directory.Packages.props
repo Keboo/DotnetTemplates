@@ -32,7 +32,7 @@
     <PackageVersion Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
 
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.3.1" />
 
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.6" />
   </ItemGroup>
