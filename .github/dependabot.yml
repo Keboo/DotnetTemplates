@@ -14,6 +14,10 @@ updates:
     directory: "/templates/WPF/WpfApp"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "github-actions" 
+    directory: "/templates/WPF/WpfApp"
+    schedule:
+      interval: "weekly" 
 
   - package-ecosystem: "nuget" 
     directory: "/templates/Console/ConsoleApp"
@@ -30,5 +34,14 @@ updates:
       interval: "weekly"
   - package-ecosystem: "github-actions" 
     directory: "/templates/Library/NuGet"
+    schedule:
+      interval: "weekly" 
+
+  - package-ecosystem: "nuget" 
+    directory: "/templates/Avalonia/AvaloniaSolution"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions" 
+    directory: "/templates/Avalonia/AvaloniaSolution"
     schedule:
       interval: "weekly" 
