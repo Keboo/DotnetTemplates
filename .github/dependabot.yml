@@ -15,7 +15,7 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions" 
-    directory: "/templates/WPF/WpfApp"
+    directory: "/templates/WPF/WpfApp/.github/workflows"
     schedule:
       interval: "weekly" 
 
@@ -33,7 +33,7 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions" 
-    directory: "/templates/Library/NuGet"
+    directory: "/templates/Library/NuGet/.github/workflows"
     schedule:
       interval: "weekly" 
 
@@ -42,6 +42,6 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions" 
-    directory: "/templates/Avalonia/AvaloniaSolution"
+    directory: "/templates/Avalonia/AvaloniaSolution/.github/workflows"
     schedule:
       interval: "weekly" 
