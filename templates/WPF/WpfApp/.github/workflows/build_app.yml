@@ -48,7 +48,7 @@ jobs:
           New-Item -Type File -Value "${{ github.event.number }}" -Force -Path "${{github.workspace}}/.build/coveragereport/PullRequestNumber"
 
       - name: Upload Code Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: CodeCoverage
           path: ${{github.workspace}}/.build/coveragereport/
@@ -60,7 +60,7 @@ jobs:
 
       - name: Upload artifact for deployment job
         if: ${{ github.event_name != 'pull_request' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app
           path: ${{github.workspace}}/.build/publish
