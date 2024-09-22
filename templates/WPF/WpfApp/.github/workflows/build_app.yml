@@ -76,7 +76,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: fastify/github-action-merge-dependabot@v3.9.1
+      - uses: fastify/github-action-merge-dependabot@v3.10.1
         with:
           # For GitHub Auto Merge to work it must be enabled on the repo.
           # This can be done with the script here:
