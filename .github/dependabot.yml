@@ -24,7 +24,7 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions" 
-    directory: "/templates/Console/ConsoleApp"
+    directory: "/templates/Console/ConsoleApp/.github/workflows"
     schedule:
       interval: "weekly" 
 
