@@ -35,7 +35,7 @@ jobs:
         run: dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ${{github.workspace}}/.build/coverage
         
       - name: ReportGenerator
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.26
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.3.9
         with:
           reports: ${{github.workspace}}/.build/coverage/**/coverage.cobertura.xml
           targetdir: ${{github.workspace}}/.build/coveragereport/
