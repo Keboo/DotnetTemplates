@@ -111,7 +111,7 @@ jobs:
           dotnet pack --configuration Release -o ./NuGet
 
   test-avalonia:
-    runs-on: ubuntu-latest
+    runs-on: masos-latest
     needs: build
 
     steps:
