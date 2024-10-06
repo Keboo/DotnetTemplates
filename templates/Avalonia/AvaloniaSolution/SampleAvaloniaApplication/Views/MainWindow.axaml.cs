@@ -8,4 +8,10 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
+
+    public MainWindow(MainView mainView)
+        : this()
+    {
+        Content = mainView;
+    }
 }
