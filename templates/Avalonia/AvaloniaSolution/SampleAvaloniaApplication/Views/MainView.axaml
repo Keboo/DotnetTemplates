@@ -12,5 +12,9 @@
     <vm:MainViewModel />
   </Design.DataContext>
 
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <TextBlock Text="{Binding Greeting}" />
+    <TextBlock Text="{Binding Counter, StringFormat='Clicked {0} times'}" Margin="0,20,0,0" />
+    <Button Command="{Binding IncrementCommand}" Content="Click me!" />
+  </StackPanel>
 </UserControl>
