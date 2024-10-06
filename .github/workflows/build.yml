@@ -131,6 +131,7 @@ jobs:
           mkdir TestAvalonia
           Push-Location TestAvalonia
           dotnet new keboo.avalonia
+          dotnet workload restore
           dotnet build
 
 
@@ -151,7 +152,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     name: Push NuGets
     runs-on: ubuntu-latest
-    needs: [build, test-console, test-wpf, test-library]
+    needs: [build, test-console, test-wpf, test-library, test-avalonia]
 
     steps:
       - name: Download NuGet Artifacts
