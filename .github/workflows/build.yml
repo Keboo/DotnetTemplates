@@ -110,6 +110,30 @@ jobs:
           dotnet test
           dotnet pack --configuration Release -o ./NuGet
 
+  test-avalonia:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download NuGet Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: NuGet
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Test Template
+        run: |
+          dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
+          mkdir TestAvalonia
+          Push-Location TestAvalonia
+          dotnet new keboo.avalonia
+          dotnet build
+
+
   automerge:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
