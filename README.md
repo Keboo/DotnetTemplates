@@ -21,6 +21,7 @@ dotnet new uninstall Keboo.Dotnet.Templates
 ```
 
 ## Included Templates 
+- [Avalonia Solution](./templates/Avalonia/AvaloniaSolution/README.md)
 - [WPF Solution](./templates/WPF/WpfApp/README.md)
 - [NuGet Package Solution](./templates/Library/NuGet/README.md)
 - [System.CommandLine Solution](./templates/Console/ConsoleApp/README.md)

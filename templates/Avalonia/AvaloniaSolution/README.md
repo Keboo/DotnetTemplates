@@ -1,12 +1,12 @@
-# Command line app template
-This template creates a [System.CommandLine](https://github.com/dotnet/command-line-api) solution, along with unit tests.
+# Avalonia solution template
+This template creates a solution with all needed projects for an [Avalonia UI project](https://avaloniaui.net/).
 
 
 ## Template
 Create a new app in your current directory by running.
 
 ```cli
-> dotnet new keboo.console
+> dotnet new keboo.avalonia
 ```
 
 ### Parameters
@@ -19,6 +19,9 @@ Create a new app in your current directory by running.
 
 ### Centralized Package Management
 [Docs](https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472)
+
+### CommunityToolkit MVVM
+[Docs](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/?WT.mc_id=DT-MVP-5003472)
 
 ### NuGet package source mapping
 [Docs](https://learn.microsoft.com/nuget/consume-packages/package-source-mapping?WT.mc_id=DT-MVP-5003472)
