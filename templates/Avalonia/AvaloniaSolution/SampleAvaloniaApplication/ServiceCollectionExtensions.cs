@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
     private static void AddAvaloniaServices(this IServiceCollection services)
     {
         services.AddSingleton<IDispatcher>(_ => Dispatcher.UIThread);
-        services.AddSingleton(_ => Application.Current?.ApplicationLifetime ?? NoopApplicationLifetime.Instance);
+        services.AddSingleton(_ => Application.Current?.ApplicationLifetime ?? throw new InvalidOperationException("No application lifetime is set"));
 
         services.AddSingleton(sp =>
             sp.GetRequiredService<IApplicationLifetime>() switch
@@ -48,16 +48,5 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<TViewModel>();
         services.AddTransient<TView>();
-    }
-
-    private sealed class NoopApplicationLifetime : IDisposable, IApplicationLifetime
-    {
-        private static readonly Lazy<NoopApplicationLifetime> _instance = new(() => new NoopApplicationLifetime());
-        public static IApplicationLifetime Instance => _instance.Value;
-
-        private NoopApplicationLifetime()
-        { }
-
-        public void Dispose() { }
     }
 }
