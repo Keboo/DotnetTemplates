@@ -16,6 +16,8 @@
   The Condition on PublishSingleFile is to prevent debugging issues while running as a single file.
   Many debugging tools (Snoop, Visual Studio's UI debugging tools for XAML) will not function with PublishSingleFile set to true.
   https://github.com/dotnet/runtime/issues/3773
+
+  You will also need to remove the no-build option from the `dotnet publish` command on the "dotnet publish" step in .github/workflows/build_app.yml 
   -->
   <!--
   <PropertyGroup>

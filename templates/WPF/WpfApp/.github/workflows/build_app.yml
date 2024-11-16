@@ -56,7 +56,9 @@ jobs:
         
       - name: dotnet publish
         if: ${{ github.event_name != 'pull_request' }}
-        run: dotnet publish --configuration Release --no-build -p:Version="${{ env.version }}" -p:PublishDir=${{github.workspace}}/.build/publish
+        run: |
+          # If publishing single file, remove the --no-build below
+          dotnet publish --configuration Release --no-build -p:Version="${{ env.version }}" -p:PublishDir=${{github.workspace}}/.build/publish
 
       - name: Upload artifact for deployment job
         if: ${{ github.event_name != 'pull_request' }}
