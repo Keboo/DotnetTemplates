@@ -1,0 +1,62 @@
+<UserControl x:Class="SampleAvaloniaApplication.Views.NavigationStackView"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             xmlns:local="clr-namespace:SampleAvaloniaApplication.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             TopLevel.AutoSafeAreaPadding="True"
+             mc:Ignorable="d">
+  <dialogHost:DialogHost x:Name="DialogHost"
+                         dialogHost:DialogHostStyle.CornerRadius="8"
+                         DialogMargin="16">
+    <dialogHost:DialogHost.DataTemplates>
+      <DataTemplate DataType="local:DialogRequest">
+        <Grid RowDefinitions="Auto,Auto,Auto">
+
+          <TextBlock Text="{Binding Title}"
+                     TextAlignment="Center"
+                     TextWrapping="Wrap"
+                     Theme="{StaticResource Headline6TextBlock}" />
+          <TextBlock Grid.Row="1"
+                     Margin="0,15"
+                     Text="{Binding Message}"
+                     TextAlignment="Left"
+                     TextWrapping="Wrap"
+                     Theme="{StaticResource Body1TextBlock}" />
+
+          <ItemsControl Grid.Row="2"
+                        HorizontalAlignment="Right"
+                        ItemsSource="{Binding Options}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="10" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Button Command="{Binding $parent[dialogHost:DialogHost].CloseDialogCommand}"
+                        CommandParameter="{Binding}"
+                        Content="{Binding}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Grid>
+      </DataTemplate>
+    </dialogHost:DialogHost.DataTemplates>
+    <dialogHost:DialogHost.DialogContent>
+      <Grid RowDefinitions="Auto,Auto">
+        <TextBlock Text="Test" />
+      </Grid>
+    </dialogHost:DialogHost.DialogContent>
+    <Grid x:Name="Root" />
+
+    <dialogHost:DialogHost.Transitions>
+        <Transitions>
+          <ThicknessTransition Property="Margin" />
+        </Transitions>
+      </dialogHost:DialogHost.Transitions>
+  </dialogHost:DialogHost>
+</UserControl>
