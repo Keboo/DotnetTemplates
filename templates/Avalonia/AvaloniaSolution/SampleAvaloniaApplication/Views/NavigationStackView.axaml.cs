@@ -97,6 +97,10 @@ public partial class NavigationStackView : UserControl, IAppShell, IRecipient<Na
         Control view = AddView(request, Services);
         while (Root.Children.Count > 1)
         {
+            if (GetServiceScope(Root.Children[0]) is { } serviceScope)
+            {
+                serviceScope.Dispose();
+            }
             Root.Children.RemoveAt(0);
         }
         await request.LoadDataAsync(view);

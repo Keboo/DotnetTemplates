@@ -18,7 +18,8 @@ public class NavigationRequest
     public bool StartNewScope { get; private set; }
 
     //public static NavigationRequest LoginPage() => new(typeof(LoginView)) { StartNewScope = true };
-    
+    // Various nagigation stuff
+
     private class NavigationRequestData<T> : NavigationRequest
     {
         public NavigationRequestData(Type viewType, T data)
