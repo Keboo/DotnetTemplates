@@ -46,11 +46,6 @@
         </Grid>
       </DataTemplate>
     </dialogHost:DialogHost.DataTemplates>
-    <dialogHost:DialogHost.DialogContent>
-      <Grid RowDefinitions="Auto,Auto">
-        <TextBlock Text="Test" />
-      </Grid>
-    </dialogHost:DialogHost.DialogContent>
     <Grid x:Name="Root" />
 
     <dialogHost:DialogHost.Transitions>
