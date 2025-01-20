@@ -19,7 +19,7 @@
   This would typically list all NuGet packages used within this solution.
   -->
   <ItemGroup>
-    <PackageVersion Include="coverlet.collector" Version="6.0.3">
+    <PackageVersion Include="coverlet.collector" Version="6.0.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageVersion>
