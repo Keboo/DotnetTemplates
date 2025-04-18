@@ -5,7 +5,7 @@ namespace WpfApp;
 
 public partial class MainWindowViewModel : ObservableObject
 {
-    //This is using the source generators from CommunityToolkit.Mvvm to generate a RelayCommand
+    //This is using the source generators from CommunityToolkit.Mvvm to generate an ObservableProperty
     //See: https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/generators/observableproperty
     //and: https://learn.microsoft.com/windows/communitytoolkit/mvvm/observableobject
     [ObservableProperty]
