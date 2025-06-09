@@ -1,8 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
   <PropertyGroup>
-    <TargetFramework>net8.0-browser</TargetFramework>
+    <TargetFramework>net9.0-browser</TargetFramework>
     <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!--
+    This requires the WASM workload to be installed.
+    If you are using the .NET 9 SDK run: dotnet workload install wasm-tools
+    Otherwise run: dotnet workload install wasm-tools-net9
+    See: https://learn.microsoft.com/en-us/aspnet/core/blazor/webassembly-build-tools-and-aot?view=aspnetcore-9.0&WT.mc_id=DT-MVP-5003472#net-webassembly-build-tools
+    -->
+    <WasmBuildNative>true</WasmBuildNative>
   </PropertyGroup>
 
   <ItemGroup>
