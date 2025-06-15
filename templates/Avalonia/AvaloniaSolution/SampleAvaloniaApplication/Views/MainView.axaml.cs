@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Interactivity;
 
 using SampleAvaloniaApplication.ViewModels;
 
