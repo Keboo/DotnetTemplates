@@ -6,21 +6,21 @@ public sealed class Program
 {
     private static Task<int> Main(string[] args)
     {
-        CliConfiguration configuration = GetConfiguration();
+        CommandLineConfiguration configuration = GetConfiguration();
         return configuration.InvokeAsync(args);
     }
 
-    public static CliConfiguration GetConfiguration()
+    public static CommandLineConfiguration GetConfiguration()
     {
-        CliArgument<int> number1 = new("number1")
+        Argument<int> number1 = new("number1")
         {
             Description = "The first number to add"
         };
-        CliArgument<int> number2 = new("number2")
+        Argument<int> number2 = new("number2")
         {
             Description = "The second number to add"
         };
-        CliCommand addCommand = new("add", "Add two numbers together")
+        Command addCommand = new("add", "Add two numbers together")
         {
             number1,
             number2
@@ -33,10 +33,11 @@ public sealed class Program
             parseResult.Configuration.Output.WriteLine($"The result is {result}");
         });
 
-        CliRootCommand rootCommand = new("A starter console app by Keboo")
+        RootCommand rootCommand = new("A starter console app by Keboo")
         {
             addCommand
         };
-        return new CliConfiguration(rootCommand);
+
+        return new CommandLineConfiguration(rootCommand);
     }
 }
