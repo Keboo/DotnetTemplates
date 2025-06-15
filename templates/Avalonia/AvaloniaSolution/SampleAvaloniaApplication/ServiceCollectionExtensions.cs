@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
         where TViewModel : class
     {
         services.AddTransient<TViewModel>();
+        services.AddSingleton<Func<TViewModel>>(sp => () => sp.GetRequiredService<TViewModel>());
         services.AddTransient<TView>();
     }
 }
