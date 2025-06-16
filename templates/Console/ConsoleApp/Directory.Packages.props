@@ -25,12 +25,12 @@
     </PackageVersion>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Moq.AutoMock" Version="3.5.0" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.0-beta5.25227.102" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.0-beta5.25315.103" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2">
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageVersion>
