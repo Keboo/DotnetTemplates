@@ -12,6 +12,14 @@ Create a new app in your current directory by running.
 ### Parameters
 [Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
 
+## Updating .NET Version
+
+This template uses a `global.json` file to specify the required .NET SDK version. To update the .NET SDK version:
+
+1. Update the `global.json` file in the solution root
+
+Note: The Avalonia template does not include a GitHub Actions workflow by default. If you add one, configure it to use the `global-json-file` parameter in the `actions/setup-dotnet` step.
+
 ## Key Features
 
 ### Build Customization

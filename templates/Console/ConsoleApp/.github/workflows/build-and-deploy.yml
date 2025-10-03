@@ -21,7 +21,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '8.x'
+          global-json-file: global.json
 
       - name: dotnet restore
         run: dotnet restore
