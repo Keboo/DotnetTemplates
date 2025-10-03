@@ -40,6 +40,30 @@
       "type": "parameter",
       "dataType":"bool",
       "defaultValue": "false"
+    },
+    "ci-provider": {
+      "type": "parameter",
+      "dataType": "choice",
+      "choices": [
+        {
+          "choice": "github",
+          "description": "Use GitHub Actions for CI/CD"
+        },
+        {
+          "choice": "azuredevops",
+          "description": "Use Azure DevOps Pipelines for CI/CD"
+        }
+      ],
+      "defaultValue": "github",
+      "description": "The CI/CD provider to use"
+    },
+    "useGitHub": {
+      "type": "computed",
+      "value": "(ci-provider == \"github\")"
+    },
+    "useAzureDevOps": {
+      "type": "computed",
+      "value": "(ci-provider == \"azuredevops\")"
     }
   },
   "sources": [
@@ -55,6 +79,18 @@
           "condition": "(no-tests)",
           "exclude": [
             "ConsoleApp.Tests/*"
+          ]
+        },
+        {
+          "condition": "(useGitHub)",
+          "exclude": [
+            ".devops/**"
+          ]
+        },
+        {
+          "condition": "(useAzureDevOps)",
+          "exclude": [
+            ".github/**"
           ]
         }
       ]
