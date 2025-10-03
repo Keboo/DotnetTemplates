@@ -11,6 +11,15 @@ Create a new app in your current directory by running.
 ### Parameters
 [Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
 
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--ci-provider` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
+
+**Example with Azure DevOps:**
+```cli
+> dotnet new keboo.wpf --ci-provider azuredevops
+```
+
 ## Key Features
 
 ### Generic Host Dependency Injection
@@ -46,3 +55,8 @@ Auto merging of these PRs done with [fastify/github-action-merge-dependabot](htt
 Code coverage provided by [coverlet-coverage/coverlet](https://github.com/coverlet-coverage/coverlet).
 Code coverage report provided by [danielpalme/ReportGenerator-GitHub-Action](https://github.com/danielpalme/ReportGenerator-GitHub-Action).
 The coverage reports are posted as "stciky" PR comments provided by [marocchino/sticky-pull-request-comment](https://github.com/marocchino/sticky-pull-request-comment)
+
+### Azure DevOps Pipeline support
+Alternative to GitHub Actions. Set `--ci-provider azuredevops` when creating the template.
+Code coverage provided by [coverlet-coverage/coverlet](https://github.com/coverlet-coverage/coverlet).
+Uses built-in Azure DevOps code coverage reporting.
