@@ -25,9 +25,7 @@ Create a new app in your current directory by running.
 This template uses a `global.json` file to specify the required .NET SDK version. To update the .NET SDK version:
 
 1. Update the `global.json` file in the solution root
-2. Update the `.github/workflows/build_app.yml` workflow file if needed
-
-The GitHub Actions workflow uses the `global-json-file` parameter to automatically install the correct SDK version specified in `global.json`.
+2. Update the `<TargetFramework>` in the `csproj` files.
 
 ## Key Features
 

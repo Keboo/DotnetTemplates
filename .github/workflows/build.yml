@@ -14,6 +14,9 @@ defaults:
   run:
     shell: pwsh
 
+env:
+  DOTNET_VERSION: 9.x
+
 jobs:
   build:
     runs-on: windows-latest
@@ -49,9 +52,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: |
-            8.x
-            9.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Test Template
         run: |
@@ -75,9 +76,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: |
-            8.x
-            9.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Test Template
         run: |
@@ -100,9 +99,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: |
-            8.x
-            9.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Test Template
         run: |
@@ -126,9 +123,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: |
-            8.x
-            9.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Test Template
         run: |
