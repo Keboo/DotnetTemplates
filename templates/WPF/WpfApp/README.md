@@ -13,11 +13,11 @@ Create a new app in your current directory by running.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--ci-provider` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
+| `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
 
 **Example with Azure DevOps:**
 ```cli
-> dotnet new keboo.wpf --ci-provider azuredevops
+> dotnet new keboo.wpf --pipeline azuredevops
 ```
 
 ## Key Features
@@ -57,6 +57,6 @@ Code coverage report provided by [danielpalme/ReportGenerator-GitHub-Action](htt
 The coverage reports are posted as "stciky" PR comments provided by [marocchino/sticky-pull-request-comment](https://github.com/marocchino/sticky-pull-request-comment)
 
 ### Azure DevOps Pipeline support
-Alternative to GitHub Actions. Set `--ci-provider azuredevops` when creating the template.
+Alternative to GitHub Actions. Set `--pipeline azuredevops` when creating the template.
 Code coverage provided by [coverlet-coverage/coverlet](https://github.com/coverlet-coverage/coverlet).
 Uses built-in Azure DevOps code coverage reporting.

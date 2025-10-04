@@ -14,11 +14,11 @@ Create a new app in your current directory by running.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--ci-provider` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
+| `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
 
 **Example with Azure DevOps:**
 ```cli
-> dotnet new keboo.console --ci-provider azuredevops
+> dotnet new keboo.console --pipeline azuredevops
 ```
 
 ## Key Features
@@ -33,4 +33,4 @@ Create a new app in your current directory by running.
 [Docs](https://learn.microsoft.com/nuget/consume-packages/package-source-mapping?WT.mc_id=DT-MVP-5003472)
 
 ### GitHub Actions / Azure DevOps Pipeline
-Build, test, and code coverage reporting included. Use `--ci-provider` parameter to choose between GitHub Actions (default) or Azure DevOps Pipelines.
+Build, test, and code coverage reporting included. Use `--pipeline` parameter to choose between GitHub Actions (default) or Azure DevOps Pipelines.

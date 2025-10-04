@@ -33,7 +33,7 @@
       "dataType":"bool",
       "defaultValue": "false"
     },
-    "ci-provider": {
+    "pipeline": {
       "type": "parameter",
       "dataType": "choice",
       "choices": [
@@ -51,11 +51,11 @@
     },
     "useGitHub": {
       "type": "computed",
-      "value": "(ci-provider == \"github\")"
+      "value": "(pipeline == \"github\")"
     },
     "useAzureDevOps": {
       "type": "computed",
-      "value": "(ci-provider == \"azuredevops\")"
+      "value": "(pipeline == \"azuredevops\")"
     }
   },
   "sources": [
