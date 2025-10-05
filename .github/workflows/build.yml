@@ -201,7 +201,8 @@ jobs:
         if: matrix.check-tests == true
         run: |
           Push-Location TestWpfApp
-          dotnet test
+          dotnet build
+          dotnet test --no-build
           
       - name: Build Only
         if: matrix.check-tests == false && matrix.check-sln == true
@@ -286,8 +287,9 @@ jobs:
         if: matrix.check-tests == true
         run: |
           Push-Location TestLibrary
-          dotnet test
-          dotnet pack --configuration Release -o ./NuGet
+          dotnet build
+          dotnet test --no-build
+          dotnet pack --no-build --configuration Release -o ./NuGet
           
       - name: Build Only
         if: matrix.check-tests == false && matrix.check-sln == true
