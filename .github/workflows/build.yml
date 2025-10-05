@@ -42,30 +42,132 @@ jobs:
   test-console:
     runs-on: ubuntu-latest
     needs: build
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: "Default (slnx with tests)"
+            template-args: ""
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "Legacy sln format"
+            template-args: "--sln true"
+            check-slnx: false
+            check-sln: true
+            check-tests: true
+          - name: "No tests"
+            template-args: "--no-tests"
+            check-slnx: true
+            check-sln: false
+            check-tests: false
+          - name: "No solution"
+            template-args: "--no-sln"
+            check-slnx: false
+            check-sln: false
+            check-tests: true
 
     steps:
       - name: Download NuGet Artifacts
         uses: actions/download-artifact@v5
         with:
           name: NuGet
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Test Template
+      - name: Test Template - ${{ matrix.name }}
         run: |
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestConsoleApp
           Push-Location TestConsoleApp
-          dotnet new keboo.console
+          dotnet new keboo.console ${{ matrix.template-args }}
+          
+      - name: Verify slnx file exists
+        if: matrix.check-slnx == true
+        run: |
+          if (-not (Test-Path "TestConsoleApp/*.slnx")) {
+            throw "Expected .slnx file not found"
+          }
+          
+      - name: Verify sln file exists
+        if: matrix.check-sln == true
+        run: |
+          if (-not (Test-Path "TestConsoleApp/*.sln")) {
+            throw "Expected .sln file not found"
+          }
+          
+      - name: Verify tests folder exists
+        if: matrix.check-tests == true
+        run: |
+          if (-not (Test-Path "TestConsoleApp/*.Tests")) {
+            throw "Expected Tests folder not found"
+          }
+          
+      - name: Verify tests folder does not exist
+        if: matrix.check-tests == false
+        run: |
+          if (Test-Path "TestConsoleApp/*.Tests") {
+            throw "Tests folder should not exist"
+          }
+          
+      - name: Build and Test Solution
+        if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
+        run: |
+          Push-Location TestConsoleApp
+          dotnet build
+          dotnet test --no-build
+          
+      - name: Build Solution
+        if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
+        run: |
+          Push-Location TestConsoleApp
+          dotnet build
+      
+      - name: Build Project Only
+        if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestConsoleApp/TestConsoleApp
+          dotnet build
+      
+      - name: Build and Test Project Only
+        if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestConsoleApp/TestConsoleApp
+          dotnet build
+          Pop-Location
+          Push-Location TestConsoleApp/TestConsoleApp.Tests
           dotnet test
-          dotnet pack --configuration Release -o ./NuGet
 
   test-wpf:
     runs-on: windows-latest
     needs: build
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: "Default (slnx with tests)"
+            template-args: ""
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "Legacy sln format"
+            template-args: "--sln true"
+            check-slnx: false
+            check-sln: true
+            check-tests: true
+          - name: "No tests"
+            template-args: "--no-tests"
+            check-slnx: true
+            check-sln: false
+            check-tests: false
+          - name: "No solution"
+            template-args: "--no-sln"
+            check-slnx: false
+            check-sln: false
+            check-tests: true
 
     steps:
       - name: Download NuGet Artifacts
@@ -78,17 +180,96 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Test Template
+      - name: Test Template - ${{ matrix.name }}
         run: |
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestWpfApp
           Push-Location TestWpfApp
-          dotnet new keboo.wpf
+          dotnet new keboo.wpf ${{ matrix.template-args }}
+          
+      - name: Verify slnx file exists
+        if: matrix.check-slnx == true
+        run: |
+          if (-not (Test-Path "TestWpfApp/*.slnx")) {
+            throw "Expected .slnx file not found"
+          }
+          
+      - name: Verify sln file exists
+        if: matrix.check-sln == true
+        run: |
+          if (-not (Test-Path "TestWpfApp/*.sln")) {
+            throw "Expected .sln file not found"
+          }
+          
+      - name: Verify tests folder exists
+        if: matrix.check-tests == true
+        run: |
+          if (-not (Test-Path "TestWpfApp/*.Tests")) {
+            throw "Expected Tests folder not found"
+          }
+          
+      - name: Verify tests folder does not exist
+        if: matrix.check-tests == false
+        run: |
+          if (Test-Path "TestWpfApp/*.Tests") {
+            throw "Tests folder should not exist"
+          }
+          
+      - name: Build and Test Solution
+        if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
+        run: |
+          Push-Location TestWpfApp
+          dotnet build
+          dotnet test --no-build
+          
+      - name: Build Solution
+        if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
+        run: |
+          Push-Location TestWpfApp
+          dotnet build
+      
+      - name: Build Project Only
+        if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestWpfApp/TestWpfApp
+          dotnet build
+      
+      - name: Build and Test Project Only
+        if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestWpfApp/TestWpfApp
+          dotnet build
+          Pop-Location
+          Push-Location TestWpfApp/TestWpfApp.Tests
           dotnet test
 
   test-library:
     runs-on: ubuntu-latest
     needs: build
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: "Default (slnx with tests)"
+            template-args: ""
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "Legacy sln format"
+            template-args: "--sln true"
+            check-slnx: false
+            check-sln: true
+            check-tests: true
+          - name: "No tests"
+            template-args: "--no-tests"
+            check-slnx: true
+            check-sln: false
+            check-tests: false
+          - name: "No solution"
+            template-args: "--no-sln"
+            check-slnx: false
+            check-sln: false
+            check-tests: true
 
     steps:
       - name: Download NuGet Artifacts
@@ -101,18 +282,92 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Test Template
+      - name: Test Template - ${{ matrix.name }}
         run: |
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestLibrary
           Push-Location TestLibrary
-          dotnet new keboo.nuget
-          dotnet test
+          dotnet new keboo.nuget ${{ matrix.template-args }}
+          
+      - name: Verify slnx file exists
+        if: matrix.check-slnx == true
+        run: |
+          if (-not (Test-Path "TestLibrary/*.slnx")) {
+            throw "Expected .slnx file not found"
+          }
+          
+      - name: Verify sln file exists
+        if: matrix.check-sln == true
+        run: |
+          if (-not (Test-Path "TestLibrary/*.sln")) {
+            throw "Expected .sln file not found"
+          }
+          
+      - name: Verify tests folder exists
+        if: matrix.check-tests == true
+        run: |
+          if (-not (Test-Path "TestLibrary/*.Tests")) {
+            throw "Expected Tests folder not found"
+          }
+          
+      - name: Verify tests folder does not exist
+        if: matrix.check-tests == false
+        run: |
+          if (Test-Path "TestLibrary/*.Tests") {
+            throw "Tests folder should not exist"
+          }
+          
+      - name: Build and Test Solution
+        if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
+        run: |
+          Push-Location TestLibrary
+          dotnet build
+          dotnet test --no-build
           dotnet pack --configuration Release -o ./NuGet
+          
+      - name: Build Solution
+        if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
+        run: |
+          Push-Location TestLibrary
+          dotnet build
+          dotnet pack --configuration Release -o ./NuGet
+
+      - name: Build Project Only
+        if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestLibrary/TestLibrary
+          dotnet build
+          dotnet pack --configuration Release -o ./NuGet
+      
+      - name: Build and Test Project Only
+        if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestLibrary/TestLibrary
+          dotnet build
+          dotnet pack --configuration Release -o ./NuGet
+          Pop-Location
+          Push-Location TestLibrary/TestLibrary.Tests
+          dotnet test
 
   test-avalonia:
     runs-on: windows-latest
     needs: build
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: "Default (slnx)"
+            template-args: ""
+            check-slnx: true
+            check-sln: false
+          - name: "Legacy sln format"
+            template-args: "--sln true"
+            check-slnx: false
+            check-sln: true
+          - name: "No solution"
+            template-args: "--no-sln"
+            check-slnx: false
+            check-sln: false
 
     steps:
       - name: Download NuGet Artifacts
@@ -125,15 +380,33 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Test Template
+      - name: Test Template - ${{ matrix.name }}
         run: |
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestAvalonia
           Push-Location TestAvalonia
-          dotnet new keboo.avalonia
+          dotnet new keboo.avalonia ${{ matrix.template-args }}
+          
+      - name: Verify slnx file exists
+        if: matrix.check-slnx == true
+        run: |
+          if (-not (Test-Path "TestAvalonia/*.slnx")) {
+            throw "Expected .slnx file not found"
+          }
+          
+      - name: Verify sln file exists
+        if: matrix.check-sln == true
+        run: |
+          if (-not (Test-Path "TestAvalonia/*.sln")) {
+            throw "Expected .sln file not found"
+          }
+          
+      - name: Build
+        if: matrix.check-sln == true || matrix.check-slnx == true
+        run: |
+          Push-Location TestAvalonia
           dotnet workload restore
           dotnet build
-
 
   automerge:
     if: ${{ github.event_name == 'pull_request' }}

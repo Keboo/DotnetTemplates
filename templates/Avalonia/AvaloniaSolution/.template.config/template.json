@@ -32,6 +32,12 @@
       "type": "parameter",
       "dataType":"bool",
       "defaultValue": "false"
+    },
+    "sln": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false",
+      "description": "Use legacy .sln format instead of .slnx format"
     }
   },
   "sources": [
@@ -39,6 +45,19 @@
       "modifiers": [
         {
           "condition": "(no-sln)",
+          "exclude": [
+            "SampleAvaloniaApplication.sln",
+            "SampleAvaloniaApplication.slnx"
+          ]
+        },
+        {
+          "condition": "(sln && !no-sln)",
+          "exclude": [
+            "SampleAvaloniaApplication.slnx"
+          ]
+        },
+        {
+          "condition": "(!sln && !no-sln)",
           "exclude": [
             "SampleAvaloniaApplication.sln"
           ]

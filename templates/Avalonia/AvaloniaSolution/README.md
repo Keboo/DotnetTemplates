@@ -12,6 +12,15 @@ Create a new app in your current directory by running.
 ### Parameters
 [Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
 
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--sln` | Use legacy .sln format instead of .slnx format | `false` |
+
+**Example with legacy .sln format:**
+```cli
+> dotnet new keboo.avalonia --sln true
+```
+
 ## Updating .NET Version
 
 This template uses a `global.json` file to specify the required .NET SDK version. To update the .NET SDK version:
@@ -32,3 +41,11 @@ This template uses a `global.json` file to specify the required .NET SDK version
 
 ### NuGet package source mapping
 [Docs](https://learn.microsoft.com/nuget/consume-packages/package-source-mapping?WT.mc_id=DT-MVP-5003472)
+
+### Solution File Format (slnx)
+By default, this template uses the new `.slnx` (XML-based solution) format introduced in .NET 9. This modern format is more maintainable and easier to version control compared to the legacy `.sln` format.
+
+[Blog: Introducing slnx support in the dotnet CLI](https://devblogs.microsoft.com/dotnet/introducing-slnx-support-dotnet-cli/?WT.mc_id=DT-MVP-5003472)  
+[Docs: dotnet sln command](https://learn.microsoft.com/dotnet/core/tools/dotnet-sln?WT.mc_id=DT-MVP-5003472)
+
+If you need to use the legacy `.sln` format, use the `--sln true` parameter when creating the template.

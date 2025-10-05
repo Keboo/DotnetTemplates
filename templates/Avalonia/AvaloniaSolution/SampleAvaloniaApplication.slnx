@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="exclusions.dic" />
+    <File Path="NuGet.config" />
+    <File Path="Settings.XamlStyler" />
+  </Folder>
+  <Project Path="SampleAvaloniaApplication.Android/SampleAvaloniaApplication.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="SampleAvaloniaApplication.Browser/SampleAvaloniaApplication.Browser.csproj" />
+  <Project Path="SampleAvaloniaApplication.Desktop/SampleAvaloniaApplication.Desktop.csproj" />
+  <Project Path="SampleAvaloniaApplication.iOS/SampleAvaloniaApplication.iOS.csproj" />
+  <Project Path="SampleAvaloniaApplication/SampleAvaloniaApplication.csproj" />
+</Solution>

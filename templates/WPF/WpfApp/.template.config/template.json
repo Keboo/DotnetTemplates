@@ -26,12 +26,19 @@
     "no-sln": {
       "type": "parameter",
       "dataType":"bool",
-      "defaultValue": "false"
+      "defaultValue": "false",
+      "description": "Do not include a solution file."
     },
     "no-tests": {
       "type": "parameter",
       "dataType":"bool",
       "defaultValue": "false"
+    },
+    "sln": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false",
+      "description": "Use legacy .sln format instead of .slnx format"
     },
     "pipeline": {
       "type": "parameter",
@@ -63,6 +70,19 @@
       "modifiers": [
         {
           "condition": "(no-sln)",
+          "exclude": [
+            "WpfApp.sln",
+            "WpfApp.slnx"
+          ]
+        },
+        {
+          "condition": "(sln && !no-sln)",
+          "exclude": [
+            "WpfApp.slnx"
+          ]
+        },
+        {
+          "condition": "(!sln && !no-sln)",
           "exclude": [
             "WpfApp.sln"
           ]
