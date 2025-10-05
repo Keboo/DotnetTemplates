@@ -26,30 +26,6 @@ dotnet new uninstall Keboo.Dotnet.Templates
 - [NuGet Package Solution](./templates/Library/NuGet/README.md)
 - [System.CommandLine Solution](./templates/Console/ConsoleApp/README.md)
 
-Many templates support both GitHub Actions and Azure DevOps Pipelines. Use the `--pipeline` parameter to choose:
-- `--pipeline github` (default) - Includes `.github` folder with GitHub Actions workflows
-- `--pipeline azuredevops` - Includes `.devops` folder with Azure DevOps pipelines
-
-## Updating .NET Version
-
-The repository and each template use a `global.json` file to specify the required .NET SDK version. This ensures consistency across development environments and CI/CD pipelines.
-
-To update the .NET SDK version:
-
-1. Update the `global.json` file in the root directory or template directory
-2. Update the corresponding GitHub Actions workflow file to match (if applicable)
-Example `global.json`:
-```json
-{
-  "sdk": {
-    "version": "8.0.100",
-    "rollForward": "latestFeature"
-  }
-}
-```
-
-The `rollForward` policy allows using newer feature versions (e.g., 8.0.200) while ensuring the minimum version requirement is met.
-
 # Local testing 
 Build the template package:
 ```cli
