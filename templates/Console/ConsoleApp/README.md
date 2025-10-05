@@ -12,6 +12,15 @@ Create a new app in your current directory by running.
 ### Parameters
 [Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
 
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
+
+**Example with Azure DevOps:**
+```cli
+> dotnet new keboo.console --pipeline azuredevops
+```
+
 ## Key Features
 
 ### Build Customization
@@ -22,3 +31,6 @@ Create a new app in your current directory by running.
 
 ### NuGet package source mapping
 [Docs](https://learn.microsoft.com/nuget/consume-packages/package-source-mapping?WT.mc_id=DT-MVP-5003472)
+
+### GitHub Actions / Azure DevOps Pipeline
+Build, test, and code coverage reporting included. Use `--pipeline` parameter to choose between GitHub Actions (default) or Azure DevOps Pipelines.

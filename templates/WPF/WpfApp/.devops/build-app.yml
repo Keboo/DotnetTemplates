@@ -1,0 +1,83 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - '**/*.md'
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  buildConfiguration: 'Release'
+  version: '1.0.$(Build.BuildId)'
+
+stages:
+  - stage: Build
+    displayName: 'Build and Test'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build WpfApp'
+        pool:
+          vmImage: 'windows-latest'
+        
+        steps:
+          - checkout: self
+            clean: true
+
+          - task: UseDotNet@2
+            displayName: 'Set up .NET Core'
+            inputs:
+              packageType: 'sdk'
+              version: '8.x'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet build'
+            inputs:
+              command: 'build'
+              projects: '**/*.csproj'
+              arguments: '--configuration $(buildConfiguration) -p:Version="$(version)"'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet test'
+            inputs:
+              command: 'test'
+              projects: '**/*Tests.csproj'
+              arguments: '--configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage" --results-directory $(Build.ArtifactStagingDirectory)/coverage'
+              publishTestResults: true
+
+          - task: reportgenerator@5
+            displayName: 'Generate Code Coverage Report'
+            inputs:
+              reports: '$(Build.ArtifactStagingDirectory)/coverage/**/coverage.cobertura.xml'
+              targetdir: '$(Build.ArtifactStagingDirectory)/coveragereport'
+              reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
+              title: 'Code Coverage'
+
+          - task: PublishCodeCoverageResults@2
+            displayName: 'Publish Code Coverage'
+            inputs:
+              summaryFileLocation: '$(Build.ArtifactStagingDirectory)/coveragereport/Cobertura.xml'
+              pathToSources: '$(Build.SourcesDirectory)'
+              reportDirectory: '$(Build.ArtifactStagingDirectory)/coveragereport'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet publish'
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+            inputs:
+              command: 'publish'
+              projects: '**/*.csproj'
+              publishWebProjects: false
+              arguments: '--configuration $(buildConfiguration) --no-build -p:Version="$(version)" --output $(Build.ArtifactStagingDirectory)/publish'
+              zipAfterPublish: false
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Upload Build Artifact'
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)/publish'
+              artifactName: 'app'
+              publishLocation: 'Container'

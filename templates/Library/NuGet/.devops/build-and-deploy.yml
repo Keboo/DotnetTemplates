@@ -1,0 +1,115 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - '**/*.md'
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  buildConfiguration: 'Release'
+  version: '1.0.$(Build.BuildId)'
+
+stages:
+  - stage: Build
+    displayName: 'Build and Test'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build NuGet Package'
+        pool:
+          vmImage: 'ubuntu-latest'
+        
+        steps:
+          - checkout: self
+            clean: true
+
+          - task: UseDotNet@2
+            displayName: 'Set up .NET Core'
+            inputs:
+              packageType: 'sdk'
+              version: '8.x'
+              includePreviewVersions: true
+
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet restore'
+            inputs:
+              command: 'restore'
+              projects: '**/*.csproj'
+              arguments: '--configuration $(buildConfiguration)'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet build'
+            inputs:
+              command: 'build'
+              projects: '**/*.csproj'
+              arguments: '--configuration $(buildConfiguration) --no-restore'
+#if (!no-tests)
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet test'
+            inputs:
+              command: 'test'
+              projects: '**/*Tests.csproj'
+              arguments: '--configuration $(buildConfiguration) --no-build --collect:"XPlat Code Coverage" --results-directory $(Build.ArtifactStagingDirectory)/coverage'
+              publishTestResults: true
+
+          - task: reportgenerator@5
+            displayName: 'Generate Code Coverage Report'
+            inputs:
+              reports: '$(Build.ArtifactStagingDirectory)/coverage/**/coverage.cobertura.xml'
+              targetdir: '$(Build.ArtifactStagingDirectory)/coveragereport'
+              reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
+              title: 'Code Coverage'
+
+          - task: PublishCodeCoverageResults@2
+            displayName: 'Publish Code Coverage'
+            inputs:
+              summaryFileLocation: '$(Build.ArtifactStagingDirectory)/coveragereport/Cobertura.xml'
+              pathToSources: '$(Build.SourcesDirectory)'
+              reportDirectory: '$(Build.ArtifactStagingDirectory)/coveragereport'
+#endif
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet pack'
+            inputs:
+              command: 'pack'
+              projects: '**/*.csproj'
+              arguments: '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)/NuGet'
+              nobuild: true
+              includesymbols: true
+              includesource: true
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Upload NuGet Artifact'
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)/NuGet'
+              artifactName: 'NuGet'
+              publishLocation: 'Container'
+
+  - stage: Deploy
+    displayName: 'Deploy to NuGet.org'
+    dependsOn: Build
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - deployment: DeployNuGet
+        displayName: 'Push to NuGet.org'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'nuget-org'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: NuGet
+
+                - task: NuGetCommand@2
+                  displayName: 'Push NuGet Package'
+                  inputs:
+                    command: 'push'
+                    packagesToPush: '$(Pipeline.Workspace)/NuGet/**/*.nupkg;!$(Pipeline.Workspace)/NuGet/**/*.symbols.nupkg'
+                    nuGetFeedType: 'external'
+                    publishFeedCredentials: 'NuGet.org'

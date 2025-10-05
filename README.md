@@ -26,6 +26,10 @@ dotnet new uninstall Keboo.Dotnet.Templates
 - [NuGet Package Solution](./templates/Library/NuGet/README.md)
 - [System.CommandLine Solution](./templates/Console/ConsoleApp/README.md)
 
+Many templates support both GitHub Actions and Azure DevOps Pipelines. Use the `--pipeline` parameter to choose:
+- `--pipeline github` (default) - Includes `.github` folder with GitHub Actions workflows
+- `--pipeline azuredevops` - Includes `.devops` folder with Azure DevOps pipelines
+
 
 # Local testing 
 Build the template package:
