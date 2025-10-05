@@ -78,17 +78,18 @@
         {
           "condition": "(no-sln)",
           "exclude": [
-            "ConsoleApp.sln"
+            "ConsoleApp.sln",
+            "ConsoleApp.slnx"
           ]
         },
         {
-          "condition": "(sln)",
+          "condition": "(sln && !no-sln)",
           "exclude": [
             "ConsoleApp.slnx"
           ]
         },
         {
-          "condition": "(!sln)",
+          "condition": "(!sln && !no-sln)",
           "exclude": [
             "ConsoleApp.sln"
           ]

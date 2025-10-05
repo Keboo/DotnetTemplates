@@ -78,17 +78,18 @@
         {
           "condition": "(no-sln)",
           "exclude": [
-            "NuGetLib.sln"
+            "NuGetLib.sln",
+            "NuGetLib.slnx"
           ]
         },
         {
-          "condition": "(sln)",
+          "condition": "(sln && !no-sln)",
           "exclude": [
             "NuGetLib.slnx"
           ]
         },
         {
-          "condition": "(!sln)",
+          "condition": "(!sln && !no-sln)",
           "exclude": [
             "NuGetLib.sln"
           ]

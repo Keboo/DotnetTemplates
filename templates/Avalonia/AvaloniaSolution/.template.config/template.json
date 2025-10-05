@@ -46,17 +46,18 @@
         {
           "condition": "(no-sln)",
           "exclude": [
-            "SampleAvaloniaApplication.sln"
+            "SampleAvaloniaApplication.sln",
+            "SampleAvaloniaApplication.slnx"
           ]
         },
         {
-          "condition": "(sln)",
+          "condition": "(sln && !no-sln)",
           "exclude": [
             "SampleAvaloniaApplication.slnx"
           ]
         },
         {
-          "condition": "(!sln)",
+          "condition": "(!sln && !no-sln)",
           "exclude": [
             "SampleAvaloniaApplication.sln"
           ]

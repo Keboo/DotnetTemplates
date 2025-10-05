@@ -70,17 +70,18 @@
         {
           "condition": "(no-sln)",
           "exclude": [
-            "WpfApp.sln"
+            "WpfApp.sln",
+            "WpfApp.slnx"
           ]
         },
         {
-          "condition": "(sln)",
+          "condition": "(sln && !no-sln)",
           "exclude": [
             "WpfApp.slnx"
           ]
         },
         {
-          "condition": "(!sln)",
+          "condition": "(!sln && !no-sln)",
           "exclude": [
             "WpfApp.sln"
           ]
