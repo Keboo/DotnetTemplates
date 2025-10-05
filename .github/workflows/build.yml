@@ -120,7 +120,7 @@ jobs:
           dotnet build
           dotnet test --no-build
           
-      - name: Build Solution Only
+      - name: Build Solution
         if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
           Push-Location TestConsoleApp
@@ -130,13 +130,13 @@ jobs:
         if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
         run: |
           Push-Location TestConsoleApp/TestConsoleApp
-          dotnet build ./TestConsoleApp.csproj
+          dotnet build
       
       - name: Build and Test Project Only
         if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
         run: |
           Push-Location TestConsoleApp/TestConsoleApp
-          dotnet build ./TestConsoleApp.csproj
+          dotnet build
           Pop-Location
           Push-Location TestConsoleApp/TestConsoleApp.Tests
           dotnet test
@@ -215,18 +215,33 @@ jobs:
             throw "Tests folder should not exist"
           }
           
-      - name: Build and Test
-        if: matrix.check-tests == true
+      - name: Build and Test Solution
+        if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
           Push-Location TestWpfApp
           dotnet build
           dotnet test --no-build
           
-      - name: Build Only
-        if: matrix.check-tests == false && matrix.check-sln == true
+      - name: Build Solution
+        if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
           Push-Location TestWpfApp
           dotnet build
+      
+      - name: Build Project Only
+        if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestWpfApp/TestWpfApp
+          dotnet build
+      
+      - name: Build and Test Project Only
+        if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestWpfApp/TestWpfApp
+          dotnet build
+          Pop-Location
+          Push-Location TestWpfApp/TestWpfApp.Tests
+          dotnet test
 
   test-library:
     runs-on: ubuntu-latest
@@ -302,19 +317,34 @@ jobs:
             throw "Tests folder should not exist"
           }
           
-      - name: Build and Test
-        if: matrix.check-tests == true
+      - name: Build and Test Solution
+        if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
           Push-Location TestLibrary
           dotnet build
           dotnet test --no-build
           dotnet pack --no-build --configuration Release -o ./NuGet
           
-      - name: Build Only
-        if: matrix.check-tests == false && matrix.check-sln == true
+      - name: Build Solution
+        if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
           Push-Location TestLibrary
           dotnet build
+
+      - name: Build Project Only
+        if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestLibrary/TestLibrary
+          dotnet build
+      
+      - name: Build and Test Project Only
+        if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestLibrary/TestLibrary
+          dotnet build
+          Pop-Location
+          Push-Location TestLibrary/TestLibrary.Tests
+          dotnet test
 
   test-avalonia:
     runs-on: windows-latest
