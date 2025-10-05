@@ -113,18 +113,33 @@ jobs:
             throw "Tests folder should not exist"
           }
           
-      - name: Build and Test
-        if: matrix.check-tests == true
+      - name: Build and Test Solution
+        if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
           Push-Location TestConsoleApp
           dotnet build
           dotnet test --no-build
           
-      - name: Build Only
-        if: matrix.check-tests == false && matrix.check-sln == true
+      - name: Build Solution Only
+        if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
           Push-Location TestConsoleApp
           dotnet build
+      
+      - name: Build Project Only
+        if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestConsoleApp/TestConsoleApp
+          dotnet build ./TestConsoleApp.csproj
+      
+      - name: Build and Test Project Only
+        if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
+        run: |
+          Push-Location TestConsoleApp/TestConsoleApp
+          dotnet build ./TestConsoleApp.csproj
+          Pop-Location
+          Push-Location TestConsoleApp/TestConsoleApp.Tests
+          dotnet test
 
   test-wpf:
     runs-on: windows-latest
@@ -359,7 +374,6 @@ jobs:
           Push-Location TestAvalonia
           dotnet workload restore
           dotnet build
-
 
   automerge:
     if: ${{ github.event_name == 'pull_request' }}
