@@ -41,6 +41,12 @@
       "dataType":"bool",
       "defaultValue": "false"
     },
+    "sln": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false",
+      "description": "Use legacy .sln format instead of .slnx format"
+    },
     "pipeline": {
       "type": "parameter",
       "dataType": "choice",
@@ -71,6 +77,18 @@
       "modifiers": [
         {
           "condition": "(no-sln)",
+          "exclude": [
+            "NuGetLib.sln"
+          ]
+        },
+        {
+          "condition": "(sln)",
+          "exclude": [
+            "NuGetLib.slnx"
+          ]
+        },
+        {
+          "condition": "(!sln)",
           "exclude": [
             "NuGetLib.sln"
           ]

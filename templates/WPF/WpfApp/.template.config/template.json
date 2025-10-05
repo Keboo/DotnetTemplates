@@ -33,6 +33,12 @@
       "dataType":"bool",
       "defaultValue": "false"
     },
+    "sln": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false",
+      "description": "Use legacy .sln format instead of .slnx format"
+    },
     "pipeline": {
       "type": "parameter",
       "dataType": "choice",
@@ -63,6 +69,18 @@
       "modifiers": [
         {
           "condition": "(no-sln)",
+          "exclude": [
+            "WpfApp.sln"
+          ]
+        },
+        {
+          "condition": "(sln)",
+          "exclude": [
+            "WpfApp.slnx"
+          ]
+        },
+        {
+          "condition": "(!sln)",
           "exclude": [
             "WpfApp.sln"
           ]
