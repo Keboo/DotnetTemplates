@@ -6,11 +6,11 @@ public sealed class Program
 {
     private static Task<int> Main(string[] args)
     {
-        CommandLineConfiguration configuration = GetConfiguration();
-        return configuration.InvokeAsync(args);
+        RootCommand rootCommand = BuildCommandLine();
+        return rootCommand.Parse(args).InvokeAsync();
     }
 
-    public static CommandLineConfiguration GetConfiguration()
+    public static RootCommand BuildCommandLine()
     {
         Argument<int> number1 = new("number1")
         {
@@ -30,7 +30,7 @@ public sealed class Program
             int value1 = parseResult.CommandResult.GetValue(number1);
             int value2 = parseResult.CommandResult.GetValue(number2);
             int result = value1 + value2;
-            parseResult.Configuration.Output.WriteLine($"The result is {result}");
+            parseResult.InvocationConfiguration.Output.WriteLine($"The result is {result}");
         });
 
         RootCommand rootCommand = new("A starter console app by Keboo")
@@ -38,6 +38,6 @@ public sealed class Program
             addCommand
         };
 
-        return new CommandLineConfiguration(rootCommand);
+        return rootCommand;
     }
 }
