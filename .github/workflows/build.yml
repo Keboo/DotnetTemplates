@@ -43,6 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     strategy:
+      fail-fast: true
       matrix:
         include:
           - name: "Default (slnx with tests)"
@@ -57,8 +58,8 @@ jobs:
             check-tests: true
           - name: "No tests"
             template-args: "--no-tests"
-            check-slnx: false
-            check-sln: true
+            check-slnx: true
+            check-sln: false
             check-tests: false
           - name: "No solution"
             template-args: "--no-sln"
@@ -71,7 +72,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: NuGet
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -129,6 +130,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     strategy:
+      fail-fast: true
       matrix:
         include:
           - name: "Default (slnx with tests)"
@@ -143,8 +145,8 @@ jobs:
             check-tests: true
           - name: "No tests"
             template-args: "--no-tests"
-            check-slnx: false
-            check-sln: true
+            check-slnx: true
+            check-sln: false
             check-tests: false
           - name: "No solution"
             template-args: "--no-sln"
@@ -215,6 +217,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     strategy:
+      fail-fast: true
       matrix:
         include:
           - name: "Default (slnx with tests)"
@@ -229,8 +232,8 @@ jobs:
             check-tests: true
           - name: "No tests"
             template-args: "--no-tests"
-            check-slnx: false
-            check-sln: true
+            check-slnx: true
+            check-sln: false
             check-tests: false
           - name: "No solution"
             template-args: "--no-sln"
@@ -302,6 +305,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     strategy:
+      fail-fast: true
       matrix:
         include:
           - name: "Default (slnx)"
