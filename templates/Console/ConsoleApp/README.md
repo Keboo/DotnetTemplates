@@ -15,10 +15,16 @@ Create a new app in your current directory by running.
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
+| `--sln` | Use legacy .sln format instead of .slnx format | `false` |
 
 **Example with Azure DevOps:**
 ```cli
 > dotnet new keboo.console --pipeline azuredevops
+```
+
+**Example with legacy .sln format:**
+```cli
+> dotnet new keboo.console --sln true
 ```
 
 ## Updating .NET Version
@@ -41,3 +47,11 @@ This template uses a `global.json` file to specify the required .NET SDK version
 
 ### GitHub Actions / Azure DevOps Pipeline
 Build, test, and code coverage reporting included. Use `--pipeline` parameter to choose between GitHub Actions (default) or Azure DevOps Pipelines.
+
+### Solution File Format (slnx)
+By default, this template uses the new `.slnx` (XML-based solution) format introduced in .NET 9. This modern format is more maintainable and easier to version control compared to the legacy `.sln` format.
+
+[Blog: Introducing slnx support in the dotnet CLI](https://devblogs.microsoft.com/dotnet/introducing-slnx-support-dotnet-cli/?WT.mc_id=DT-MVP-5003472)  
+[Docs: dotnet sln command](https://learn.microsoft.com/dotnet/core/tools/dotnet-sln?WT.mc_id=DT-MVP-5003472)
+
+If you need to use the legacy `.sln` format, use the `--sln true` parameter when creating the template.

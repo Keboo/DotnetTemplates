@@ -14,10 +14,16 @@ Create a new app in your current directory by running.
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
+| `--sln` | Use legacy .sln format instead of .slnx format | `false` |
 
 **Example with Azure DevOps:**
 ```cli
 > dotnet new keboo.wpf --pipeline azuredevops
+```
+
+**Example with legacy .sln format:**
+```cli
+> dotnet new keboo.wpf --sln true
 ```
 
 ## Updating .NET Version
@@ -67,3 +73,11 @@ The coverage reports are posted as "stciky" PR comments provided by [marocchino/
 Alternative to GitHub Actions. Set `--pipeline azuredevops` when creating the template.
 Code coverage provided by [coverlet-coverage/coverlet](https://github.com/coverlet-coverage/coverlet).
 Uses built-in Azure DevOps code coverage reporting.
+
+### Solution File Format (slnx)
+By default, this template uses the new `.slnx` (XML-based solution) format introduced in .NET 9. This modern format is more maintainable and easier to version control compared to the legacy `.sln` format.
+
+[Blog: Introducing slnx support in the dotnet CLI](https://devblogs.microsoft.com/dotnet/introducing-slnx-support-dotnet-cli/?WT.mc_id=DT-MVP-5003472)  
+[Docs: dotnet sln command](https://learn.microsoft.com/dotnet/core/tools/dotnet-sln?WT.mc_id=DT-MVP-5003472)
+
+If you need to use the legacy `.sln` format, use the `--sln true` parameter when creating the template.
