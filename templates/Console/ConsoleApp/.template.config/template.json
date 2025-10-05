@@ -89,16 +89,21 @@
           ]
         },
         {
-          "condition": "(!sln && !no-sln)",
+          "condition": "(!sln && !no-sln && !no-tests)",
           "exclude": [
             "ConsoleApp.sln"
           ]
         },
         {
+          "condition": "(no-tests && !no-sln)",
+          "exclude": [
+            "ConsoleApp.slnx"
+          ]
+        },
+        {
           "condition": "(no-tests)",
           "exclude": [
-            "ConsoleApp.Tests/*",
-            "ConsoleApp.slnx"
+            "ConsoleApp.Tests/*"
           ]
         },
         {
