@@ -20,6 +20,13 @@ Create a new app in your current directory by running.
 > dotnet new keboo.wpf --pipeline azuredevops
 ```
 
+## Updating .NET Version
+
+This template uses a `global.json` file to specify the required .NET SDK version. To update the .NET SDK version:
+
+1. Update the `global.json` file in the solution root
+2. Update the `<TargetFramework>` in the `csproj` files.
+
 ## Key Features
 
 ### Generic Host Dependency Injection

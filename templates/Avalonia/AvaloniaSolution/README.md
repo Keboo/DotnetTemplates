@@ -12,6 +12,13 @@ Create a new app in your current directory by running.
 ### Parameters
 [Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
 
+## Updating .NET Version
+
+This template uses a `global.json` file to specify the required .NET SDK version. To update the .NET SDK version:
+
+1. Update the `global.json` file in the solution root
+2. Update the `<TargetFrameworks>` in the `csproj` files.
+
 ## Key Features
 
 ### Build Customization
