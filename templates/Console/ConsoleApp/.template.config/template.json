@@ -97,7 +97,8 @@
         {
           "condition": "(no-tests)",
           "exclude": [
-            "ConsoleApp.Tests/*"
+            "ConsoleApp.Tests/*",
+            "ConsoleApp.slnx"
           ]
         },
         {

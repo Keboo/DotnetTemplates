@@ -89,7 +89,8 @@
         {
           "condition": "(no-tests)",
           "exclude": [
-            "WpfApp.Tests/*"
+            "WpfApp.Tests/*",
+            "WpfApp.slnx"
           ]
         },
         {
