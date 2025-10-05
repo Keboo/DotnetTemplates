@@ -323,25 +323,28 @@ jobs:
           Push-Location TestLibrary
           dotnet build
           dotnet test --no-build
-          dotnet pack --no-build --configuration Release -o ./NuGet
+          dotnet pack --configuration Release -o ./NuGet
           
       - name: Build Solution
         if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
           Push-Location TestLibrary
           dotnet build
+          dotnet pack --configuration Release -o ./NuGet
 
       - name: Build Project Only
         if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
         run: |
           Push-Location TestLibrary/TestLibrary
           dotnet build
+          dotnet pack --configuration Release -o ./NuGet
       
       - name: Build and Test Project Only
         if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
         run: |
           Push-Location TestLibrary/TestLibrary
           dotnet build
+          dotnet pack --configuration Release -o ./NuGet
           Pop-Location
           Push-Location TestLibrary/TestLibrary.Tests
           dotnet test
