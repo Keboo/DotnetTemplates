@@ -14,8 +14,6 @@
   </Project>
   <Project Path="SampleAvaloniaApplication.Browser/SampleAvaloniaApplication.Browser.csproj" />
   <Project Path="SampleAvaloniaApplication.Desktop/SampleAvaloniaApplication.Desktop.csproj" />
-  <Project Path="SampleAvaloniaApplication.iOS/SampleAvaloniaApplication.iOS.csproj">
-    <Deploy />
-  </Project>
+  <Project Path="SampleAvaloniaApplication.iOS/SampleAvaloniaApplication.iOS.csproj" />
   <Project Path="SampleAvaloniaApplication/SampleAvaloniaApplication.csproj" />
 </Solution>
