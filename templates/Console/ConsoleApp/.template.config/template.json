@@ -64,6 +64,12 @@
       "defaultValue": "github",
       "description": "The CI/CD provider to use"
     },
+    "no-ai": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false",
+      "description": "Exclude AI configuration files (mcp.json)"
+    },
     "useGitHub": {
       "type": "computed",
       "value": "(pipeline == \"github\")"
@@ -111,6 +117,12 @@
           "condition": "(useAzureDevOps)",
           "exclude": [
             ".github/**"
+          ]
+        },
+        {
+          "condition": "(no-ai)",
+          "exclude": [
+            "mcp.json"
           ]
         }
       ]

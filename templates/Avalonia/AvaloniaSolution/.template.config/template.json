@@ -38,6 +38,12 @@
       "dataType":"bool",
       "defaultValue": "false",
       "description": "Use legacy .sln format instead of .slnx format"
+    },
+    "no-ai": {
+      "type": "parameter",
+      "dataType":"bool",
+      "defaultValue": "false",
+      "description": "Exclude AI configuration files (mcp.json)"
     }
   },
   "sources": [
@@ -66,6 +72,12 @@
           "condition": "(no-tests)",
           "exclude": [
             "SampleAvaloniaApplication.Tests/*"
+          ]
+        },
+        {
+          "condition": "(no-ai)",
+          "exclude": [
+            "mcp.json"
           ]
         }
       ]
