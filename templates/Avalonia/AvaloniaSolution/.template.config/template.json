@@ -43,7 +43,7 @@
       "type": "parameter",
       "dataType":"bool",
       "defaultValue": "false",
-      "description": "Exclude AI configuration files (mcp.json)"
+      "description": "Exclude AI configuration files (.vscode/mcp.json)"
     }
   },
   "sources": [
@@ -77,7 +77,7 @@
         {
           "condition": "(no-ai)",
           "exclude": [
-            "mcp.json"
+            ".vscode/mcp.json"
           ]
         }
       ]

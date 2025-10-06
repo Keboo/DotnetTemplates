@@ -15,7 +15,7 @@ Create a new app in your current directory by running.
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
-| `--no-ai` | Exclude AI configuration files (mcp.json) | `false` |
+| `--no-ai` | Exclude AI configuration files (.vscode/mcp.json) | `false` |
 
 **Example with legacy .sln format:**
 ```cli
@@ -57,8 +57,10 @@ By default, this template uses the new `.slnx` (XML-based solution) format intro
 If you need to use the legacy `.sln` format, use the `--sln true` parameter when creating the template.
 
 ### AI Configuration (Model Context Protocol)
-By default, this template includes an `mcp.json` configuration file for AI development assistants supporting the [Model Context Protocol](https://modelcontextprotocol.io/). The configuration includes:
+By default, this template includes a `.vscode/mcp.json` configuration file for AI development assistants supporting the [Model Context Protocol](https://modelcontextprotocol.io/). The configuration includes:
 - **context7**: Provides semantic code search and contextual understanding
 - **msdocs**: Access to Microsoft documentation directly in your AI assistant
+
+Supported in [Visual Studio](https://learn.microsoft.com/visualstudio/ide/mcp-servers?WT.mc_id=DT-MVP-5003472) and [VS Code](https://code.visualstudio.com/docs/copilot/customization/mcp-servers?wt.md_id=AZ-MVP-5004796).
 
 If you prefer not to include AI configuration, use the `--no-ai true` parameter when creating the template.
