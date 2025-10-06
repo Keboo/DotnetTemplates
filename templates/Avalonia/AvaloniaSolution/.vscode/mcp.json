@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "msdocs": {
+      "command": "npx",
+      "args": ["-y", "@microsoft/mcp-server-docs"]
+    }
+  }
+}
