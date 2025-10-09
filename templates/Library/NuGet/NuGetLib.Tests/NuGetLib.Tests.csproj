@@ -12,17 +12,46 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Moq" />
     <PackageReference Include="Moq.AutoMock" />
+<!--#if (tests == "xunit")-->
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
+<!--#endif-->
+<!--#if (tests == "mstest")-->
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
+<!--#endif-->
+<!--#if (tests == "tunit")-->
+    <PackageReference Include="TUnit" />
+    <PackageReference Include="TUnit.Assertions" />
+    <PackageReference Include="TUnit.Engine" />
+<!--#endif-->
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NuGetLib\NuGetLib.csproj" />
   </ItemGroup>
 
+<!--#if (tests == "xunit")-->
   <ItemGroup>
     <Using Include="Xunit" />
     <Using Include="Moq" />
     <Using Include="Moq.AutoMock" />
   </ItemGroup>
+<!--#endif-->
+<!--#if (tests == "mstest")-->
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <Using Include="Moq" />
+    <Using Include="Moq.AutoMock" />
+  </ItemGroup>
+<!--#endif-->
+<!--#if (tests == "tunit")-->
+  <ItemGroup>
+    <Using Include="TUnit.Assertions" />
+    <Using Include="TUnit.Assertions.Extensions" />
+    <Using Include="TUnit.Core" />
+    <Using Include="Moq" />
+    <Using Include="Moq.AutoMock" />
+  </ItemGroup>
+<!--#endif-->
 </Project>

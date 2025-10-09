@@ -28,10 +28,45 @@
       "dataType":"bool",
       "defaultValue": "false"
     },
-    "no-tests": {
+    "tests": {
       "type": "parameter",
-      "dataType":"bool",
-      "defaultValue": "false"
+      "dataType": "choice",
+      "choices": [
+        {
+          "choice": "xunit",
+          "description": "Use xUnit v3 testing framework"
+        },
+        {
+          "choice": "mstest",
+          "description": "Use MSTest testing framework"
+        },
+        {
+          "choice": "tunit",
+          "description": "Use TUnit testing framework"
+        },
+        {
+          "choice": "none",
+          "description": "Do not include tests"
+        }
+      ],
+      "defaultValue": "xunit",
+      "description": "The testing framework to use"
+    },
+    "useXunit": {
+      "type": "computed",
+      "value": "(tests == \"xunit\")"
+    },
+    "useMstest": {
+      "type": "computed",
+      "value": "(tests == \"mstest\")"
+    },
+    "useTunit": {
+      "type": "computed",
+      "value": "(tests == \"tunit\")"
+    },
+    "noTests": {
+      "type": "computed",
+      "value": "(tests == \"none\")"
     },
     "sln": {
       "type": "parameter",
@@ -63,9 +98,9 @@
           ]
         },
         {
-          "condition": "(no-tests)",
+          "condition": "(noTests)",
           "exclude": [
-            "SampleAvaloniaApplication.Tests/*"
+            "SampleAvaloniaApplication.Tests/**"
           ]
         }
       ]
