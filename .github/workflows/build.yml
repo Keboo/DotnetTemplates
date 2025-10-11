@@ -408,6 +408,14 @@ jobs:
           dotnet workload restore
           dotnet build
 
+  tests-all:
+    name: All Tests Summary
+    runs-on: ubuntu-latest
+    needs: [test-console, test-wpf, test-library, test-avalonia]
+    steps:
+      - name: Summary
+        run: echo "All tests completed successfully"
+
   automerge:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest

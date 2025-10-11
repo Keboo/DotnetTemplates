@@ -2,15 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0-windows</TargetFramework>
+<!--#if (tests == "tunit")-->
+    <OutputType>exe</OutputType>
+<!--#endif-->
 
     <IsPublishable>false</IsPublishable>
     <IsPackable>false</IsPackable>
+<!--#if (tests != "tunit")-->
     <IsTestProject>true</IsTestProject>
+<!--#endif-->
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" />
+<!--#if (tests != "tunit")-->
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+<!--#endif-->
     <PackageReference Include="Moq" />
     <PackageReference Include="Moq.AutoMock" />
 <!--#if (tests == "xunit")-->

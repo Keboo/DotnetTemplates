@@ -1,10 +1,9 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace WpfApp.Tests;
 
 //This attribute generates tests for MainWindowViewModel that
 //asserts all constructor arguments are checked for null
 [ConstructorTests(typeof(MainWindowViewModel))]
+[TestClass]
 public partial class MainWindowViewModelTests
 {
     [TestMethod]

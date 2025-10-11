@@ -1,7 +1,3 @@
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
 namespace WpfApp.Tests;
 
 //This attribute generates tests for MainWindowViewModel that
