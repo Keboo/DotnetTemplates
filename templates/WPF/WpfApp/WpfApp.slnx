@@ -18,8 +18,8 @@
     <File Path=".github/workflows/code_coverage_comment.yml" />
 <!--#endif-->
   </Folder>
+  <Project Path="WpfApp/WpfApp.csproj" />
 <!--#if (!noTests)-->
   <Project Path="WpfApp.Tests/WpfApp.Tests.csproj" />
 <!--#endif-->
-  <Project Path="WpfApp/WpfApp.csproj" />
 </Solution>

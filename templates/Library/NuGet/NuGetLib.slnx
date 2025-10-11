@@ -7,8 +7,8 @@
     <File Path="NuGet.config" />
     <File Path="NuGetPackageReadme.md" />
   </Folder>
+  <Project Path="NuGetLib/NuGetLib.csproj" />
 <!--#if (!noTests)-->
   <Project Path="NuGetLib.Tests/NuGetLib.Tests.csproj" />
 <!--#endif-->
-  <Project Path="NuGetLib/NuGetLib.csproj" />
 </Solution>

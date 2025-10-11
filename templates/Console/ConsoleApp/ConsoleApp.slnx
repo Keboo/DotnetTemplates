@@ -16,8 +16,8 @@
     <File Path=".github/workflows/pr-code-coverage-comment.yml" />
 <!--#endif-->
   </Folder>
+  <Project Path="ConsoleApp/ConsoleApp.csproj" />
 <!--#if (!noTests)-->
   <Project Path="ConsoleApp.Tests/ConsoleApp.Tests.csproj" />
 <!--#endif-->
-  <Project Path="ConsoleApp/ConsoleApp.csproj" />
 </Solution>
