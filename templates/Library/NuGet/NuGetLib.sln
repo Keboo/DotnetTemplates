@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetLib", "NuGetLib\NuGetLib.csproj", "{A87CB29C-0A36-423F-B9B6-43053906A3CC}"
 EndProject
-//#if (!no-tests)
+//#if (!noTests)
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetLib.Tests", "NuGetLib.Tests\NuGetLib.Tests.csproj", "{DF8F9490-887C-489E-AFE0-99518CC49ECF}"
 EndProject
 //#endif
@@ -29,7 +29,7 @@ Global
 		{A87CB29C-0A36-423F-B9B6-43053906A3CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A87CB29C-0A36-423F-B9B6-43053906A3CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A87CB29C-0A36-423F-B9B6-43053906A3CC}.Release|Any CPU.Build.0 = Release|Any CPU
-//#if (!no-tests)
+//#if (!noTests)
 		{DF8F9490-887C-489E-AFE0-99518CC49ECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DF8F9490-887C-489E-AFE0-99518CC49ECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF8F9490-887C-489E-AFE0-99518CC49ECF}.Release|Any CPU.ActiveCfg = Release|Any CPU

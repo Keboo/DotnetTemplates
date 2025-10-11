@@ -16,6 +16,7 @@ Create a new app in your current directory by running.
 |-----------|-------------|---------|
 | `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
+| `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `xunit` |
 
 **Example with Azure DevOps:**
 ```cli
@@ -25,6 +26,16 @@ Create a new app in your current directory by running.
 **Example with legacy .sln format:**
 ```cli
 > dotnet new keboo.nuget --sln true
+```
+
+**Example with MSTest:**
+```cli
+> dotnet new keboo.nuget --tests mstest
+```
+
+**Example with no tests:**
+```cli
+> dotnet new keboo.nuget --tests none
 ```
 
 ## Updating .NET Version

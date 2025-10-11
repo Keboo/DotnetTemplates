@@ -12,7 +12,7 @@ This repository provides opinionated .NET project templates packaged as a NuGet 
 **Template Parameters Pattern:**
 All templates share common parameters:
 - `no-sln` - Exclude solution files
-- `no-tests` - Exclude test projects  
+- `tests` - Choose testing framework: "xunit" (default), "mstest", "tunit", or "none"
 - `sln` - Use legacy .sln instead of modern .slnx format
 - `pipeline` - Choice between "github" or "azuredevops" CI/CD
 - Auto-generated symbols: `user_secrets_id` (GUID), `createdDate` (year)
@@ -52,9 +52,16 @@ dotnet new uninstall .              # Clean up
 
 Templates use MSBuild-style conditions in `template.json`:
 ```json
-"condition": "(no-tests)",
-"exclude": ["ProjectName.Tests/*"]
+"condition": "(noTests)",
+"exclude": ["ProjectName.Tests/**"]
 ```
+
+**Test Framework Selection:**
+- `useXunit` computed symbol includes xUnit v3 tests
+- `useMstest` computed symbol includes MSTest tests
+- `useTunit` computed symbol includes TUnit tests
+- `noTests` computed symbol excludes all test projects
+- Each framework has separate test files with `.xunit.cs`, `.mstest.cs`, or `.tunit.cs` extensions that get renamed during template instantiation
 
 **CI/CD Pipeline Selection:**
 - `useGitHub` computed symbol excludes `.devops/**`
