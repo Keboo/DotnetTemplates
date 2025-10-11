@@ -133,7 +133,8 @@
         {
           "condition": "(noTests)",
           "exclude": [
-            "ConsoleApp.Tests/**"
+            "ConsoleApp.Tests/**",
+            ".github/workflows/pr-code-coverage-comment.yml"
           ]
         },
         {

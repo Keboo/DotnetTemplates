@@ -125,7 +125,8 @@
         {
           "condition": "(noTests)",
           "exclude": [
-            "WpfApp.Tests/**"
+            "WpfApp.Tests/**",
+            ".github/workflows/pr-code-coverage-comment.yml"
           ]
         },
         {

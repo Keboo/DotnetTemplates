@@ -134,7 +134,7 @@
           "condition": "(noTests)",
           "exclude": [
             "NuGetLib.Tests/**",
-            ".github/.workflows/pr-code-coverage-comment.yml"
+            ".github/workflows/pr-code-coverage-comment.yml"
           ]
         },
         {

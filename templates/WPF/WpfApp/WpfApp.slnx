@@ -14,7 +14,9 @@
   </Folder>
   <Folder Name="/Solution Items/.github/workflows/">
     <File Path=".github/workflows/build_app.yml" />
+<!--#if (!noTests)-->
     <File Path=".github/workflows/code_coverage_comment.yml" />
+<!--#endif-->
   </Folder>
 <!--#if (!noTests)-->
   <Project Path="WpfApp.Tests/WpfApp.Tests.csproj" />

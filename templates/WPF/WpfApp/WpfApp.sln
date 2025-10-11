@@ -29,7 +29,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{AC2A502B-963E-4FD6-ACCA-8F96EDD4190F}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build_app.yml = .github\workflows\build_app.yml
+//#if (!noTests)
 		.github\workflows\code_coverage_comment.yml = .github\workflows\code_coverage_comment.yml
+//#endif
 	EndProjectSection
 EndProject
 Global

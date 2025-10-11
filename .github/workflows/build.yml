@@ -57,10 +57,25 @@ jobs:
             check-sln: true
             check-tests: true
           - name: "No tests"
-            template-args: "--no-tests"
+            template-args: "--tests none"
             check-slnx: true
             check-sln: false
             check-tests: false
+          - name: "xUnit tests"
+            template-args: "--tests xunit"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "MSTest tests"
+            template-args: "--tests mstest"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "TUnit tests"
+            template-args: "--tests tunit"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
           - name: "No solution"
             template-args: "--no-sln"
             check-slnx: false
@@ -159,10 +174,25 @@ jobs:
             check-sln: true
             check-tests: true
           - name: "No tests"
-            template-args: "--no-tests"
+            template-args: "--tests none"
             check-slnx: true
             check-sln: false
             check-tests: false
+          - name: "xUnit tests"
+            template-args: "--tests xunit"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "MSTest tests"
+            template-args: "--tests mstest"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "TUnit tests"
+            template-args: "--tests tunit"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
           - name: "No solution"
             template-args: "--no-sln"
             check-slnx: false
@@ -261,10 +291,25 @@ jobs:
             check-sln: true
             check-tests: true
           - name: "No tests"
-            template-args: "--no-tests"
+            template-args: "--tests none"
             check-slnx: true
             check-sln: false
             check-tests: false
+          - name: "xUnit tests"
+            template-args: "--tests xunit"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "MSTest tests"
+            template-args: "--tests mstest"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+          - name: "TUnit tests"
+            template-args: "--tests tunit"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
           - name: "No solution"
             template-args: "--no-sln"
             check-slnx: false
@@ -408,7 +453,7 @@ jobs:
           dotnet workload restore
           dotnet build
 
-  tests-all:
+  all-tests:
     name: All Tests Summary
     runs-on: ubuntu-latest
     needs: [test-console, test-wpf, test-library, test-avalonia]
