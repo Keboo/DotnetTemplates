@@ -106,6 +106,8 @@ jobs:
           if (-not (Test-Path "TestConsoleApp/*.slnx")) {
             throw "Expected .slnx file not found"
           }
+          Write-Host "Contents of .slnx file:"
+          Get-Content TestConsoleApp/*.slnx
           
       - name: Verify sln file exists
         if: matrix.check-sln == true
@@ -113,6 +115,8 @@ jobs:
           if (-not (Test-Path "TestConsoleApp/*.sln")) {
             throw "Expected .sln file not found"
           }
+          Write-Host "Contents of .sln file:"
+          Get-Content TestConsoleApp/*.sln
           
       - name: Verify tests folder exists
         if: matrix.check-tests == true
@@ -223,6 +227,8 @@ jobs:
           if (-not (Test-Path "TestWpfApp/*.slnx")) {
             throw "Expected .slnx file not found"
           }
+          Write-Host "Contents of .slnx file:"
+          Get-Content TestWpfApp/*.slnx
           
       - name: Verify sln file exists
         if: matrix.check-sln == true
@@ -230,6 +236,8 @@ jobs:
           if (-not (Test-Path "TestWpfApp/*.sln")) {
             throw "Expected .sln file not found"
           }
+          Write-Host "Contents of .sln file:"
+          Get-Content TestWpfApp/*.sln
           
       - name: Verify tests folder exists
         if: matrix.check-tests == true
@@ -340,6 +348,8 @@ jobs:
           if (-not (Test-Path "TestLibrary/*.slnx")) {
             throw "Expected .slnx file not found"
           }
+          Write-Host "Contents of .slnx file:"
+          Get-Content TestLibrary/*.slnx
           
       - name: Verify sln file exists
         if: matrix.check-sln == true
@@ -347,6 +357,8 @@ jobs:
           if (-not (Test-Path "TestLibrary/*.sln")) {
             throw "Expected .sln file not found"
           }
+          Write-Host "Contents of .sln file:"
+          Get-Content TestLibrary/*.sln
           
       - name: Verify tests folder exists
         if: matrix.check-tests == true
@@ -438,6 +450,8 @@ jobs:
           if (-not (Test-Path "TestAvalonia/*.slnx")) {
             throw "Expected .slnx file not found"
           }
+          Write-Host "Contents of .slnx file:"
+          Get-Content TestAvalonia/*.slnx
           
       - name: Verify sln file exists
         if: matrix.check-sln == true
@@ -445,6 +459,8 @@ jobs:
           if (-not (Test-Path "TestAvalonia/*.sln")) {
             throw "Expected .sln file not found"
           }
+          Write-Host "Contents of .sln file:"
+          Get-Content TestAvalonia/*.sln
           
       - name: Build
         if: matrix.check-sln == true || matrix.check-slnx == true
