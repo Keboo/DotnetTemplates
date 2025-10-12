@@ -1,0 +1,32 @@
+{
+  "name": "Keboo's .NET Templates",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/powershell:1": {
+      "version": "latest"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
+      ],
+      "settings": {
+        "dotnet.defaultSolution": "disable"
+      }
+    }
+  },
+
+  "postCreateCommand": "dotnet --version && dotnet restore",
+
+  "remoteUser": "vscode"
+}
