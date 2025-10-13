@@ -81,6 +81,27 @@ jobs:
             check-slnx: false
             check-sln: false
             check-tests: true
+          - name: "Pipeline GitHub"
+            template-args: "--pipeline github"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: true
+            check-devops: false
+          - name: "Pipeline Azure DevOps"
+            template-args: "--pipeline azuredevops"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: false
+            check-devops: true
+          - name: "Pipeline None"
+            template-args: "--pipeline none"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: false
+            check-devops: false
 
     steps:
       - name: Download NuGet Artifacts
@@ -130,6 +151,34 @@ jobs:
         run: |
           if (Test-Path "TestConsoleApp/*.Tests") {
             throw "Tests folder should not exist"
+          }
+          
+      - name: Verify .github folder exists
+        if: matrix.check-github == true
+        run: |
+          if (-not (Test-Path "TestConsoleApp/.github")) {
+            throw "Expected .github folder not found"
+          }
+          
+      - name: Verify .github folder does not exist
+        if: matrix.check-github == false
+        run: |
+          if (Test-Path "TestConsoleApp/.github") {
+            throw ".github folder should not exist"
+          }
+          
+      - name: Verify .devops folder exists
+        if: matrix.check-devops == true
+        run: |
+          if (-not (Test-Path "TestConsoleApp/.devops")) {
+            throw "Expected .devops folder not found"
+          }
+          
+      - name: Verify .devops folder does not exist
+        if: matrix.check-devops == false
+        run: |
+          if (Test-Path "TestConsoleApp/.devops") {
+            throw ".devops folder should not exist"
           }
           
       - name: Build and Test Solution
@@ -202,6 +251,27 @@ jobs:
             check-slnx: false
             check-sln: false
             check-tests: true
+          - name: "Pipeline GitHub"
+            template-args: "--pipeline github"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: true
+            check-devops: false
+          - name: "Pipeline Azure DevOps"
+            template-args: "--pipeline azuredevops"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: false
+            check-devops: true
+          - name: "Pipeline None"
+            template-args: "--pipeline none"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: false
+            check-devops: false
 
     steps:
       - name: Download NuGet Artifacts
@@ -251,6 +321,34 @@ jobs:
         run: |
           if (Test-Path "TestWpfApp/*.Tests") {
             throw "Tests folder should not exist"
+          }
+          
+      - name: Verify .github folder exists
+        if: matrix.check-github == true
+        run: |
+          if (-not (Test-Path "TestWpfApp/.github")) {
+            throw "Expected .github folder not found"
+          }
+          
+      - name: Verify .github folder does not exist
+        if: matrix.check-github == false
+        run: |
+          if (Test-Path "TestWpfApp/.github") {
+            throw ".github folder should not exist"
+          }
+          
+      - name: Verify .devops folder exists
+        if: matrix.check-devops == true
+        run: |
+          if (-not (Test-Path "TestWpfApp/.devops")) {
+            throw "Expected .devops folder not found"
+          }
+          
+      - name: Verify .devops folder does not exist
+        if: matrix.check-devops == false
+        run: |
+          if (Test-Path "TestWpfApp/.devops") {
+            throw ".devops folder should not exist"
           }
           
       - name: Build and Test Solution
@@ -323,6 +421,27 @@ jobs:
             check-slnx: false
             check-sln: false
             check-tests: true
+          - name: "Pipeline GitHub"
+            template-args: "--pipeline github"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: true
+            check-devops: false
+          - name: "Pipeline Azure DevOps"
+            template-args: "--pipeline azuredevops"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: false
+            check-devops: true
+          - name: "Pipeline None"
+            template-args: "--pipeline none"
+            check-slnx: true
+            check-sln: false
+            check-tests: true
+            check-github: false
+            check-devops: false
 
     steps:
       - name: Download NuGet Artifacts
@@ -372,6 +491,34 @@ jobs:
         run: |
           if (Test-Path "TestLibrary/*.Tests") {
             throw "Tests folder should not exist"
+          }
+          
+      - name: Verify .github folder exists
+        if: matrix.check-github == true
+        run: |
+          if (-not (Test-Path "TestLibrary/.github")) {
+            throw "Expected .github folder not found"
+          }
+          
+      - name: Verify .github folder does not exist
+        if: matrix.check-github == false
+        run: |
+          if (Test-Path "TestLibrary/.github") {
+            throw ".github folder should not exist"
+          }
+          
+      - name: Verify .devops folder exists
+        if: matrix.check-devops == true
+        run: |
+          if (-not (Test-Path "TestLibrary/.devops")) {
+            throw "Expected .devops folder not found"
+          }
+          
+      - name: Verify .devops folder does not exist
+        if: matrix.check-devops == false
+        run: |
+          if (Test-Path "TestLibrary/.devops") {
+            throw ".devops folder should not exist"
           }
           
       - name: Build and Test Solution

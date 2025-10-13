@@ -103,6 +103,10 @@
         {
           "choice": "azuredevops",
           "description": "Use Azure DevOps Pipelines for CI/CD"
+        },
+        {
+          "choice": "none",
+          "description": "Do not include CI/CD pipeline files"
         }
       ],
       "defaultValue": "github",
@@ -115,6 +119,10 @@
     "useAzureDevOps": {
       "type": "computed",
       "value": "(pipeline == \"azuredevops\")"
+    },
+    "noPipeline": {
+      "type": "computed",
+      "value": "(pipeline == \"none\")"
     }
   },
   "sources": [
@@ -189,6 +197,13 @@
           "condition": "(useAzureDevOps)",
           "exclude": [
             ".github/**"
+          ]
+        },
+        {
+          "condition": "(noPipeline)",
+          "exclude": [
+            ".github/**",
+            ".devops/**"
           ]
         }
       ]
