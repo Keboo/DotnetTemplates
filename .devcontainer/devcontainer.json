@@ -3,12 +3,15 @@
   "image": "mcr.microsoft.com/devcontainers/dotnet:1-9.0-bookworm",
   
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/powershell:1": {
-      "version": "latest"
-    }
+      "ghcr.io/devcontainers/features/github-cli:1": {
+        "version": "latest"
+      },
+      "ghcr.io/devcontainers/features/powershell:1": {
+        "version": "latest"
+      },
+      "ghcr.io/devcontainers/features/git-lfs:1": {
+        "version": "latest"
+      }
   },
 
   "customizations": {
