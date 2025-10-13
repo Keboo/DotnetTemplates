@@ -9,6 +9,7 @@
     <File Path="NuGet.config" />
     <File Path="Settings.XamlStyler" />
   </Folder>
+<!--#if (useGitHub)-->
   <Folder Name="/Solution Items/.github/">
     <File Path=".github/dependabot.yml" />
   </Folder>
@@ -18,6 +19,12 @@
     <File Path=".github/workflows/code_coverage_comment.yml" />
 <!--#endif-->
   </Folder>
+<!--#endif-->
+<!--#if (useAzureDevOps)-->
+  <Folder Name="/Solution Items/.devops/">
+    <File Path=".devops/build-app.yml" />
+  </Folder>
+<!--#endif-->
   <Project Path="WpfApp/WpfApp.csproj" />
 <!--#if (!noTests)-->
   <Project Path="WpfApp.Tests/WpfApp.Tests.csproj" />

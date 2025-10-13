@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
+//#if (useGitHub)
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{6E32D310-8A68-4061-82C9-4A0040537448}"
 	ProjectSection(SolutionItems) = preProject
 		.github\dependabot.yml = .github\dependabot.yml
@@ -32,6 +33,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 //#endif
 	EndProjectSection
 EndProject
+//#endif
+//#if (useAzureDevOps)
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".devops", ".devops", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+	ProjectSection(SolutionItems) = preProject
+		.devops\build-and-test.yml = .devops\build-and-test.yml
+	EndProjectSection
+EndProject
+//#endif
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,8 +62,13 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+//#if (useGitHub)
 		{6E32D310-8A68-4061-82C9-4A0040537448} = {D88D7F20-19C5-42B4-8561-874CC78B134A}
 		{D73E76B4-8613-4EF2-A925-0766B9E8B02C} = {6E32D310-8A68-4061-82C9-4A0040537448}
+//#endif
+//#if (useAzureDevOps)
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890} = {D88D7F20-19C5-42B4-8561-874CC78B134A}
+//#endif
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF353750-2089-4072-9508-65E9DC66DF2D}
