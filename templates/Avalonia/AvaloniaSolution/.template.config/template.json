@@ -14,6 +14,23 @@
   },
   "preferNameDirectory":true,
   "sourceName": "SampleAvaloniaApplication",
+  "SpecialCustomOperations": {
+    "**.slnx": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "<!--#if" ],
+            "else": [ "<!--#else" ],
+            "elseif": [ "<!--#elseif" ],
+            "endif": [ "<!--#endif" ],
+            "trim": true,
+            "wholeLine": true
+          }
+        }
+      ]
+    }
+  },
   "symbols":{
     "user_secrets_id":{
       "type": "generated",

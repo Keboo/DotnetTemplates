@@ -14,6 +14,23 @@
   },
   "preferNameDirectory":true,
   "sourceName": "NuGetLib",
+  "SpecialCustomOperations": {
+    "**.slnx": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "if": [ "<!--#if" ],
+            "else": [ "<!--#else" ],
+            "elseif": [ "<!--#elseif" ],
+            "endif": [ "<!--#endif" ],
+            "trim": true,
+            "wholeLine": true
+          }
+        }
+      ]
+    }
+  },
   "symbols":{
     "createdDate": {
       "type": "generated",
