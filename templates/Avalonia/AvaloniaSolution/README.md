@@ -15,10 +15,21 @@ Create a new app in your current directory by running.
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
+| `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `xunit` |
 
 **Example with legacy .sln format:**
 ```cli
 > dotnet new keboo.avalonia --sln true
+```
+
+**Example with MSTest:**
+```cli
+> dotnet new keboo.avalonia --tests mstest
+```
+
+**Example with no tests:**
+```cli
+> dotnet new keboo.avalonia --tests none
 ```
 
 ## Updating .NET Version

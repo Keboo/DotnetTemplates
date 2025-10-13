@@ -12,6 +12,9 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Keboo/DotnetTemplates</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
 
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
@@ -24,6 +27,7 @@
     <Compile Remove="**\*" />
 
     <None Include="NuGetIcon.png" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>

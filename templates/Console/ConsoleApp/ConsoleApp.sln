@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{55D459AD-9D92-4A4A-ADAB-D0143BA39451}"
 EndProject
-//#if (!no-tests)
+//#if (!noTests)
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp.Tests", "ConsoleApp.Tests\ConsoleApp.Tests.csproj", "{E0A57BAE-FFD5-46A6-9A93-33DF9195362B}"
 EndProject
 //#endif
@@ -27,7 +27,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{D73E76B4-8613-4EF2-A925-0766B9E8B02C}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-and-deploy.yml = .github\workflows\build-and-deploy.yml
+//#if (!noTests)
 		.github\workflows\pr-code-coverage-comment.yml = .github\workflows\pr-code-coverage-comment.yml
+//#endif
 	EndProjectSection
 EndProject
 Global
@@ -40,7 +42,7 @@ Global
 		{55D459AD-9D92-4A4A-ADAB-D0143BA39451}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55D459AD-9D92-4A4A-ADAB-D0143BA39451}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55D459AD-9D92-4A4A-ADAB-D0143BA39451}.Release|Any CPU.Build.0 = Release|Any CPU
-//#if (!no-tests)
+//#if (!noTests)
 		{E0A57BAE-FFD5-46A6-9A93-33DF9195362B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0A57BAE-FFD5-46A6-9A93-33DF9195362B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0A57BAE-FFD5-46A6-9A93-33DF9195362B}.Release|Any CPU.ActiveCfg = Release|Any CPU
