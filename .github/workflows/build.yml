@@ -51,36 +51,50 @@ jobs:
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "Legacy sln format"
             template-args: "--sln true"
             check-slnx: false
             check-sln: true
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "No tests"
             template-args: "--tests none"
             check-slnx: true
             check-sln: false
             check-tests: false
+            check-github: true
+            check-devops: false
           - name: "xUnit tests"
             template-args: "--tests xunit"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "MSTest tests"
             template-args: "--tests mstest"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "TUnit tests"
             template-args: "--tests tunit"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "No solution"
             template-args: "--no-sln"
             check-slnx: false
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "Pipeline GitHub"
             template-args: "--pipeline github"
             check-slnx: true
@@ -221,36 +235,50 @@ jobs:
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "Legacy sln format"
             template-args: "--sln true"
             check-slnx: false
             check-sln: true
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "No tests"
             template-args: "--tests none"
             check-slnx: true
             check-sln: false
             check-tests: false
+            check-github: true
+            check-devops: false
           - name: "xUnit tests"
             template-args: "--tests xunit"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "MSTest tests"
             template-args: "--tests mstest"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "TUnit tests"
             template-args: "--tests tunit"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "No solution"
             template-args: "--no-sln"
             check-slnx: false
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "Pipeline GitHub"
             template-args: "--pipeline github"
             check-slnx: true
@@ -391,36 +419,50 @@ jobs:
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "Legacy sln format"
             template-args: "--sln true"
             check-slnx: false
             check-sln: true
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "No tests"
             template-args: "--tests none"
             check-slnx: true
             check-sln: false
             check-tests: false
+            check-github: true
+            check-devops: false
           - name: "xUnit tests"
             template-args: "--tests xunit"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "MSTest tests"
             template-args: "--tests mstest"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "TUnit tests"
             template-args: "--tests tunit"
             check-slnx: true
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "No solution"
             template-args: "--no-sln"
             check-slnx: false
             check-sln: false
             check-tests: true
+            check-github: true
+            check-devops: false
           - name: "Pipeline GitHub"
             template-args: "--pipeline github"
             check-slnx: true
