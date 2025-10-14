@@ -14,13 +14,18 @@ Create a new app in your current directory by running.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops` | `github` |
+| `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops`, `none` | `github` |
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
 | `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `xunit` |
 
 **Example with Azure DevOps:**
 ```cli
 > dotnet new keboo.nuget --pipeline azuredevops
+```
+
+**Example with no CI/CD pipeline:**
+```cli
+> dotnet new keboo.nuget --pipeline none
 ```
 
 **Example with legacy .sln format:**

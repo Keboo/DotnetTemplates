@@ -19,6 +19,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGetPackageReadme.md = NuGetPackageReadme.md
 	EndProjectSection
 EndProject
+//#if (useGitHub)
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{C3D4E5F6-A7B8-9012-CDEF-123456789012}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{D4E5F6A7-B8C9-0123-DEF1-234567890123}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-and-deploy.yml = .github\workflows\build-and-deploy.yml
+//#if (!noTests)
+		.github\workflows\pr-code-coverage-comment.yml = .github\workflows\pr-code-coverage-comment.yml
+//#endif
+	EndProjectSection
+EndProject
+//#endif
+//#if (useAzureDevOps)
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".devops", ".devops", "{E5F6A7B8-C9D0-1234-EF12-345678901234}"
+	ProjectSection(SolutionItems) = preProject
+		.devops\build-and-deploy.yml = .devops\build-and-deploy.yml
+	EndProjectSection
+EndProject
+//#endif
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,5 +60,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+//#if (useGitHub)
+		{C3D4E5F6-A7B8-9012-CDEF-123456789012} = {33332FBD-7EFF-4A3D-8691-21BF50B245A7}
+		{D4E5F6A7-B8C9-0123-DEF1-234567890123} = {C3D4E5F6-A7B8-9012-CDEF-123456789012}
+//#endif
+//#if (useAzureDevOps)
+		{E5F6A7B8-C9D0-1234-EF12-345678901234} = {33332FBD-7EFF-4A3D-8691-21BF50B245A7}
+//#endif
 	EndGlobalSection
 EndGlobal

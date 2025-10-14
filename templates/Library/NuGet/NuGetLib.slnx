@@ -7,6 +7,22 @@
     <File Path="NuGet.config" />
     <File Path="NuGetPackageReadme.md" />
   </Folder>
+<!--#if (useGitHub)-->
+  <Folder Name="/Solution Items/.github/">
+    <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/workflows/">
+    <File Path=".github/workflows/build-and-deploy.yml" />
+<!--#if (!noTests)-->
+    <File Path=".github/workflows/pr-code-coverage-comment.yml" />
+<!--#endif-->
+  </Folder>
+<!--#endif-->
+<!--#if (useAzureDevOps)-->
+  <Folder Name="/Solution Items/.devops/">
+    <File Path=".devops/build-and-deploy.yml" />
+  </Folder>
+<!--#endif-->
   <Project Path="NuGetLib/NuGetLib.csproj" />
 <!--#if (!noTests)-->
   <Project Path="NuGetLib.Tests/NuGetLib.Tests.csproj" />
