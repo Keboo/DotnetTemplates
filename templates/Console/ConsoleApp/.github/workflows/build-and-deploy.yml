@@ -46,7 +46,7 @@ jobs:
           echo ${{ github.event.number }} > ./coveragereport/PullRequestNumber
   
       - name: Upload Code Coverage Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: CodeCoverage
           path: coveragereport/
@@ -56,7 +56,7 @@ jobs:
         run: dotnet pack --configuration Release --no-build -o ./NuGet
 
       - name: Upload NuGet artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: NuGet
           path: ./NuGet
