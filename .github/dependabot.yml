@@ -8,7 +8,11 @@ updates:
   - package-ecosystem: "github-actions" 
     directory: "/"
     schedule:
-      interval: "weekly" 
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "nuget" 
     directory: "/templates/WPF/WpfApp"
@@ -17,7 +21,11 @@ updates:
   - package-ecosystem: "github-actions" 
     directory: "/templates/WPF/WpfApp/.github/workflows"
     schedule:
-      interval: "weekly" 
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "nuget" 
     directory: "/templates/Console/ConsoleApp"
@@ -26,7 +34,11 @@ updates:
   - package-ecosystem: "github-actions" 
     directory: "/templates/Console/ConsoleApp/.github/workflows"
     schedule:
-      interval: "weekly" 
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "nuget" 
     directory: "/templates/Library/NuGet"
@@ -35,7 +47,11 @@ updates:
   - package-ecosystem: "github-actions" 
     directory: "/templates/Library/NuGet/.github/workflows"
     schedule:
-      interval: "weekly" 
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "nuget" 
     directory: "/templates/Avalonia/AvaloniaSolution"
@@ -44,4 +60,8 @@ updates:
   - package-ecosystem: "github-actions" 
     directory: "/templates/Avalonia/AvaloniaSolution/.github/workflows"
     schedule:
-      interval: "weekly" 
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
