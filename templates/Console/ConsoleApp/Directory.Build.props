@@ -11,7 +11,7 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>12</LangVersion>
+    <LangVersion>14</LangVersion>
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 
     <!-- 
