@@ -1,4 +1,14 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="exclusions.dic" />
+    <File Path="global.json" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
   <Project Path="BlazorApp.AppHost/BlazorApp.AppHost.csproj" />
   <Project Path="BlazorApp.ServiceDefaults/BlazorApp.ServiceDefaults.csproj" />
   <Project Path="BlazorApp/BlazorApp.Client/BlazorApp.Client.csproj" />
