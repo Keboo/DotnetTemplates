@@ -11,9 +11,11 @@
 
 <PageTitle>Confirm email change</PageTitle>
 
-<h1>Confirm email change</h1>
+<MudText Typo="Typo.h3" GutterBottom="true">Confirm email change</MudText>
 
-<StatusMessage Message="@message" />
+<MudPaper Class="pa-4" Elevation="2">
+    <StatusMessage Message="@message" />
+</MudPaper>
 
 @code {
     private string? message;

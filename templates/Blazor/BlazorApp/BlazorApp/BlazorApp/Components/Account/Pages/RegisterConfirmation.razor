@@ -12,21 +12,25 @@
 
 <PageTitle>Register confirmation</PageTitle>
 
-<h1>Register confirmation</h1>
+<MudText Typo="Typo.h3" GutterBottom="true">Register confirmation</MudText>
 
-<StatusMessage Message="@statusMessage" />
+<MudPaper Class="pa-4" Elevation="2">
+    <StatusMessage Message="@statusMessage" />
 
-@if (emailConfirmationLink is not null)
-{
-    <p>
-        This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-        Normally this would be emailed: <a href="@emailConfirmationLink">Click here to confirm your account</a>
-    </p>
-}
-else
-{
-    <p role="alert">Please check your email to confirm your account.</p>
-}
+    @if (emailConfirmationLink is not null)
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-3">
+            This app does not currently have a real email sender registered, see <MudLink Href="https://aka.ms/aspaccountconf" Target="_blank">these docs</MudLink> for how to configure a real email sender.
+        </MudAlert>
+        <MudAlert Severity="Severity.Warning">
+            Normally this would be emailed: <MudLink Href="@emailConfirmationLink">Click here to confirm your account</MudLink>
+        </MudAlert>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Info">Please check your email to confirm your account.</MudAlert>
+    }
+</MudPaper>
 
 @code {
     private string? emailConfirmationLink;
