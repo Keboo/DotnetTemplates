@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using System.Text;
 
 using BlazorApp.AppHost;
 using BlazorApp.Core;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace BlazorApp.AppHost;
 
@@ -30,6 +28,11 @@ public static class Resources
 
         database.WithCommand("CreateMigration", "Create Migration", async ctx =>
         {
+            string? connectionString = await database.Resource.ConnectionStringExpression.GetValueAsync(ctx.CancellationToken);
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return CommandResults.Failure("No connection string to the database");
+            }
 #pragma warning disable ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             var interactionService = ctx.ServiceProvider.GetRequiredService<IInteractionService>();
             var migrationNameResult = await interactionService.PromptInputAsync("Migration Name", "Enter the name for the migration", "Name", "", cancellationToken: ctx.CancellationToken);
@@ -37,13 +40,8 @@ public static class Resources
             {
                 return CommandResults.Canceled();
             }
-            string? connectionString = await database.Resource.ConnectionStringExpression.GetValueAsync(ctx.CancellationToken);
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                return CommandResults.Canceled();
-            }
-            var logger = ctx.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            
+#pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
             ProcessStartInfo psi = new()
             {
                 FileName = "dotnet",
@@ -54,6 +52,7 @@ public static class Resources
                     "./BlazorApp.AppHost",
                     "--project",
                     "./BlazorApp.Data",
+                    "--no-build",
                     "add",
                     migrationNameResult.Data.Value
                 },
@@ -66,39 +65,8 @@ public static class Resources
                     { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
                 }
             };
-            if (Process.Start(psi) is { } process)
-            {
-                process.OutputDataReceived += (sender, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        logger.LogInformation(e.Data);
-                    }
-                };
-                
-                process.ErrorDataReceived += (sender, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        logger.LogError(e.Data);
-                    }
-                };
-                
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                
-                await process.WaitForExitAsync(ctx.CancellationToken);
-                if (process.ExitCode != 0)
-                {
-                    return CommandResults.Failure("Failed to create a migration");
-                }
-                return CommandResults.Success();
-            }
-#pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-            else
-            {
-                return CommandResults.Failure("Failed to run dotnet");
-            }
+            bool processResult = await ctx.ExecuteProcessAsync(database, psi);
+            return processResult ? CommandResults.Success() : CommandResults.Failure("Failed to create a migration");
         }, new CommandOptions()
         {
             IconName = "TableAdd"
@@ -108,25 +76,24 @@ public static class Resources
         {
 #pragma warning disable ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             var interactionService = ctx.ServiceProvider.GetRequiredService<IInteractionService>();
-            var confirmationResult = await interactionService.PromptConfirmationAsync("Remove Migration", "This will remove the most recent migration. Continue?", 
+            var confirmationResult = await interactionService.PromptConfirmationAsync("Remove Migration", "This will remove the most recent compiled migration. Continue?",
                 options: new()
                 {
                     PrimaryButtonText = "Yes",
                     SecondaryButtonText = "No",
-                    Intent = MessageIntent.Confirmation
+                    Intent = MessageIntent.Warning
                 },
                 cancellationToken: ctx.CancellationToken);
             if (confirmationResult.Canceled || !confirmationResult.Data)
             {
                 return CommandResults.Canceled();
             }
+#pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             string? connectionString = await database.Resource.ConnectionStringExpression.GetValueAsync(ctx.CancellationToken);
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 return CommandResults.Canceled();
             }
-            var logger = ctx.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            
             ProcessStartInfo psi = new()
             {
                 FileName = "dotnet",
@@ -141,52 +108,14 @@ public static class Resources
                     "remove"
                 },
                 WorkingDirectory = "..",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
                 EnvironmentVariables =
                 {
                     { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
                 }
             };
 
-            if (Process.Start(psi) is { } process)
-            {
-                StringBuilder sb = new();
-                process.OutputDataReceived += (sender, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        sb.AppendLine(e.Data);
-                        logger.LogInformation(e.Data);
-                    }
-                };
-                
-                process.ErrorDataReceived += (sender, e) =>
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Data))
-                    {
-                        sb.AppendLine(e.Data);
-                        logger.LogError(e.Data);
-                    }
-                };
-                
-                process.BeginOutputReadLine();
-                process.BeginErrorReadLine();
-                
-                await process.WaitForExitAsync(ctx.CancellationToken);
-                string output = sb.ToString();
-                if (process.ExitCode != 0)
-                {
-                    return CommandResults.Failure("Failed to remove a migration");
-                }
-                return CommandResults.Success();
-            }
-#pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-            else
-            {
-                return CommandResults.Failure("Failed to run dotnet");
-            }
+            bool processResult = await ctx.ExecuteProcessAsync(database, psi);
+            return processResult ? CommandResults.Success() : CommandResults.Failure("Failed to remove a migration");
         }, new CommandOptions()
         {
             IconName = "TableDismiss"
