@@ -4,12 +4,15 @@
     <File Path=".gitignore" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
     <File Path="exclusions.dic" />
     <File Path="global.json" />
     <File Path="NuGet.config" />
     <File Path="README.md" />
   </Folder>
   <Project Path="BlazorApp.AppHost/BlazorApp.AppHost.csproj" />
+  <Project Path="BlazorApp.Core/BlazorApp.Core.csproj" />
+  <Project Path="BlazorApp.Data/BlazorApp.Data.csproj" />
   <Project Path="BlazorApp.ServiceDefaults/BlazorApp.ServiceDefaults.csproj" />
   <Project Path="BlazorApp/BlazorApp.Client/BlazorApp.Client.csproj" />
   <Project Path="BlazorApp/BlazorApp/BlazorApp.csproj" />

@@ -2,20 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-BlazorApp-967b04fb-dae3-4d1b-987d-a3680dff5493</UserSecretsId>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\BlazorApp.Core\BlazorApp.Core.csproj" />
+    <ProjectReference Include="..\..\BlazorApp.Data\BlazorApp.Data.csproj" />
     <ProjectReference Include="..\..\BlazorApp.ServiceDefaults\BlazorApp.ServiceDefaults.csproj" />
     <ProjectReference Include="..\BlazorApp.Client\BlazorApp.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+
   </ItemGroup>
 
 </Project>
