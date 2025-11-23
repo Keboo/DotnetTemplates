@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="BlazorApp.AppHost/BlazorApp.AppHost.csproj" />
+  <Project Path="BlazorApp.ServiceDefaults/BlazorApp.ServiceDefaults.csproj" />
+  <Project Path="BlazorApp/BlazorApp.Client/BlazorApp.Client.csproj" />
+  <Project Path="BlazorApp/BlazorApp/BlazorApp.csproj" />
+</Solution>
