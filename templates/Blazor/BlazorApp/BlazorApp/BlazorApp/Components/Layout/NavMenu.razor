@@ -2,72 +2,31 @@
 
 @inject NavigationManager NavigationManager
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorApp</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
+<MudNavMenu>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <MudNavLink Href="counter" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
+    <MudNavLink Href="weather" Icon="@Icons.Material.Filled.List">Weather</MudNavLink>
+    <MudNavLink Href="auth" Icon="@Icons.Material.Filled.Lock">Auth Required</MudNavLink>
+    
+    <AuthorizeView>
+        <Authorized>
+            <MudNavLink Href="Account/Manage" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink>
+            <MudNavGroup Title="Account" Icon="@Icons.Material.Filled.AccountCircle">
+                <form action="Account/Logout" method="post">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Text" Color="Color.Default" StartIcon="@Icons.Material.Filled.Logout" FullWidth="true" Style="justify-content: flex-start;">
+                        Logout
+                    </MudButton>
+                </form>
+            </MudNavGroup>
+        </Authorized>
+        <NotAuthorized>
+            <MudNavLink Href="Account/Register" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
+            <MudNavLink Href="Account/Login" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudNavMenu>
 
 @code {
     private string? currentUrl;

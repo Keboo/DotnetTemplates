@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" />
+    <PackageReference Include="MudBlazor" />
   </ItemGroup>
 
 </Project>

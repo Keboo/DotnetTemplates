@@ -10,8 +10,10 @@
 
 <PageTitle>Confirm email</PageTitle>
 
-<h1>Confirm email</h1>
-<StatusMessage Message="@statusMessage" />
+<MudText Typo="Typo.h3" GutterBottom="true">Confirm email</MudText>
+<MudPaper Class="pa-4" Elevation="2">
+    <StatusMessage Message="@statusMessage" />
+</MudPaper>
 
 @code {
     private string? statusMessage;

@@ -5,6 +5,7 @@ using BlazorApp.Client.Pages;
 using BlazorApp.Components;
 using BlazorApp.Components.Account;
 using BlazorApp.Data;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
+
+builder.Services.AddMudServices();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();

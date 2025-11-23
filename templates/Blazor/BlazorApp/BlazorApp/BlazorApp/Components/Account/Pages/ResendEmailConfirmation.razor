@@ -14,24 +14,32 @@
 
 <PageTitle>Resend email confirmation</PageTitle>
 
-<h1>Resend email confirmation</h1>
-<h2>Enter your email.</h2>
-<hr />
-<StatusMessage Message="@message" />
-<div class="row">
-    <div class="col-md-4">
-        <EditForm Model="Input" FormName="resend-email-confirmation" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" aria-required="true" placeholder="name@example.com" />
-                <label for="Input.Email" class="form-label">Email</label>
-                <ValidationMessage For="() => Input.Email" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Resend</button>
-        </EditForm>
-    </div>
-</div>
+<MudText Typo="Typo.h3" GutterBottom="true">Resend email confirmation</MudText>
+<MudText Typo="Typo.h6" GutterBottom="true">Enter your email.</MudText>
+<MudDivider Class="mb-4" />
+<MudGrid>
+    <MudItem xs="12" md="6">
+        <MudPaper Class="pa-4" Elevation="2">
+            <StatusMessage Message="@message" />
+            <EditForm Model="Input" FormName="resend-email-confirmation" OnValidSubmit="OnValidSubmitAsync" method="post">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+                <MudTextField @bind-Value="Input.Email" 
+                              For="@(() => Input.Email)"
+                              Label="Email" 
+                              Variant="Variant.Outlined" 
+                              InputType="InputType.Email"
+                              Required="true"
+                              Class="mb-3" />
+                <MudButton ButtonType="ButtonType.Submit" 
+                           Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           FullWidth="true"
+                           Size="Size.Large">Resend</MudButton>
+            </EditForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 
 @code {
     private string? message;
