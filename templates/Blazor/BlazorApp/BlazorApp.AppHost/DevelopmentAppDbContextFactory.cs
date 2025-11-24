@@ -1,11 +1,9 @@
 using BlazorApp.Core;
 using BlazorApp.Data;
 
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace BlazorApp.AppHost;
 
@@ -14,26 +12,18 @@ public class DesignTimeAppDbContextFactory : IDesignTimeDbContextFactory<Applica
 {
     public ApplicationDbContext CreateDbContext(string[] args)
     {
-        // This is only used when adding migrations and updating the database from the cmd line.
-        // It shouldn't ever be used in code where it might end up running in production.
-        ConfigurationBuilder config = new();
-        config.AddEnvironmentVariables();
-        config.AddCommandLine(args);
-        IConfiguration configuration = config.Build();
-
-        IServiceCollection services = null!;
-        services.AddIdentityCore<ApplicationUser>(options =>
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+        var factory = new DefaultServiceProviderFactory(new ServiceProviderOptions()
         {
-            options.SignIn.RequireConfirmedAccount = true;
-            options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-        })
-        ;
+            ValidateOnBuild = false,
+            ValidateScopes = false
+        });
+        builder.ConfigureContainer(factory);
+        builder.AddDatabase();
 
-        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        optionsBuilder.EnableSensitiveDataLogging();
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString(ConnectionStrings.DatabaseKey));
-        optionsBuilder.
-        return new ApplicationDbContext(optionsBuilder.Options);
+        var host = builder.Build();
+
+        return host.Services.GetRequiredService<ApplicationDbContext>();
     }
 }
 #endif

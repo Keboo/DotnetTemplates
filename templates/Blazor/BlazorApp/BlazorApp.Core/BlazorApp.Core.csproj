@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BlazorApp.Data\BlazorApp.Data.csproj" />
+  </ItemGroup>
+
 </Project>
