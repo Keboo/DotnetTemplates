@@ -1,6 +1,9 @@
 ﻿@implements IDisposable
 
+@using BlazorApp.Services
+
 @inject NavigationManager NavigationManager
+@inject TokenAuthenticationStateProvider AuthStateProvider
 
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
@@ -12,13 +15,9 @@
         <Authorized>
             <MudNavLink Href="Account/Manage" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink>
             <MudNavGroup Title="Account" Icon="@Icons.Material.Filled.AccountCircle">
-                <form action="Account/Logout" method="post">
-                    <AntiforgeryToken />
-                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Text" Color="Color.Default" StartIcon="@Icons.Material.Filled.Logout" FullWidth="true" Style="justify-content: flex-start;">
-                        Logout
-                    </MudButton>
-                </form>
+                <MudButton OnClick="LogoutAsync" Variant="Variant.Text" Color="Color.Default" StartIcon="@Icons.Material.Filled.Logout" FullWidth="true" Style="justify-content: flex-start;">
+                    Logout
+                </MudButton>
             </MudNavGroup>
         </Authorized>
         <NotAuthorized>
@@ -41,6 +40,12 @@
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
+    }
+
+    private void LogoutAsync()
+    {
+        AuthStateProvider.NotifyUserLogout();
+        NavigationManager.NavigateTo("/", forceLoad: true);
     }
 
     public void Dispose()

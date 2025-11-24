@@ -1,15 +1,21 @@
 ﻿@page "/Account/Login"
+@rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using BlazorApp.Data
+@using BlazorApp.Services
+@using System.Net.Http.Json
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject IHttpClientFactory HttpClientFactory
+@inject TokenAuthenticationStateProvider AuthStateProvider
+@inject TokenRefreshService TokenRefreshService
 
 <PageTitle>Log in</PageTitle>
 
@@ -18,37 +24,48 @@
     <MudItem xs="12" md="6">
         <MudPaper Class="pa-4" Elevation="2">
             <StatusMessage Message="@errorMessage" />
-            <EditForm EditContext="editContext" method="post" OnSubmit="LoginUser" FormName="login">
+            <EditForm Model="Input" OnValidSubmit="LoginUser">
                 <DataAnnotationsValidator />
                 <MudText Typo="Typo.h6" GutterBottom="true">Use a local account to log in.</MudText>
                 <MudDivider Class="mb-4" />
                 <ValidationSummary class="text-danger" role="alert" />
-                <MudTextField @bind-Value="Input.Email" 
+                <MudTextField @bind-Value="Input.Email"
                               For="@(() => Input.Email)"
-                              Label="Email" 
-                              Variant="Variant.Outlined" 
+                              Label="Email"
+                              Variant="Variant.Outlined"
+                              Class="mb-3"
+                              AutoFocus="true"
                               InputType="InputType.Email"
-                              AutoComplete="username webauthn"
-                              Required="true"
-                              Class="mb-3" />
-                <MudTextField @bind-Value="Input.Password" 
+                              autocomplete="username" />
+                <MudTextField @bind-Value="Input.Password"
                               For="@(() => Input.Password)"
-                              Label="Password" 
-                              Variant="Variant.Outlined" 
+                              Label="Password"
+                              Variant="Variant.Outlined"
+                              Class="mb-3"
                               InputType="InputType.Password"
-                              AutoComplete="current-password"
-                              Required="true"
-                              Class="mb-3" />
-                <MudCheckBox @bind-Value="Input.RememberMe" Label="Remember me" Color="Color.Primary" Class="mb-3" />
+                              autocomplete="current-password" />
+                <MudCheckBox @bind-Value="Input.RememberMe"
+                             For="@(() => Input.RememberMe)"
+                             Label="Remember me"
+                             Color="Color.Primary"
+                             Class="mb-3" />
                 <MudButton ButtonType="ButtonType.Submit" 
                            Variant="Variant.Filled" 
                            Color="Color.Primary" 
                            FullWidth="true"
                            Size="Size.Large"
-                           Class="mb-3">Log in</MudButton>
-                <MudDivider Class="my-3" />
-                <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-2">OR</MudText>
-                <PasskeySubmit Operation="PasskeyOperation.Request" Name="Input.Passkey" EmailName="Input.Email" class="btn btn-link mx-auto">Log in with a passkey</PasskeySubmit>
+                           Disabled="isLoading"
+                           Class="mb-3">
+                    @if (isLoading)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        <span>Logging in...</span>
+                    }
+                    else
+                    {
+                        <span>Log in</span>
+                    }
+                </MudButton>
                 <MudDivider Class="my-3" />
                 <MudStack Spacing="2">
                     <MudLink Href="Account/ForgotPassword">Forgot your password?</MudLink>
@@ -69,76 +86,103 @@
 
 @code {
     private string? errorMessage;
-    private EditContext editContext = default!;
+    private bool isLoading;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
-
-    [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = default!;
+    private InputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Input ??= new();
-
-        editContext = new EditContext(Input);
-
-        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        // Check if user is already authenticated
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
         {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            RedirectManager.RedirectTo(ReturnUrl ?? "/");
         }
     }
 
-    public async Task LoginUser()
+    private async Task LoginUser()
     {
-        if (!string.IsNullOrEmpty(Input.Passkey?.Error))
-        {
-            errorMessage = $"Error: {Input.Passkey.Error}";
-            return;
-        }
+        isLoading = true;
+        errorMessage = null;
 
-        SignInResult result;
-        if (!string.IsNullOrEmpty(Input.Passkey?.CredentialJson))
+        try
         {
-            // When performing passkey sign-in, don't perform form validation.
-            result = await SignInManager.PasskeySignInAsync(Input.Passkey.CredentialJson);
-        }
-        else
-        {
-            // If doing a password sign-in, validate the form.
-            if (!editContext.Validate())
+            var httpClient = HttpClientFactory.CreateClient("Backend");
+            var loginUrl = NavigationManager.ToAbsoluteUri("/login").ToString();
+
+            var loginRequest = new
             {
-                return;
+                email = Input.Email,
+                password = Input.Password,
+                twoFactorCode = (string?)null,
+                twoFactorRecoveryCode = (string?)null
+            };
+
+            var response = await httpClient.PostAsJsonAsync(loginUrl, loginRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var tokenResponse = await response.Content.ReadFromJsonAsync<AccessTokenResponse>();
+
+                if (tokenResponse != null)
+                {
+                    AuthStateProvider.NotifyUserAuthentication(
+                        tokenResponse.AccessToken,
+                        tokenResponse.RefreshToken,
+                        tokenResponse.ExpiresIn
+                    );
+
+                    TokenRefreshService.StartRefreshTimer();
+
+                    Logger.LogInformation("User logged in.");
+                    RedirectManager.RedirectTo(ReturnUrl ?? "/");
+                }
+                else
+                {
+                    errorMessage = "Error: Invalid response from server.";
+                }
             }
-
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-            result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                var problemDetails = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+                
+                if (problemDetails != null && problemDetails.ContainsKey("detail"))
+                {
+                    var detail = problemDetails["detail"].ToString();
+                    
+                    if (detail?.Contains("RequiresTwoFactor") == true)
+                    {
+                        RedirectManager.RedirectTo(
+                            "Account/LoginWith2fa",
+                            new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
+                        return;
+                    }
+                    else if (detail?.Contains("LockedOut") == true)
+                    {
+                        Logger.LogWarning("User account locked out.");
+                        RedirectManager.RedirectTo("Account/Lockout");
+                        return;
+                    }
+                }
+                
+                errorMessage = "Error: Invalid login attempt.";
+            }
+            else
+            {
+                errorMessage = "Error: Unable to connect to server.";
+            }
         }
-
-        if (result.Succeeded)
+        catch (Exception ex)
         {
-            Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo(ReturnUrl);
+            Logger.LogError(ex, "Error during login");
+            errorMessage = "Error: An unexpected error occurred.";
         }
-        else if (result.RequiresTwoFactor)
+        finally
         {
-            RedirectManager.RedirectTo(
-                "Account/LoginWith2fa",
-                new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
-        }
-        else if (result.IsLockedOut)
-        {
-            Logger.LogWarning("User account locked out.");
-            RedirectManager.RedirectTo("Account/Lockout");
-        }
-        else
-        {
-            errorMessage = "Error: Invalid login attempt.";
+            isLoading = false;
         }
     }
 

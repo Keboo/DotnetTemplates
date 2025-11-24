@@ -478,3 +478,6 @@ $RECYCLE.BIN/
 
 # Ignore live unit testing config
 *.lutconfig 
+
+#Ignore playwright MCP Output
+.playwright-mcp/

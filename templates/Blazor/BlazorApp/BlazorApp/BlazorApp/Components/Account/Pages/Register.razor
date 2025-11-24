@@ -73,7 +73,7 @@
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = default!;
+    private InputModel Input { get; set; } = null!;
 
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
