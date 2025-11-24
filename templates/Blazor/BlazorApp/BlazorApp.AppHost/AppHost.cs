@@ -23,6 +23,7 @@ var dbGate = builder.AddContainer("dbgate", "dbgate/dbgate")
     ;
 
 builder.AddProject<Projects.BlazorApp>("blazorapp")
+    .WaitFor(db)
     .WithReference(db, ConnectionStrings.DatabaseKey);
 
 builder.Build().Run();

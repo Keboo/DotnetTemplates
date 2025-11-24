@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace BlazorApp.AppHost;
 
-#if DEBUG
 public class DesignTimeAppDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
     public ApplicationDbContext CreateDbContext(string[] args)
@@ -26,4 +25,3 @@ public class DesignTimeAppDbContextFactory : IDesignTimeDbContextFactory<Applica
         return host.Services.GetRequiredService<ApplicationDbContext>();
     }
 }
-#endif

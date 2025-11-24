@@ -4,6 +4,7 @@ using BlazorApp.AppHost;
 using BlazorApp.Core;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorApp.AppHost;
 
@@ -25,6 +26,47 @@ public static class Resources
     public static IResourceBuilder<SqlServerDatabaseResource> AddSqlDatabase(this IResourceBuilder<SqlServerServerResource> sql)
     {
         var database = sql.AddDatabase("blazorapp-db");
+
+        database.OnResourceReady(async (resource, e, cancellationToken) =>
+        {
+            string? connectionString = await database.Resource.ConnectionStringExpression.GetValueAsync(cancellationToken);
+            if (string.IsNullOrWhiteSpace(connectionString)) throw new InvalidOperationException("Connection string for database not available");
+
+            ILogger logger = e.Services.GetResourceLogger(resource);
+
+            logger.LogInformation("Applying any pending migrations to the database");
+
+            ProcessStartInfo psi = new()
+            {
+                FileName = "dotnet",
+                ArgumentList = {
+                    "ef",
+                    "database",
+                    "update",
+                    "--no-build",
+                    "--startup-project",
+                    "./BlazorApp.AppHost",
+                    "--project",
+                    "./BlazorApp.Data",
+                },
+                WorkingDirectory = "..",
+                EnvironmentVariables =
+                {
+                    { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
+                }
+            };
+            bool processResult = await resource.ExecuteProcessAsync(e.Services, psi, cancellationToken);
+
+            if (processResult)
+            {
+                logger.LogInformation("Applied migrations to the database");
+            }
+            else
+            {
+                logger.LogError("Failed to apply migrations to the database");
+                throw new Exception("Failed to apply database migrations to the database");
+            }
+        });
 
         database.WithCommand("CreateMigration", "Create Migration", async ctx =>
         {
@@ -57,15 +99,12 @@ public static class Resources
                     migrationNameResult.Data.Value
                 },
                 WorkingDirectory = "..",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
                 EnvironmentVariables =
                 {
                     { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
                 }
             };
-            bool processResult = await ctx.ExecuteProcessAsync(database, psi);
+            bool processResult = await database.ExecuteProcessAsync(ctx, psi);
             return processResult ? CommandResults.Success() : CommandResults.Failure("Failed to create a migration");
         }, new CommandOptions()
         {
@@ -114,7 +153,7 @@ public static class Resources
                 }
             };
 
-            bool processResult = await ctx.ExecuteProcessAsync(database, psi);
+            bool processResult = await database.ExecuteProcessAsync(ctx, psi);
             return processResult ? CommandResults.Success() : CommandResults.Failure("Failed to remove a migration");
         }, new CommandOptions()
         {
