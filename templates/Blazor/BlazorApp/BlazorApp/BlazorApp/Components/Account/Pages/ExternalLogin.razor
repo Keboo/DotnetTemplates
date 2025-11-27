@@ -1,5 +1,7 @@
 ﻿@page "/Account/ExternalLogin"
 
+@rendermode InteractiveServer
+
 @using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
 @using System.Text
@@ -39,7 +41,6 @@
                               Label="Email" 
                               Variant="Variant.Outlined" 
                               InputType="InputType.Email"
-                              AutoComplete="email"
                               Required="true"
                               Class="mb-3" />
                 <MudButton ButtonType="ButtonType.Submit" 

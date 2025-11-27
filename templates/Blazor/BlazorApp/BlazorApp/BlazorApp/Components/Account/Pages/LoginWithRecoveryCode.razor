@@ -1,4 +1,6 @@
-﻿@page "/Account/LoginWithRecoveryCode"
+@page "/Account/LoginWithRecoveryCode"
+
+@rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
@@ -27,8 +29,7 @@
                 <MudTextField @bind-Value="Input.RecoveryCode" 
                               For="@(() => Input.RecoveryCode)"
                               Label="Recovery Code" 
-                              Variant="Variant.Outlined" 
-                              AutoComplete="off"
+                              Variant="Variant.Outlined"
                               Required="true"
                               Class="mb-3" />
                 <MudButton ButtonType="ButtonType.Submit" 

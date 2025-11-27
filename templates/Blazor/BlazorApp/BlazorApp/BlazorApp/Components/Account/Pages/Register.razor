@@ -1,4 +1,6 @@
-﻿@page "/Account/Register"
+@page "/Account/Register"
+
+@rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using System.Text
@@ -33,7 +35,6 @@
                               Label="Email" 
                               Variant="Variant.Outlined" 
                               InputType="InputType.Email"
-                              AutoComplete="username"
                               Required="true"
                               Class="mb-3" />
                 <MudTextField @bind-Value="Input.Password" 
@@ -41,7 +42,6 @@
                               Label="Password" 
                               Variant="Variant.Outlined" 
                               InputType="InputType.Password"
-                              AutoComplete="new-password"
                               Required="true"
                               Class="mb-3" />
                 <MudTextField @bind-Value="Input.ConfirmPassword" 
@@ -49,7 +49,6 @@
                               Label="Confirm Password" 
                               Variant="Variant.Outlined" 
                               InputType="InputType.Password"
-                              AutoComplete="new-password"
                               Required="true"
                               Class="mb-3" />
                 <MudButton ButtonType="ButtonType.Submit" 
