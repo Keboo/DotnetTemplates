@@ -1,3 +1,4 @@
+using BlazorApp.Core.Services;
 using BlazorApp.Data;
 
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +30,8 @@ public static class DependencyInjection
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddSignInManager()
         .AddDefaultTokenProviders();
+
+        builder.Services.AddScoped<ITicketQueueService, TicketQueueService>();
 
         return builder;
     }

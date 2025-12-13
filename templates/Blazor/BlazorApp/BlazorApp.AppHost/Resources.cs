@@ -1,7 +1,12 @@
 using System.Diagnostics;
+using System.Threading;
+
+using Aspire.Hosting.ApplicationModel;
 
 using BlazorApp.AppHost;
 using BlazorApp.Core;
+
+using Humanizer.Localisation;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,47 +28,39 @@ public static class Resources
             ;
     }
 
+    public static IResourceBuilder<TResource> AddDotnetToolRestoreCommand<TResource>(this IResourceBuilder<TResource> resource)
+        where TResource : IResource
+    {
+        resource.WithCommand("RestoreTools", "Restore Tools", async ctx =>
+        {
+            ProcessStartInfo psi = new()
+            {
+                FileName = "dotnet",
+                ArgumentList = {
+                    "tool",
+                    "restore"
+                },
+                WorkingDirectory = "..",
+            };
+
+            bool processResult = await resource.ExecuteProcessAsync(ctx, psi);
+            return processResult ? CommandResults.Success() : CommandResults.Failure("Failed to restore tools");
+        }, new CommandOptions()
+        {
+            IconName = "Toolbox"
+        });
+        return resource;
+    }
+
+
     public static IResourceBuilder<SqlServerDatabaseResource> AddSqlDatabase(this IResourceBuilder<SqlServerServerResource> sql)
     {
         var database = sql.AddDatabase("blazorapp-db");
 
         database.OnResourceReady(async (resource, e, cancellationToken) =>
         {
-            string? connectionString = await database.Resource.ConnectionStringExpression.GetValueAsync(cancellationToken);
-            if (string.IsNullOrWhiteSpace(connectionString)) throw new InvalidOperationException("Connection string for database not available");
-
-            ILogger logger = e.Services.GetResourceLogger(resource);
-
-            logger.LogInformation("Applying any pending migrations to the database");
-
-            ProcessStartInfo psi = new()
+            if (!await ApplyDatabaseMigrations(resource, e.Services, cancellationToken))
             {
-                FileName = "dotnet",
-                ArgumentList = {
-                    "ef",
-                    "database",
-                    "update",
-                    "--no-build",
-                    "--startup-project",
-                    "./BlazorApp.AppHost",
-                    "--project",
-                    "./BlazorApp.Data",
-                },
-                WorkingDirectory = "..",
-                EnvironmentVariables =
-                {
-                    { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
-                }
-            };
-            bool processResult = await resource.ExecuteProcessAsync(e.Services, psi, cancellationToken);
-
-            if (processResult)
-            {
-                logger.LogInformation("Applied migrations to the database");
-            }
-            else
-            {
-                logger.LogError("Failed to apply migrations to the database");
                 throw new Exception("Failed to apply database migrations to the database");
             }
         });
@@ -157,9 +154,61 @@ public static class Resources
             return processResult ? CommandResults.Success() : CommandResults.Failure("Failed to remove a migration");
         }, new CommandOptions()
         {
-            IconName = "TableDismiss"
+            IconName = "TableDismiss",
         });
 
+        database.WithCommand("ApplyMigrations", "Apply Database Migrations", 
+            async ctx => await ApplyDatabaseMigrations(database.Resource, ctx.ServiceProvider, ctx.CancellationToken)
+                ? CommandResults.Success() : CommandResults.Failure("Failed to apply migrations"), new CommandOptions()
+        {
+            IconName = "DatabaseLightning"
+        });
+
+        database.AddDotnetToolRestoreCommand();
+
         return database;
+
+
+        static async Task<bool> ApplyDatabaseMigrations(SqlServerDatabaseResource database, IServiceProvider services, CancellationToken cancellationToken)
+        {
+            string? connectionString = await database.ConnectionStringExpression.GetValueAsync(cancellationToken);
+            if (string.IsNullOrWhiteSpace(connectionString)) throw new InvalidOperationException("Connection string for database not available");
+
+            ILogger logger = services.GetResourceLogger(database);
+
+            logger.LogInformation("Applying any pending migrations to the database");
+
+            ProcessStartInfo psi = new()
+            {
+                FileName = "dotnet",
+                ArgumentList = {
+                    "ef",
+                    "database",
+                    "update",
+                    "--no-build",
+                    "--startup-project",
+                    "./BlazorApp.AppHost",
+                    "--project",
+                    "./BlazorApp.Data",
+                },
+                WorkingDirectory = "..",
+                EnvironmentVariables =
+                {
+                    { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
+                }
+            };
+            bool processResult = await database.ExecuteProcessAsync(services, psi, cancellationToken);
+
+            if (processResult)
+            {
+                logger.LogInformation("Applied migrations to the database");
+                return true;
+            }
+            else
+            {
+                logger.LogError("Failed to apply migrations to the database");
+                return false;
+            }
+        }
     }
 }
