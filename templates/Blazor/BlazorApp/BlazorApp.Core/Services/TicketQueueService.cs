@@ -2,13 +2,61 @@ using BlazorApp.Core.Hubs;
 using BlazorApp.Data;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Polly;
+using Polly.Retry;
 
 namespace BlazorApp.Core.Services;
 
-public class TicketQueueService(ApplicationDbContext context, IHubContext<TicketQueueHub> hubContext) : ITicketQueueService
+public class TicketQueueService(IDbContextFactory<ApplicationDbContext> contextFactory, IHubContext<TicketQueueHub> hubContext) : ITicketQueueService
 {
+    private static readonly ResiliencePipeline RetryPipeline = new ResiliencePipelineBuilder()
+        .AddRetry(new RetryStrategyOptions
+        {
+            ShouldHandle = new PredicateBuilder().Handle<DbUpdateConcurrencyException>(),
+            MaxRetryAttempts = 3,
+            Delay = TimeSpan.FromMilliseconds(50),
+            BackoffType = DelayBackoffType.Linear
+        })
+        .Build();
+
+    private async Task<TResult> ExecuteQueueOperationAsync<TResult>(
+        Guid queueId,
+        Func<TicketQueue, CancellationToken, Task<TResult>> operation,
+        CancellationToken cancellationToken = default)
+    {
+        return await RetryPipeline.ExecuteAsync(async ct =>
+        {
+            await using var context = await contextFactory.CreateDbContextAsync(ct);
+
+            var queue = await context.TicketQueues
+                .FirstOrDefaultAsync(x => x.Id == queueId, ct) ?? throw new InvalidOperationException("Queue not found");
+
+            var result = await operation(queue, ct);
+
+            await context.SaveChangesAsync(ct);
+
+            await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueUpdated", queue, ct);
+            await hubContext.Clients.Group("all-queues").SendAsync("QueueUpdated", queue, ct);
+
+            return result;
+        }, cancellationToken);
+    }
+
+    private async Task ExecuteQueueOperationAsync(
+        Guid queueId,
+        Func<TicketQueue, CancellationToken, Task> operation,
+        CancellationToken cancellationToken = default)
+    {
+        await ExecuteQueueOperationAsync<object?>(queueId, async (queue, ct) =>
+        {
+            await operation(queue, ct);
+            return null;
+        }, cancellationToken);
+    }
+
     public async Task<IEnumerable<TicketQueue>> GetAllQueuesAsync()
     {
+        await using var context = await contextFactory.CreateDbContextAsync();
         return await context.TicketQueues
             .OrderByDescending(q => q.CreatedDate)
             .ToListAsync();
@@ -16,11 +64,14 @@ public class TicketQueueService(ApplicationDbContext context, IHubContext<Ticket
 
     public async Task<TicketQueue?> GetQueueByIdAsync(Guid id)
     {
-        return await context.TicketQueues.FindAsync(id);
+        await using var context = await contextFactory.CreateDbContextAsync();
+        return await context.TicketQueues.FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<TicketQueue> CreateQueueAsync(string friendlyName, string userId)
     {
+        await using var context = await contextFactory.CreateDbContextAsync();
+
         var queue = new TicketQueue
         {
             Id = Guid.NewGuid(),
@@ -41,68 +92,44 @@ public class TicketQueueService(ApplicationDbContext context, IHubContext<Ticket
 
     public async Task<int> TakeTicketAsync(Guid queueId)
     {
-        var queue = await context.TicketQueues.FindAsync(queueId);
-        
-        if (queue == null)
+        return await ExecuteQueueOperationAsync(queueId, (queue, ct) =>
         {
-            throw new InvalidOperationException("Queue not found");
-        }
-
-        var ticketNumber = queue.NextNumber;
-        queue.NextNumber++;
-        
-        await context.SaveChangesAsync();
-
-        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueUpdated", queue);
-        await hubContext.Clients.Group("all-queues").SendAsync("QueueUpdated", queue);
-
-        return ticketNumber;
+            var ticketNumber = queue.NextNumber;
+            queue.NextNumber++;
+            return Task.FromResult(ticketNumber);
+        });
     }
 
     public async Task HandleNextAsync(Guid queueId, string userId)
     {
-        var queue = await context.TicketQueues.FindAsync(queueId) ?? throw new InvalidOperationException("Queue not found");
-
-        // Allow any authenticated user to handle next
-        queue.CurrentNumber++;
-        
-        await context.SaveChangesAsync();
-
-        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueUpdated", queue);
-        await hubContext.Clients.Group("all-queues").SendAsync("QueueUpdated", queue);
+        await ExecuteQueueOperationAsync(queueId, (queue, ct) =>
+        {
+            queue.CurrentNumber++;
+            return Task.CompletedTask;
+        });
     }
 
     public async Task ResetQueueAsync(Guid queueId, string userId)
     {
-        var queue = await context.TicketQueues.FindAsync(queueId);
-        
-        if (queue == null)
+        await ExecuteQueueOperationAsync(queueId, (queue, ct) =>
         {
-            throw new InvalidOperationException("Queue not found");
-        }
+            if (queue.CreatedByUserId != userId)
+            {
+                throw new UnauthorizedAccessException("Only the creator can reset this queue");
+            }
 
-        if (queue.CreatedByUserId != userId)
-        {
-            throw new UnauthorizedAccessException("Only the creator can reset this queue");
-        }
-
-        queue.CurrentNumber = 0;
-        queue.NextNumber = 1;
-        
-        await context.SaveChangesAsync();
-
-        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueUpdated", queue);
-        await hubContext.Clients.Group("all-queues").SendAsync("QueueUpdated", queue);
+            queue.CurrentNumber = 0;
+            queue.NextNumber = 1;
+            return Task.CompletedTask;
+        });
     }
 
     public async Task DeleteQueueAsync(Guid queueId, string userId)
     {
-        var queue = await context.TicketQueues.FindAsync(queueId);
-        
-        if (queue == null)
-        {
-            throw new InvalidOperationException("Queue not found");
-        }
+        await using var context = await contextFactory.CreateDbContextAsync();
+
+        var queue = await context.TicketQueues.FirstOrDefaultAsync(x => x.Id == queueId)
+            ?? throw new InvalidOperationException("Queue not found");
 
         if (queue.CreatedByUserId != userId)
         {

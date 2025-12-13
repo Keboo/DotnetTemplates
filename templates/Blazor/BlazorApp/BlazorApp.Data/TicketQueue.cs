@@ -21,4 +21,7 @@ public class TicketQueue
     public ApplicationUser? CreatedBy { get; set; }
 
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+    [Timestamp]
+    public byte[]? RowVersion { get; set; }
 }
