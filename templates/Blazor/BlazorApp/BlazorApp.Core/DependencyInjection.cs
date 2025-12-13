@@ -1,4 +1,4 @@
-﻿using BlazorApp.Data;
+using BlazorApp.Data;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +16,9 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException($"Connection string '{ConnectionStrings.DatabaseKey}' not found.");
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+        {
+            options.UseAzureSql(connectionString);
+        });
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
