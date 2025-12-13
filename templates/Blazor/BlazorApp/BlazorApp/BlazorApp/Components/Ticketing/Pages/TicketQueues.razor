@@ -4,8 +4,11 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.SignalR.Client
 @inject ITicketQueueService TicketQueueService
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@implements IAsyncDisposable
 @rendermode InteractiveServer
 
 <PageTitle>Ticket Queues</PageTitle>
@@ -136,6 +139,7 @@ else
 }
 
 @code {
+    private HubConnection? hubConnection;
     private List<TicketQueue>? queues;
     private string newQueueName = string.Empty;
     private Dictionary<Guid, int> takenTickets = new();
@@ -148,6 +152,70 @@ else
     {
         await LoadQueues();
         await LoadCurrentUser();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitializeSignalR();
+        }
+    }
+
+    private async Task InitializeSignalR()
+    {
+        try
+        {
+            Uri hubUri = NavigationManager.ToAbsoluteUri("/hubs/ticketqueue");
+            if (hubUri.Host.EndsWith(".localhost"))
+            {
+                UriBuilder builder = new(hubUri);
+                builder.Host = "localhost";
+                hubUri = builder.Uri;
+            }
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(hubUri)
+                .WithAutomaticReconnect()
+                .Build();
+
+            hubConnection.On<TicketQueue>("QueueCreated", async (queue) =>
+            {
+                queues ??= new List<TicketQueue>();
+                queues.Insert(0, queue);
+                await InvokeAsync(StateHasChanged);
+            });
+
+            hubConnection.On<TicketQueue>("QueueUpdated", async (updatedQueue) =>
+            {
+                if (queues != null)
+                {
+                    var index = queues.FindIndex(q => q.Id == updatedQueue.Id);
+                    if (index >= 0)
+                    {
+                        queues[index] = updatedQueue;
+                        await InvokeAsync(StateHasChanged);
+                    }
+                }
+            });
+
+            hubConnection.On<Guid>("QueueDeleted", async (queueId) =>
+            {
+                if (queues != null)
+                {
+                    queues.RemoveAll(q => q.Id == queueId);
+                    takenTickets.Remove(queueId);
+                    await InvokeAsync(StateHasChanged);
+                }
+            });
+
+            await hubConnection.StartAsync();
+            await hubConnection.SendAsync("JoinAllQueues");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"SignalR connection error: {ex.Message}";
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task LoadCurrentUser()
@@ -292,4 +360,12 @@ else
     private bool IsProcessing(Guid queueId) => processingQueues.Contains(queueId);
 
     private bool IsCreator(TicketQueue queue) => currentUserId != null && queue.CreatedByUserId == currentUserId;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
 }
