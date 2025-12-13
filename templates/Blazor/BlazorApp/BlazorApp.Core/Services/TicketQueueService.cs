@@ -1,9 +1,11 @@
+using BlazorApp.Core.Hubs;
 using BlazorApp.Data;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp.Core.Services;
 
-public class TicketQueueService(ApplicationDbContext context) : ITicketQueueService
+public class TicketQueueService(ApplicationDbContext context, IHubContext<TicketQueueHub> hubContext) : ITicketQueueService
 {
     public async Task<IEnumerable<TicketQueue>> GetAllQueuesAsync()
     {
@@ -32,6 +34,8 @@ public class TicketQueueService(ApplicationDbContext context) : ITicketQueueServ
         context.TicketQueues.Add(queue);
         await context.SaveChangesAsync();
 
+        await hubContext.Clients.Group("all-queues").SendAsync("QueueCreated", queue);
+
         return queue;
     }
 
@@ -49,6 +53,9 @@ public class TicketQueueService(ApplicationDbContext context) : ITicketQueueServ
         
         await context.SaveChangesAsync();
 
+        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueUpdated", queue);
+        await hubContext.Clients.Group("all-queues").SendAsync("QueueUpdated", queue);
+
         return ticketNumber;
     }
 
@@ -60,6 +67,9 @@ public class TicketQueueService(ApplicationDbContext context) : ITicketQueueServ
         queue.CurrentNumber++;
         
         await context.SaveChangesAsync();
+
+        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueUpdated", queue);
+        await hubContext.Clients.Group("all-queues").SendAsync("QueueUpdated", queue);
     }
 
     public async Task ResetQueueAsync(Guid queueId, string userId)
@@ -80,6 +90,9 @@ public class TicketQueueService(ApplicationDbContext context) : ITicketQueueServ
         queue.NextNumber = 1;
         
         await context.SaveChangesAsync();
+
+        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueUpdated", queue);
+        await hubContext.Clients.Group("all-queues").SendAsync("QueueUpdated", queue);
     }
 
     public async Task DeleteQueueAsync(Guid queueId, string userId)
@@ -98,5 +111,8 @@ public class TicketQueueService(ApplicationDbContext context) : ITicketQueueServ
 
         context.TicketQueues.Remove(queue);
         await context.SaveChangesAsync();
+
+        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueDeleted", queueId);
+        await hubContext.Clients.Group("all-queues").SendAsync("QueueDeleted", queueId);
     }
 }

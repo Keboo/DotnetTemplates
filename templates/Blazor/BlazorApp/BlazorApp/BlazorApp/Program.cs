@@ -1,6 +1,7 @@
 using BlazorApp.Components;
 using BlazorApp.Components.Account;
 using BlazorApp.Core;
+using BlazorApp.Core.Hubs;
 using BlazorApp.Data;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -33,6 +34,8 @@ builder.Services.AddAuthentication(options =>
 builder.AddDatabase();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
@@ -61,6 +64,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorApp.Client._Imports).Assembly);
+
+app.MapHub<TicketQueueHub>("/hubs/ticketqueue");
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
