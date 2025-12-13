@@ -44,7 +44,14 @@
 }
 else if (!queues.Any())
 {
-    <p>No ticket queues available. Create one to get started!</p>
+    <AuthorizeView>
+        <Authorized>
+            <p>No ticket queues available. Create one to get started!</p>
+        </Authorized>
+        <NotAuthorized>
+            <p>No ticket queues available.</p>
+        </NotAuthorized>
+    </AuthorizeView>
 }
 else
 {
@@ -60,6 +67,7 @@ else
                                 <div class="col-12">
                                     <div class="text-center p-3 bg-light rounded">
                                         <div class="small text-muted">Now Serving</div>
+                                        <div>@queue.CurrentNumber / @queue.NextNumber</div>
                                         @if (queue.CurrentNumber > 0 && queue.CurrentNumber < queue.NextNumber)
                                         {
                                             <div class="h2 mb-0">@queue.CurrentNumber</div>

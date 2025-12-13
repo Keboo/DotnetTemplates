@@ -1,12 +1,7 @@
 using System.Diagnostics;
-using System.Threading;
-
-using Aspire.Hosting.ApplicationModel;
 
 using BlazorApp.AppHost;
 using BlazorApp.Core;
-
-using Humanizer.Localisation;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,17 +28,7 @@ public static class Resources
     {
         resource.WithCommand("RestoreTools", "Restore Tools", async ctx =>
         {
-            ProcessStartInfo psi = new()
-            {
-                FileName = "dotnet",
-                ArgumentList = {
-                    "tool",
-                    "restore"
-                },
-                WorkingDirectory = "..",
-            };
-
-            bool processResult = await resource.ExecuteProcessAsync(ctx, psi);
+            bool processResult = await RestoreDotnetToolsAsync(resource.Resource, ctx.ServiceProvider);
             return processResult ? CommandResults.Success() : CommandResults.Failure("Failed to restore tools");
         }, new CommandOptions()
         {
@@ -59,11 +44,12 @@ public static class Resources
 
         database.OnResourceReady(async (resource, e, cancellationToken) =>
         {
-            if (!await ApplyDatabaseMigrations(resource, e.Services, cancellationToken))
+            if (!await ApplyDatabaseMigrationsAsync(resource, e.Services, cancellationToken))
             {
                 throw new Exception("Failed to apply database migrations to the database");
             }
         });
+        database.AddDotnetToolRestoreCommand();
 
         database.WithCommand("CreateMigration", "Create Migration", async ctx =>
         {
@@ -157,27 +143,60 @@ public static class Resources
             IconName = "TableDismiss",
         });
 
-        database.WithCommand("ApplyMigrations", "Apply Database Migrations", 
-            async ctx => await ApplyDatabaseMigrations(database.Resource, ctx.ServiceProvider, ctx.CancellationToken)
+        database.WithCommand("ApplyMigrations", "Apply Database Migrations",
+            async ctx => await ApplyDatabaseMigrationsAsync(database.Resource, ctx.ServiceProvider, ctx.CancellationToken)
                 ? CommandResults.Success() : CommandResults.Failure("Failed to apply migrations"), new CommandOptions()
-        {
-            IconName = "DatabaseLightning"
-        });
-
-        database.AddDotnetToolRestoreCommand();
+                {
+                    IconName = "DatabaseLightning"
+                });
 
         return database;
+    }
 
-
-        static async Task<bool> ApplyDatabaseMigrations(SqlServerDatabaseResource database, IServiceProvider services, CancellationToken cancellationToken)
+    private static async Task<bool> RestoreDotnetToolsAsync(IResource resource, IServiceProvider services)
+    {
+        ProcessStartInfo psi = new()
         {
-            string? connectionString = await database.ConnectionStringExpression.GetValueAsync(cancellationToken);
-            if (string.IsNullOrWhiteSpace(connectionString)) throw new InvalidOperationException("Connection string for database not available");
+            FileName = "dotnet",
+            ArgumentList = {
+                    "tool",
+                    "restore"
+                },
+            WorkingDirectory = "..",
+        };
 
-            ILogger logger = services.GetResourceLogger(database);
+        return await resource.ExecuteProcessAsync(services, psi);
+    }
 
-            logger.LogInformation("Applying any pending migrations to the database");
+    private static async Task<bool> ApplyDatabaseMigrationsAsync(SqlServerDatabaseResource database, IServiceProvider services, CancellationToken cancellationToken)
+    {
+        string? connectionString = await database.ConnectionStringExpression.GetValueAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(connectionString)) throw new InvalidOperationException("Connection string for database not available");
 
+        ILogger logger = services.GetResourceLogger(database);
+
+        logger.LogInformation("Applying any pending migrations to the database");
+
+        bool processResult = await ApplyMigrationsAsync();
+
+        if (!processResult && await RestoreDotnetToolsAsync(database, services))
+        {
+            processResult = await ApplyMigrationsAsync();
+        }
+
+        if (processResult)
+        {
+            logger.LogInformation("Applied migrations to the database");
+            return true;
+        }
+        else
+        {
+            logger.LogError("Failed to apply migrations to the database");
+            return false;
+        }
+
+        Task<bool> ApplyMigrationsAsync()
+        {
             ProcessStartInfo psi = new()
             {
                 FileName = "dotnet",
@@ -197,18 +216,7 @@ public static class Resources
                     { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
                 }
             };
-            bool processResult = await database.ExecuteProcessAsync(services, psi, cancellationToken);
-
-            if (processResult)
-            {
-                logger.LogInformation("Applied migrations to the database");
-                return true;
-            }
-            else
-            {
-                logger.LogError("Failed to apply migrations to the database");
-                return false;
-            }
+            return database.ExecuteProcessAsync(services, psi, cancellationToken);
         }
     }
 }

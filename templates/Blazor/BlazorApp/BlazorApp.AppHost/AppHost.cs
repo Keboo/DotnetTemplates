@@ -20,6 +20,8 @@ var dbGate = builder.AddContainer("dbgate", "dbgate/dbgate")
     .WithEnvironment("USER_mssql", "sa")
     .WithEnvironment("PASSWORD_mssql", sql.Resource.PasswordParameter)
     .WithEnvironment("ENGINE_mssql", "mssql@dbgate-plugin-mssql")
+    .WithParentRelationship(sql)
+    .WithHttpHealthCheck("/")
     ;
 
 builder.AddProject<Projects.BlazorApp>("blazorapp")

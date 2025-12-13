@@ -16,11 +16,17 @@ public static class DependencyInjection
         var connectionString = builder.Configuration.GetConnectionString(ConnectionStrings.DatabaseKey) 
             ?? throw new InvalidOperationException($"Connection string '{ConnectionStrings.DatabaseKey}' not found.");
 
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        void BuildDbOptions(DbContextOptionsBuilder options)
         {
             options.UseAzureSql(connectionString);
-        });
-        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        }
+        builder.Services.AddDbContextFactory<ApplicationDbContext>(BuildDbOptions);
+        builder.Services.AddDbContextPool<ApplicationDbContext>(BuildDbOptions);
+
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        }
 
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
         {
@@ -31,8 +37,14 @@ public static class DependencyInjection
         .AddSignInManager()
         .AddDefaultTokenProviders();
 
+        return builder;
+    }
+
+    public static TBuilder AddTicketing<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
+    {
         builder.Services.AddScoped<ITicketQueueService, TicketQueueService>();
 
         return builder;
     }
+
 }

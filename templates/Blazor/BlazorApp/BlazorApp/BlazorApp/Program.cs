@@ -6,12 +6,13 @@ using BlazorApp.Data;
 
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+builder.AddServiceDefaults()
+    .AddDatabase()
+    .AddTicketing();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -30,13 +31,9 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-
-builder.AddDatabase();
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 builder.Services.AddSignalR();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
