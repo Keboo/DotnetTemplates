@@ -2,78 +2,34 @@
 
 @inject NavigationManager NavigationManager
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorApp</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="ticket-queues">
-                <span class="bi bi-ticket-nav-menu" aria-hidden="true"></span> Ticket Queues
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
+<RadzenPanelMenu>
+    <RadzenPanelMenuItem Text="Home" Icon="home" Path="" Match="NavLinkMatch.All" />
+    <RadzenPanelMenuItem Text="Counter" Icon="add_box" Path="counter" />
+    <RadzenPanelMenuItem Text="Weather" Icon="list" Path="weather" />
+    <RadzenPanelMenuItem Text="Ticket Queues" Icon="confirmation_number" Path="ticket-queues" />
+    <RadzenPanelMenuItem Text="Auth Required" Icon="lock" Path="auth" />
+    
+    <AuthorizeView>
+        <Authorized>
+            <RadzenPanelMenuItem Text="@($"{context.User.Identity?.Name}")" Icon="person" Path="Account/Manage" />
+            <RadzenPanelMenuItem Text="Logout" Icon="logout">
+                <Template>
+                    <form action="Account/Logout" method="post" style="display: inline; width: 100%;">
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                        <button type="submit" style="all: unset; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 0.75rem;">
+                            <span class="rz-navigation-item-text">Logout</span>
                         </button>
                     </form>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
+                </Template>
+            </RadzenPanelMenuItem>
+        </Authorized>
+        <NotAuthorized>
+            <RadzenPanelMenuItem Text="Register" Icon="person_add" Path="Account/Register" />
+            <RadzenPanelMenuItem Text="Login" Icon="login" Path="Account/Login" />
+        </NotAuthorized>
+    </AuthorizeView>
+</RadzenPanelMenu>
 
 @code {
     private string? currentUrl;
@@ -95,4 +51,3 @@
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
-

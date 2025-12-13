@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["BlazorApp.styles.css"]" />
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
@@ -16,9 +17,14 @@
 
 <body>
     <Routes />
+    <RadzenDialog />
+    <RadzenNotification />
+    <RadzenTooltip />
+    <RadzenContextMenu />
     <ReconnectModal />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
     <script src="@Assets["Components/Account/Shared/PasskeySubmit.razor.js"]" type="module"></script>
+    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
 </body>
 
 </html>
