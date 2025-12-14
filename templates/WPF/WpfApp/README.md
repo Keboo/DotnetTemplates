@@ -1,6 +1,9 @@
 # WPF app template
 This template creates a full WPF application, along with unit tests.
 
+## Common template reference
+For common template options and examples shared across all Keboo templates, see the [Template quick reference](../../_shared/TEMPLATE_README_PARTIAL.md).
+
 ## Template
 Create a new app in your current directory by running.
 

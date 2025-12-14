@@ -1,17 +1,11 @@
-# NuGet package template
-This template creates a solution for producing a NuGet package, along with unit tests.
+# Template quick reference
 
-## Common template reference
-For common template options and examples shared across all Keboo templates, see the [Template quick reference](../../_shared/TEMPLATE_README_PARTIAL.md).
-
-## Template
-Create a new app in your current directory by running.
-
+Create a new app in your current directory:
 ```cli
-> dotnet new keboo.nuget
+> dotnet new keboo.<template-name>
 ```
 
-### Parameters
+## Parameters
 [Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
 
 | Parameter | Description | Default |
@@ -22,27 +16,27 @@ Create a new app in your current directory by running.
 
 **Example with Azure DevOps:**
 ```cli
-> dotnet new keboo.nuget --pipeline azuredevops
+> dotnet new keboo.<template-name> --pipeline azuredevops
 ```
 
 **Example with no CI/CD pipeline:**
 ```cli
-> dotnet new keboo.nuget --pipeline none
+> dotnet new keboo.<template-name> --pipeline none
 ```
 
 **Example with legacy .sln format:**
 ```cli
-> dotnet new keboo.nuget --sln true
+> dotnet new keboo.<template-name> --sln true
 ```
 
 **Example with MSTest:**
 ```cli
-> dotnet new keboo.nuget --tests mstest
+> dotnet new keboo.<template-name> --tests mstest
 ```
 
 **Example with no tests:**
 ```cli
-> dotnet new keboo.nuget --tests none
+> dotnet new keboo.<template-name> --tests none
 ```
 
 ## Updating .NET Version
@@ -52,7 +46,7 @@ This template uses a `global.json` file to specify the required .NET SDK version
 1. Update the `global.json` file in the solution root
 2. Update the `<TargetFramework>` in the `csproj` files.
 
-## Key Features
+## Common Features
 
 ### Build Customization
 [Docs](https://learn.microsoft.com/visualstudio/msbuild/customize-by-directory?view=vs-2022&WT.mc_id=DT-MVP-5003472)
@@ -62,9 +56,6 @@ This template uses a `global.json` file to specify the required .NET SDK version
 
 ### NuGet package source mapping
 [Docs](https://learn.microsoft.com/nuget/consume-packages/package-source-mapping?WT.mc_id=DT-MVP-5003472)
-
-### GitHub Actions / Azure DevOps Pipeline
-Build, test, pack, and deploy to NuGet.org included. Use `--pipeline` parameter to choose between GitHub Actions (default) or Azure DevOps Pipelines.
 
 ### Solution File Format (slnx)
 By default, this template uses the new `.slnx` (XML-based solution) format introduced in .NET 9. This modern format is more maintainable and easier to version control compared to the legacy `.sln` format.
