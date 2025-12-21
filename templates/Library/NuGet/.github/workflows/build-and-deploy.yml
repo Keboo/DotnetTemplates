@@ -78,11 +78,67 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     
+    # Required for Trusted Publishing: allows GitHub to issue OIDC tokens for this job
+    # This enables secure, keyless authentication with NuGet.org
+    permissions:
+      id-token: write
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v7
         with:
           name: NuGet
 
-      - name: Push NuGet
-        run: dotnet nuget push ${{ github.workspace }}/*nupkg --source https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+      # ====================================================================================
+      # OPTION 1: Trusted Publishing (RECOMMENDED - Default)
+      # ====================================================================================
+      # Trusted Publishing uses short-lived credentials instead of long-lived API keys.
+      # This is more secure because:
+      # - No API keys to manage, rotate, or accidentally leak
+      # - Temporary credentials are valid for only 1 hour
+      # - Each token can only be used once
+      # 
+      # Setup required on nuget.org (one-time):
+      # 1. Log into nuget.org
+      # 2. Go to your profile → "Trusted Publishing"
+      # 3. Add a new policy with:
+      #    - Repository Owner: your-org or username
+      #    - Repository: your-repo-name
+      #    - Workflow File: build-and-deploy.yml (file name only, no path)
+      #    - Environment: (optional, leave empty if not using GitHub environments)
+      # 
+      # You'll also need to store your nuget.org username (NOT email) as a secret:
+      # - Go to GitHub repository → Settings → Secrets and variables → Actions
+      # - Add a new secret named NUGET_USER with your nuget.org profile username
+      # ====================================================================================
+
+      - name: NuGet login (OIDC → temporary API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}  # Your nuget.org username (profile name), NOT email
+
+      - name: Push NuGet (Trusted Publishing)
+        run: dotnet nuget push ${{ github.workspace }}/*nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      # ====================================================================================
+      # OPTION 2: Traditional API Key (Legacy Method)
+      # ====================================================================================
+      # This is the older method using a long-lived API key stored as a GitHub secret.
+      # Less secure than Trusted Publishing because:
+      # - API keys never expire (unless manually rotated)
+      # - If leaked, they can be used indefinitely
+      # - Requires manual secret management
+      # 
+      # To use this method instead:
+      # 1. Comment out the "NuGet login" step above
+      # 2. Comment out the "Push NuGet (Trusted Publishing)" step above
+      # 3. Uncomment the step below
+      # 4. Remove the "permissions: id-token: write" section from this job
+      # 5. Ensure you have a NUGET_API_KEY secret configured in GitHub:
+      #    - Get an API key from nuget.org → Account Settings → API Keys
+      #    - Add it to GitHub repository → Settings → Secrets → Actions → NUGET_API_KEY
+      # ====================================================================================
+
+      # - name: Push NuGet (API Key)
+      #   run: dotnet nuget push ${{ github.workspace }}/*nupkg --source https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
