@@ -1,5 +1,5 @@
 @page "/ticket-queues"
-@using BlazorApp.Core.Services
+@using BlazorApp.Core.Ticketing
 @using BlazorApp.Data
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
@@ -259,7 +259,7 @@ else
 
         try
         {
-            await TicketQueueService.CreateQueueAsync(newQueueName, currentUserId);
+            await TicketQueueService.CreateQueueAsync(newQueueName, currentUserId, CancellationToken.None);
             newQueueName = string.Empty;
             await LoadQueues();
         }
@@ -351,7 +351,7 @@ else
 
         try
         {
-            await TicketQueueService.DeleteQueueAsync(queueId, currentUserId);
+            await TicketQueueService.DeleteQueueAsync(queueId, currentUserId, CancellationToken.None);
             takenTickets.Remove(queueId);
             await LoadQueues();
         }

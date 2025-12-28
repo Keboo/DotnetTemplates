@@ -1,7 +1,11 @@
 using BlazorApp.AppHost;
 using BlazorApp.Core;
 
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = DistributedApplication.CreateBuilder(args);
+
+builder.AddAspireDocs();
 
 var sql = builder.AddSqlServer();
 var db = sql.AddSqlDatabase();
@@ -24,8 +28,9 @@ var dbGate = builder.AddContainer("dbgate", "dbgate/dbgate")
     .WithHttpHealthCheck("/")
     ;
 
+//var blazorappGroup = builder.AddLogicalGroup("apps");
+
 builder.AddProject<Projects.BlazorApp>("blazorapp")
-    .WaitFor(db)
-    .WithReference(db, ConnectionStrings.DatabaseKey);
+    .WithDependency(db, ConnectionStrings.DatabaseKey);
 
 builder.Build().Run();

@@ -13,4 +13,8 @@
     <ProjectReference Include="..\BlazorApp.Data\BlazorApp.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

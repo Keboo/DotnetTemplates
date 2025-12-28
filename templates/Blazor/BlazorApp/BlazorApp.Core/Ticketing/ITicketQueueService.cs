@@ -1,6 +1,6 @@
 using BlazorApp.Data;
 
-namespace BlazorApp.Core.Services;
+namespace BlazorApp.Core.Ticketing;
 
 public interface ITicketQueueService
 {
@@ -8,7 +8,7 @@ public interface ITicketQueueService
     
     Task<TicketQueue?> GetQueueByIdAsync(Guid id);
     
-    Task<TicketQueue> CreateQueueAsync(string friendlyName, string userId);
+    Task<TicketQueue> CreateQueueAsync(string friendlyName, string userId, CancellationToken cancellationToken);
     
     Task<int> TakeTicketAsync(Guid queueId);
     
@@ -16,5 +16,5 @@ public interface ITicketQueueService
     
     Task ResetQueueAsync(Guid queueId, string userId);
     
-    Task DeleteQueueAsync(Guid queueId, string userId);
+    Task DeleteQueueAsync(Guid queueId, string userId, CancellationToken cancellationToken);
 }

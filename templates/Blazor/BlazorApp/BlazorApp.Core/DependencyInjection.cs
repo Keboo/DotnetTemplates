@@ -1,4 +1,4 @@
-using BlazorApp.Core.Services;
+using BlazorApp.Core.Ticketing;
 using BlazorApp.Data;
 
 using Microsoft.AspNetCore.Identity;

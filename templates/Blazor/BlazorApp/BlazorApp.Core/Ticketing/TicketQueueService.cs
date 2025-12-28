@@ -1,11 +1,13 @@
 using BlazorApp.Core.Hubs;
 using BlazorApp.Data;
+
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+
 using Polly;
 using Polly.Retry;
 
-namespace BlazorApp.Core.Services;
+namespace BlazorApp.Core.Ticketing;
 
 public class TicketQueueService(IDbContextFactory<ApplicationDbContext> contextFactory, IHubContext<TicketQueueHub> hubContext) : ITicketQueueService
 {
@@ -68,9 +70,9 @@ public class TicketQueueService(IDbContextFactory<ApplicationDbContext> contextF
         return await context.TicketQueues.FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<TicketQueue> CreateQueueAsync(string friendlyName, string userId)
+    public async Task<TicketQueue> CreateQueueAsync(string friendlyName, string userId, CancellationToken cancellationToken)
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var queue = new TicketQueue
         {
@@ -83,9 +85,9 @@ public class TicketQueueService(IDbContextFactory<ApplicationDbContext> contextF
         };
 
         context.TicketQueues.Add(queue);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
 
-        await hubContext.Clients.Group("all-queues").SendAsync("QueueCreated", queue);
+        await hubContext.Clients.Group("all-queues").SendAsync("QueueCreated", queue, cancellationToken);
 
         return queue;
     }
@@ -124,11 +126,11 @@ public class TicketQueueService(IDbContextFactory<ApplicationDbContext> contextF
         });
     }
 
-    public async Task DeleteQueueAsync(Guid queueId, string userId)
+    public async Task DeleteQueueAsync(Guid queueId, string userId, CancellationToken cancellationToken)
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
+        await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
-        var queue = await context.TicketQueues.FirstOrDefaultAsync(x => x.Id == queueId)
+        var queue = await context.TicketQueues.FirstOrDefaultAsync(x => x.Id == queueId, cancellationToken)
             ?? throw new InvalidOperationException("Queue not found");
 
         if (queue.CreatedByUserId != userId)
@@ -137,9 +139,9 @@ public class TicketQueueService(IDbContextFactory<ApplicationDbContext> contextF
         }
 
         context.TicketQueues.Remove(queue);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
 
-        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueDeleted", queueId);
-        await hubContext.Clients.Group("all-queues").SendAsync("QueueDeleted", queueId);
+        await hubContext.Clients.Group($"queue-{queueId}").SendAsync("QueueDeleted", queueId, cancellationToken);
+        await hubContext.Clients.Group("all-queues").SendAsync("QueueDeleted", queueId, cancellationToken);
     }
 }
