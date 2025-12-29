@@ -99,13 +99,17 @@ public class RoomService(IDbContextFactory<ApplicationDbContext> contextFactory,
             {
                 throw new InvalidOperationException("Only approved questions can be set as current");
             }
+            room.CurrentQuestion = question;
+        }
+        else
+        {
+            room.CurrentQuestion = null;
         }
 
         room.CurrentQuestionId = questionId;
         await context.SaveChangesAsync(cancellationToken);
 
-        // Broadcast AFTER database save completes
-        await hubContext.Clients.Group($"room-{roomId}").SendAsync("CurrentQuestionChanged", (QuestionDto?)room.CurrentQuestion, cancellationToken);
+        await hubContext.SendCurrentQuestionChangedAsync(room.Id, room.CurrentQuestion, cancellationToken);
     }
 
     public async Task DeleteRoomAsync(Guid roomId, string userId, CancellationToken cancellationToken)

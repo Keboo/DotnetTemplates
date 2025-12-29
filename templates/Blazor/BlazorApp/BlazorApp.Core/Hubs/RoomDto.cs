@@ -23,5 +23,4 @@ public class RoomDto()
     public Guid? CurrentQuestionId { get; set; }
 
     public static explicit operator RoomDto?(Room? room) => room is null ? null : new(room);
-
 }

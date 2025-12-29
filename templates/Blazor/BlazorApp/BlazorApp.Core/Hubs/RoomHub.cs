@@ -6,14 +6,26 @@ using Microsoft.Extensions.Logging;
 
 namespace BlazorApp.Core.Hubs;
 
-public class RoomHub(IRoomService roomService, ILogger<RoomHub> logger) : Hub
+public class RoomHub(IRoomService roomService) : Hub
 {
+    public const string QuestionAnsweredEvent = "QuestionAnswered";
+    public const string QuestionDeletedEvent = "QuestionDeleted";
+    public const string QuestionApprovedEvent = "QuestionApproved";
+    public const string QuestionSubmittedEvent = "QuestionSubmitted";
+    public const string CurrentQuestionChangedEvent = "CurrentQuestionChanged";
+
+    public static string GetRoomGroupName(Guid roomId) => GetRoomGroupName(roomId.ToString());
+    public static string GetRoomGroupName(string roomId) => $"room-{roomId}";
+
+    public static string GetOwnerRoomGroupName(Guid roomId) => GetOwnerRoomGroupName(roomId.ToString());
+    public static string GetOwnerRoomGroupName(string roomId) => $"room-{roomId}-owner";
+
     /// <summary>
     /// Allows any user (authenticated or not) to join a room as a regular participant.
     /// </summary>
     public async Task JoinRoom(string roomId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"room-{roomId}");
+        await Groups.AddToGroupAsync(Context.ConnectionId, GetRoomGroupName(roomId));
     }
 
     /// <summary>
@@ -21,7 +33,7 @@ public class RoomHub(IRoomService roomService, ILogger<RoomHub> logger) : Hub
     /// </summary>
     public async Task LeaveRoom(string roomId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"room-{roomId}");
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetRoomGroupName(roomId));
     }
 
     /// <summary>
@@ -59,8 +71,8 @@ public class RoomHub(IRoomService roomService, ILogger<RoomHub> logger) : Hub
         }
 
         // Add to both owner and regular room groups
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"room-{roomId}-owner");
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"room-{roomId}");
+        await Groups.AddToGroupAsync(Context.ConnectionId, GetOwnerRoomGroupName(roomId));
+        await Groups.AddToGroupAsync(Context.ConnectionId, GetRoomGroupName(roomId));
     }
 
     /// <summary>
@@ -68,8 +80,8 @@ public class RoomHub(IRoomService roomService, ILogger<RoomHub> logger) : Hub
     /// </summary>
     public async Task LeaveRoomAsOwner(string roomId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"room-{roomId}-owner");
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"room-{roomId}");
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetOwnerRoomGroupName(roomId));
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetRoomGroupName(roomId));
     }
 }
 

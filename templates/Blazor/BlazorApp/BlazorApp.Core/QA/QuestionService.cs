@@ -61,10 +61,8 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
 
         context.Questions.Add(question);
         await context.SaveChangesAsync(cancellationToken);
-        
-        // Broadcast AFTER database save completes - notify room owner of new question
-        await hubContext.Clients.Group($"room-{roomId}-owner").SendAsync("QuestionSubmitted", (QuestionDto?)question, cancellationToken);
 
+        await hubContext.SendQuestionSubmittedAsync(question, cancellationToken);
         return question;
     }
 
@@ -112,8 +110,7 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
         question.IsApproved = true;
         await context.SaveChangesAsync(cancellationToken);
         
-        // Broadcast AFTER database save completes - notify all room participants
-        await hubContext.Clients.Group($"room-{question.RoomId}").SendAsync("QuestionApproved", (QuestionDto?)question, cancellationToken);
+        await hubContext.SendQuestionApprovedAsync(question, cancellationToken);
     }
 
     public async Task MarkAsAnsweredAsync(Guid questionId, string userId, CancellationToken cancellationToken)
@@ -121,15 +118,11 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var question = await context.Questions
+            .Include(x => x.Room)
             .FirstOrDefaultAsync(q => q.Id == questionId, cancellationToken)
             ?? throw new InvalidOperationException("Question not found");
 
-        // Get the room separately to check ownership
-        var room = await context.Rooms
-            .FirstOrDefaultAsync(r => r.Id == question.RoomId, cancellationToken)
-            ?? throw new InvalidOperationException("Room not found");
-
-        if (room.CreatedByUserId != userId)
+        if (question.Room!.CreatedByUserId != userId)
         {
             throw new UnauthorizedAccessException("Only the room owner can mark questions as answered");
         }
@@ -137,8 +130,7 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
         question.IsAnswered = true;
         await context.SaveChangesAsync(cancellationToken);
         
-        // Broadcast AFTER database save completes - notify all room participants
-        await hubContext.Clients.Group($"room-{question.RoomId}").SendAsync("QuestionAnswered", (QuestionDto?)question, cancellationToken);
+        await hubContext.SendQuestionAnsweredAsync(question, cancellationToken);
     }
 
     public async Task DeleteQuestionAsync(Guid questionId, string userId, CancellationToken cancellationToken)
@@ -146,15 +138,12 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var question = await context.Questions
+            .Include(x => x.Room)
             .FirstOrDefaultAsync(q => q.Id == questionId, cancellationToken)
             ?? throw new InvalidOperationException("Question not found");
 
-        // Get the room separately to check ownership
-        var room = await context.Rooms
-            .FirstOrDefaultAsync(r => r.Id == question.RoomId, cancellationToken)
-            ?? throw new InvalidOperationException("Room not found");
-
-        if (room.CreatedByUserId != userId)
+        
+        if (question.Room!.CreatedByUserId != userId)
         {
             throw new UnauthorizedAccessException("Only the room owner can delete questions");
         }
@@ -162,9 +151,8 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
         var roomId = question.RoomId;
         context.Questions.Remove(question);
         await context.SaveChangesAsync(cancellationToken);
-        
-        // Broadcast AFTER database save completes
-        await hubContext.Clients.Group($"room-{roomId}").SendAsync("QuestionDeleted", questionId, cancellationToken);
+
+        await hubContext.SendQuestionDeletedAsync(roomId, questionId, cancellationToken);
     }
 
     public Task<bool> CanSubmitQuestionAsync(string clientId)

@@ -1,5 +1,4 @@
-﻿using BlazorApp.Core.Auth;
-using BlazorApp.Core.Hubs;
+﻿using BlazorApp.Core.Hubs;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -43,7 +42,7 @@ public sealed class RoomHubClient : IAsyncDisposable
 
         _hubConnection = connectionBuilder.Build();
 
-        _hubConnection.On<QuestionDto>("QuestionSubmitted", async question =>
+        _hubConnection.On<QuestionDto>(RoomHub.QuestionSubmittedEvent, async question =>
         {
             if (QuestionSubmitted != null)
             {
@@ -51,7 +50,7 @@ public sealed class RoomHubClient : IAsyncDisposable
             }
         });
 
-        _hubConnection.On<QuestionDto>("QuestionApproved", async question =>
+        _hubConnection.On<QuestionDto>(RoomHub.QuestionApprovedEvent, async question =>
         {
             if (QuestionApproved != null)
             {
@@ -59,7 +58,7 @@ public sealed class RoomHubClient : IAsyncDisposable
             }
         });
 
-        _hubConnection.On<QuestionDto>("QuestionAnswered", async question =>
+        _hubConnection.On<QuestionDto>(RoomHub.QuestionAnsweredEvent, async question =>
         {
             if (QuestionAnswered != null)
             {
@@ -75,7 +74,7 @@ public sealed class RoomHubClient : IAsyncDisposable
             }
         });
 
-        _hubConnection.On<Guid>("QuestionDeleted", async questionId =>
+        _hubConnection.On<Guid>(RoomHub.QuestionDeletedEvent, async questionId =>
         {
             if (QuestionDeleted != null)
             {
@@ -92,7 +91,7 @@ public sealed class RoomHubClient : IAsyncDisposable
         }
         _roomId = roomId;
         await EnsureConnection();
-        await _hubConnection.InvokeAsync("JoinRoomAsOwner", roomId.ToString());
+        await _hubConnection.InvokeAsync(nameof(RoomHub.JoinRoomAsOwner), roomId.ToString());
     }
 
     public async Task JoinRoomAsync(Guid roomId)
@@ -103,7 +102,7 @@ public sealed class RoomHubClient : IAsyncDisposable
         }
         _roomId = roomId;
         await EnsureConnection();
-        await _hubConnection.InvokeAsync("JoinRoom", roomId.ToString());
+        await _hubConnection.InvokeAsync(nameof(RoomHub.JoinRoom), roomId.ToString());
     }
 
     private async Task EnsureConnection()
@@ -122,4 +121,6 @@ public sealed class RoomHubClient : IAsyncDisposable
         }
         await _hubConnection.DisposeAsync();
     }
+
+
 }

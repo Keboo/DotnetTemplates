@@ -9,11 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BlazorApp.Core.Auth;
 
-public interface ISignalRTokenProvider
-{
-    Task<string?> GetAccessTokenAsync();
-}
-
 public class SignalRTokenProvider : ISignalRTokenProvider
 {
     private readonly AuthenticationStateProvider _authenticationStateProvider;

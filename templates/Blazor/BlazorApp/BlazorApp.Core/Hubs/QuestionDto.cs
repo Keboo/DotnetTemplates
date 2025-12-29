@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
 
 using BlazorApp.Data;
 
@@ -25,5 +25,6 @@ public class QuestionDto()
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
 
-    public static explicit operator QuestionDto?(Question? question) => question is null ? null : new(question);
+    [return:NotNullIfNotNull(nameof(question))]
+    public static implicit operator QuestionDto?(Question? question) => question is null ? null : new(question);
 }
