@@ -1,5 +1,6 @@
 @page "/room/{FriendlyName}"
 @rendermode InteractiveServer
+@using BlazorApp.Core.Auth
 @using BlazorApp.Core.QA
 @using BlazorApp.Data
 @using Microsoft.AspNetCore.SignalR.Client
@@ -11,6 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage LocalStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISignalRTokenProvider TokenProvider
 
 @implements IAsyncDisposable
 
@@ -355,7 +357,9 @@
     {
         if (room is null) return;
 
-        roomHub = new(NavigationManager);
+        // Generate the access token server-side before creating the hub connection
+        var token = await TokenProvider.GetAccessTokenAsync();
+        roomHub = new(NavigationManager, token);
 
         roomHub.QuestionApproved += async (question) =>
         {

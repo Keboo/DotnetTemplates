@@ -8,6 +8,7 @@
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.1.0" />
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.1.0" />
     <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.1" />
@@ -27,6 +28,7 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.14.0" />
     <PackageVersion Include="Polly.Core" Version="8.6.5" />
     <PackageVersion Include="Radzen.Blazor" Version="8.4.0" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
     <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.1" />
   </ItemGroup>
 </Project>

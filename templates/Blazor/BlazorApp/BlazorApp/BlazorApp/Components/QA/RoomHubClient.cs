@@ -1,4 +1,5 @@
-﻿using BlazorApp.Core.Hubs;
+﻿using BlazorApp.Core.Auth;
+using BlazorApp.Core.Hubs;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -17,8 +18,8 @@ public sealed class RoomHubClient : IAsyncDisposable
     public event Func<QuestionDto?, Task>? CurrentQuestionChanged;
     public event Func<Guid, Task>? QuestionDeleted;
 
-    public RoomHubClient(NavigationManager navigationManager)
-    {
+    public RoomHubClient(NavigationManager navigationManager, string? accessToken)
+    {        
         Uri hubUri = navigationManager.ToAbsoluteUri("/hubs/room");
         if (hubUri.Host.EndsWith(".dev.localhost"))
         {
@@ -26,10 +27,21 @@ public sealed class RoomHubClient : IAsyncDisposable
             builder.Host = "localhost";
             hubUri = builder.Uri;
         }
-        _hubConnection = new HubConnectionBuilder()
+        
+        // Append access token to query string for JWT middleware
+        if (!string.IsNullOrEmpty(accessToken))
+        {
+            var builder = new UriBuilder(hubUri);
+            builder.Query = $"access_token={Uri.EscapeDataString(accessToken)}";
+            hubUri = builder.Uri;
+        }
+        
+        // Create connection
+        var connectionBuilder = new HubConnectionBuilder()
             .WithUrl(hubUri)
-            .WithAutomaticReconnect()
-            .Build();
+            .WithAutomaticReconnect();
+
+        _hubConnection = connectionBuilder.Build();
 
         _hubConnection.On<QuestionDto>("QuestionSubmitted", async question =>
         {

@@ -1,5 +1,6 @@
 @page "/room/{FriendlyName}/manage"
 @rendermode InteractiveServer
+@using BlazorApp.Core.Auth
 @using BlazorApp.Core.QA
 @using BlazorApp.Data
 @using Microsoft.AspNetCore.Authorization
@@ -12,6 +13,7 @@
 @inject IQuestionService QuestionService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISignalRTokenProvider TokenProvider
 
 @implements IAsyncDisposable
 
@@ -228,7 +230,9 @@
     {
         if (room is null) return;
 
-        roomHub = new(NavigationManager);
+        // Generate the access token server-side before creating the hub connection
+        var token = await TokenProvider.GetAccessTokenAsync();
+        roomHub = new(NavigationManager, token);
         
         roomHub.QuestionSubmitted += async (question) =>
         {
@@ -251,7 +255,16 @@
             await InvokeAsync(StateHasChanged);
         };
 
-        await roomHub.JoinRoomAsOwnerAsync(room.Id);
+        try
+        {
+            await roomHub.JoinRoomAsOwnerAsync(room.Id);
+        }
+        catch (Exception ex)
+        {
+            // If user is not the owner or not authenticated, redirect to public room view
+            Console.WriteLine($"Failed to join as owner: {ex.Message}");
+            NavigationManager.NavigateTo($"/room/{room.FriendlyName}");
+        }
     }
 
     private async Task ApproveQuestion(Guid questionId)

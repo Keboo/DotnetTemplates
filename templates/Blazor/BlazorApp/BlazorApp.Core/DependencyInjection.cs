@@ -1,3 +1,4 @@
+using BlazorApp.Core.Auth;
 using BlazorApp.Core.QA;
 using BlazorApp.Data;
 
@@ -44,6 +45,7 @@ public static class DependencyInjection
     {
         builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IQuestionService, QuestionService>();
+        builder.Services.AddScoped<ISignalRTokenProvider, SignalRTokenProvider>();
 
         return builder;
     }
