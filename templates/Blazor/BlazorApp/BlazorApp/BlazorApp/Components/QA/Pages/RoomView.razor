@@ -76,6 +76,12 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>@room.FriendlyName</h1>
             <div>
+                <a href="/room/@FriendlyName/fullscreen" 
+                   class="btn btn-sm btn-outline-primary me-2" 
+                   target="_blank"
+                   title="Open full screen view for display or OBS overlay">
+                    <i class="bi bi-arrows-fullscreen"></i> Full Screen
+                </a>
                 <span class="badge bg-info me-2">@displayName</span>
                 <button class="btn btn-sm btn-outline-secondary" @onclick="ChangeName">
                     Change Name
