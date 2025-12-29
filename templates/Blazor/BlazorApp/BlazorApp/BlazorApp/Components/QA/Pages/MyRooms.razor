@@ -12,6 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
 
 <PageTitle>My Rooms</PageTitle>
 
@@ -61,9 +62,15 @@
                                     @onclick="() => ManageRoom(room.FriendlyName)">
                                 <i class="bi bi-gear"></i> Manage
                             </button>
-                            <button class="btn btn-sm btn-outline-secondary" 
+                            <button class="btn btn-sm btn-outline-secondary me-2" 
                                     @onclick="() => ViewPublic(room.FriendlyName)">
                                 <i class="bi bi-eye"></i> Public View
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" 
+                                    @onclick="() => CopyRoomUrl(room.FriendlyName)"
+                                    title="Copy public room URL">
+                                <i class="bi @(copiedRoomId == room.Id ? "bi-check-circle" : "bi-clipboard")"></i>
+                                @(copiedRoomId == room.Id ? "Copied!" : "Copy URL")
                             </button>
                         </div>
                     </div>
@@ -125,6 +132,7 @@
     private string newRoomName = string.Empty;
     private string? errorMessage;
     private string? userId;
+    private Guid? copiedRoomId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -199,5 +207,24 @@
     private void ViewPublic(string friendlyName)
     {
         NavigationManager.NavigateTo($"/room/{friendlyName}");
+    }
+
+    private async Task CopyRoomUrl(string friendlyName)
+    {
+        var room = rooms?.FirstOrDefault(r => r.FriendlyName == friendlyName);
+        if (room == null) return;
+
+        var baseUri = NavigationManager.BaseUri.TrimEnd('/');
+        var roomUrl = $"{baseUri}/room/{friendlyName}";
+        
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
+        
+        copiedRoomId = room.Id;
+        StateHasChanged();
+        
+        // Reset the "Copied!" state after 2 seconds
+        await Task.Delay(2000);
+        copiedRoomId = null;
+        StateHasChanged();
     }
 }

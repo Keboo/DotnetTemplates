@@ -14,6 +14,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ISignalRTokenProvider TokenProvider
+@inject IJSRuntime JSRuntime
 
 @implements IAsyncDisposable
 
@@ -48,9 +49,17 @@
     {
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Manage: @room.FriendlyName</h1>
-            <a href="/my-rooms" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Back
-            </a>
+            <div>
+                <button class="btn btn-outline-primary me-2" 
+                        @onclick="CopyRoomUrl"
+                        title="Copy public room URL">
+                    <i class="bi @(urlCopied ? "bi-check-circle" : "bi-clipboard")"></i>
+                    @(urlCopied ? "Copied!" : "Copy Public URL")
+                </button>
+                <a href="/my-rooms" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
         </div>
 
         <!-- Current Question Section -->
@@ -193,6 +202,7 @@
     private string? userId;
     private string activeTab = "pending";
     private RoomHubClient? roomHub;
+    private bool urlCopied = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -340,6 +350,24 @@
         {
             // Handle error
         }
+    }
+
+    private async Task CopyRoomUrl()
+    {
+        if (room == null) return;
+
+        var baseUri = NavigationManager.BaseUri.TrimEnd('/');
+        var roomUrl = $"{baseUri}/room/{room.FriendlyName}";
+        
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
+        
+        urlCopied = true;
+        StateHasChanged();
+        
+        // Reset the "Copied!" state after 2 seconds
+        await Task.Delay(2000);
+        urlCopied = false;
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()

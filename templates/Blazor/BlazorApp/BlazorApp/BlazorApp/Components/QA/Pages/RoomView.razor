@@ -202,7 +202,6 @@
     private RoomHubClient? roomHub;
     private System.Threading.Timer? rateLimitTimer;
     private string? clientId;
-    private bool hasRendered;
 
     protected override async Task OnInitializedAsync()
     {
@@ -214,8 +213,6 @@
     {
         if (firstRender)
         {
-            hasRendered = true;
-
             // Get or create client ID for rate limiting
             var clientIdResult = await LocalStorage.GetAsync<string>("qa_clientId");
             if (clientIdResult.Success && !string.IsNullOrEmpty(clientIdResult.Value))
