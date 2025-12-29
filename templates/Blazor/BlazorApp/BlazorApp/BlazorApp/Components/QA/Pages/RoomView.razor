@@ -380,6 +380,11 @@
             await LoadApprovedQuestions();
             await InvokeAsync(StateHasChanged);
         };
+        roomHub.RoomDeleted += async (roomId) =>
+        {
+            // Room has been deleted, redirect to home page
+            await InvokeAsync(() => NavigationManager.NavigateTo("/"));
+        };
 
         await roomHub.JoinRoomAsync(room.Id);
     }

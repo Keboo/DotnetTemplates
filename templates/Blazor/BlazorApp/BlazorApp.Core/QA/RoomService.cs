@@ -133,6 +133,6 @@ public class RoomService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await context.SaveChangesAsync(cancellationToken);
         
         // Broadcast AFTER database save completes
-        await hubContext.Clients.Group($"room-{roomId}").SendAsync("RoomDeleted", roomId, cancellationToken);
+        await hubContext.SendRoomDeletedAsync(roomId, cancellationToken);
     }
 }

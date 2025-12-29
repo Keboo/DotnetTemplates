@@ -16,6 +16,7 @@ public sealed class RoomHubClient : IAsyncDisposable
     public event Func<QuestionDto, Task>? QuestionAnswered;
     public event Func<QuestionDto?, Task>? CurrentQuestionChanged;
     public event Func<Guid, Task>? QuestionDeleted;
+    public event Func<Guid, Task>? RoomDeleted;
 
     public RoomHubClient(NavigationManager navigationManager, string? accessToken)
     {        
@@ -79,6 +80,14 @@ public sealed class RoomHubClient : IAsyncDisposable
             if (QuestionDeleted != null)
             {
                 await QuestionDeleted.Invoke(questionId);
+            }
+        });
+
+        _hubConnection.On<Guid>(RoomHub.RoomDeletedEvent, async roomId =>
+        {
+            if (RoomDeleted != null)
+            {
+                await RoomDeleted.Invoke(roomId);
             }
         });
     }

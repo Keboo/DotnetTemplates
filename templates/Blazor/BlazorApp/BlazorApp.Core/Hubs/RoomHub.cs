@@ -13,6 +13,7 @@ public class RoomHub(IRoomService roomService) : Hub
     public const string QuestionApprovedEvent = "QuestionApproved";
     public const string QuestionSubmittedEvent = "QuestionSubmitted";
     public const string CurrentQuestionChangedEvent = "CurrentQuestionChanged";
+    public const string RoomDeletedEvent = "RoomDeleted";
 
     public static string GetRoomGroupName(Guid roomId) => GetRoomGroupName(roomId.ToString());
     public static string GetRoomGroupName(string roomId) => $"room-{roomId}";

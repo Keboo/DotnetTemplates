@@ -50,17 +50,63 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Manage: @room.FriendlyName</h1>
             <div>
-                <button class="btn btn-outline-primary me-2" 
+                <button class="btn btn-outline-primary me-2"
                         @onclick="CopyRoomUrl"
                         title="Copy public room URL">
                     <i class="bi @(urlCopied ? "bi-check-circle" : "bi-clipboard")"></i>
                     @(urlCopied ? "Copied!" : "Copy Public URL")
+                </button>
+                <button class="btn btn-outline-danger me-2"
+                        @onclick="() => showDeleteConfirmation = true"
+                        title="Delete this room">
+                    <i class="bi bi-trash"></i> Delete Room
                 </button>
                 <a href="/my-rooms" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
             </div>
         </div>
+
+        <!-- Delete Confirmation Modal -->
+        @if (showDeleteConfirmation)
+        {
+            <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Delete Room
+                            </h5>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete the room <strong>"@room.FriendlyName"</strong>?</p>
+                            <p class="text-danger mb-0">
+                                <i class="bi bi-exclamation-circle"></i>
+                                This action cannot be undone. All questions in this room will be permanently deleted, and all participants will be redirected.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    @onclick="() => showDeleteConfirmation = false"
+                                    disabled="@isDeletingRoom">
+                                Cancel
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    @onclick="DeleteRoom"
+                                    disabled="@isDeletingRoom">
+                                @if (isDeletingRoom)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                }
+                                <i class="bi bi-trash"></i> Delete Room
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
         <!-- Current Question Section -->
         <div class="card mb-4">
@@ -203,6 +249,8 @@
     private string activeTab = "pending";
     private RoomHubClient? roomHub;
     private bool urlCopied = false;
+    private bool showDeleteConfirmation = false;
+    private bool isDeletingRoom = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -243,7 +291,7 @@
         // Generate the access token server-side before creating the hub connection
         var token = await TokenProvider.GetAccessTokenAsync();
         roomHub = new(NavigationManager, token);
-        
+
         roomHub.QuestionSubmitted += async (question) =>
         {
             await LoadQuestions();
@@ -263,6 +311,11 @@
         {
             await LoadRoom();
             await InvokeAsync(StateHasChanged);
+        };
+        roomHub.RoomDeleted += async (roomId) =>
+        {
+            // Room has been deleted, redirect to My Rooms page
+            await InvokeAsync(() => NavigationManager.NavigateTo("/my-rooms"));
         };
 
         try
@@ -354,20 +407,55 @@
 
     private async Task CopyRoomUrl()
     {
-        if (room == null) return;
+        if (room is null) return;
 
-        var baseUri = NavigationManager.BaseUri.TrimEnd('/');
-        var roomUrl = $"{baseUri}/room/{room.FriendlyName}";
-        
-        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
-        
-        urlCopied = true;
-        StateHasChanged();
-        
+        try
+        {
+
+            var baseUri = NavigationManager.BaseUri.TrimEnd('/');
+            var roomUrl = $"{baseUri}/room/{room.FriendlyName}";
+
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
+
+            urlCopied = true;
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            // Handle clipboard error
+            return;
+        }
+
         // Reset the "Copied!" state after 2 seconds
         await Task.Delay(2000);
         urlCopied = false;
         StateHasChanged();
+    }
+
+    private async Task DeleteRoom()
+    {
+        if (userId is null || room is null) return;
+
+        isDeletingRoom = true;
+
+        try
+        {
+            await RoomService.DeleteRoomAsync(room.Id, userId, CancellationToken.None);
+            // Redirect to My Rooms page after successful deletion
+            NavigationManager.NavigateTo("/my-rooms");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Handle unauthorized access
+            showDeleteConfirmation = false;
+            isDeletingRoom = false;
+        }
+        catch (Exception)
+        {
+            // Handle other errors
+            showDeleteConfirmation = false;
+            isDeletingRoom = false;
+        }
     }
 
     public async ValueTask DisposeAsync()
