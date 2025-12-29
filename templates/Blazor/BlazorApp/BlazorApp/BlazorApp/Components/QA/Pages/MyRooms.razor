@@ -181,20 +181,19 @@
 
         try
         {
-            await RoomService.CreateRoomAsync(newRoomName.Trim(), userId, CancellationToken.None);
-            await LoadRooms();
-            CloseCreateDialog();
+            var roomName = newRoomName.Trim();
+            await RoomService.CreateRoomAsync(roomName, userId, CancellationToken.None);
+            // Navigate to the manage page for the newly created room
+            NavigationManager.NavigateTo($"/room/{roomName}/manage");
         }
         catch (InvalidOperationException ex)
         {
             errorMessage = ex.Message;
+            isCreating = false;
         }
         catch (Exception)
         {
             errorMessage = "An error occurred while creating the room. Please try again.";
-        }
-        finally
-        {
             isCreating = false;
         }
     }
