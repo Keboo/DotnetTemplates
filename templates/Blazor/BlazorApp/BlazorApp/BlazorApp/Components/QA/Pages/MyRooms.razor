@@ -93,6 +93,7 @@
                                class="form-control" 
                                id="roomName" 
                                @bind="newRoomName" 
+                               @bind:event="oninput"
                                placeholder="Enter a unique room name"
                                maxlength="200" />
                         <div class="form-text">This will be used in the URL. Choose a short, memorable name.</div>

@@ -136,7 +136,7 @@
                     }
                     else
                     {
-                        foreach (var question in approvedQuestions)
+                        foreach (var question in approvedQuestions.OrderBy(x => x.IsAnswered))
                         {
                             <div class="border-bottom pb-3 mb-3">
                                 <div class="d-flex justify-content-between align-items-start">
