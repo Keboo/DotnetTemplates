@@ -1,0 +1,339 @@
+@page "/room/{FriendlyName}/manage"
+@rendermode InteractiveServer
+@using BlazorApp.Core.QA
+@using BlazorApp.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Security.Claims
+
+@attribute [Authorize]
+
+@inject IRoomService RoomService
+@inject IQuestionService QuestionService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@implements IAsyncDisposable
+
+<PageTitle>Manage @FriendlyName</PageTitle>
+
+<div class="container my-4">
+    @if (loading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (room == null)
+    {
+        <div class="alert alert-danger">
+            <h4>Room Not Found</h4>
+            <p>The room "@FriendlyName" does not exist.</p>
+            <a href="/my-rooms" class="btn btn-primary">Back to My Rooms</a>
+        </div>
+    }
+    else if (!isOwner)
+    {
+        <div class="alert alert-warning">
+            <h4>Unauthorized</h4>
+            <p>You don't have permission to manage this room.</p>
+            <a href="/my-rooms" class="btn btn-primary">Back to My Rooms</a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Manage: @room.FriendlyName</h1>
+            <a href="/my-rooms" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <!-- Current Question Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Current Question</h5>
+            </div>
+            <div class="card-body">
+                @if (room.CurrentQuestion != null)
+                {
+                    <div class="alert alert-success">
+                        <h6>@room.CurrentQuestion.QuestionText</h6>
+                        @if (!string.IsNullOrEmpty(room.CurrentQuestion.AuthorName))
+                        {
+                            <small class="text-muted">Asked by: @room.CurrentQuestion.AuthorName</small>
+                        }
+                    </div>
+                    <button class="btn btn-sm btn-warning" @onclick="ClearCurrentQuestion">
+                        Clear Current Question
+                    </button>
+                }
+                else
+                {
+                    <p class="text-muted">No question is currently set. Select a question below to make it current.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Questions Tabs -->
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item">
+                <button class="nav-link @(activeTab == "pending" ? "active" : "")" @onclick='() => activeTab = "pending"'>
+                    Pending Approval @(pendingQuestions?.Count() > 0 ? $"({pendingQuestions.Count()})" : "")
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link @(activeTab == "approved" ? "active" : "")" @onclick='() => activeTab = "approved"'>
+                    Approved @(approvedQuestions?.Count() > 0 ? $"({approvedQuestions.Count()})" : "")
+                </button>
+            </li>
+        </ul>
+
+        @if (activeTab == "pending")
+        {
+            <div class="card">
+                <div class="card-body">
+                    @if (pendingQuestions == null || !pendingQuestions.Any())
+                    {
+                        <p class="text-muted">No pending questions.</p>
+                    }
+                    else
+                    {
+                        foreach (var question in pendingQuestions)
+                        {
+                            <div class="border-bottom pb-3 mb-3">
+                                <p class="mb-1"><strong>@question.QuestionText</strong></p>
+                                @if (!string.IsNullOrEmpty(question.AuthorName))
+                                {
+                                    <small class="text-muted">Asked by: @question.AuthorName</small>
+                                }
+                                <small class="text-muted d-block">@question.CreatedDate.ToString("g")</small>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-success me-2" @onclick="() => ApproveQuestion(question.Id)">
+                                        <i class="bi bi-check-circle"></i> Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteQuestion(question.Id)">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body">
+                    @if (approvedQuestions == null || !approvedQuestions.Any())
+                    {
+                        <p class="text-muted">No approved questions yet.</p>
+                    }
+                    else
+                    {
+                        foreach (var question in approvedQuestions)
+                        {
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <p class="mb-1">
+                                            <strong>@question.QuestionText</strong>
+                                            @if (question.IsAnswered)
+                                            {
+                                                <span class="badge bg-success ms-2">Answered</span>
+                                            }
+                                        </p>
+                                        @if (!string.IsNullOrEmpty(question.AuthorName))
+                                        {
+                                            <small class="text-muted">Asked by: @question.AuthorName</small>
+                                        }
+                                        <small class="text-muted d-block">@question.CreatedDate.ToString("g")</small>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    @if (room.CurrentQuestionId != question.Id)
+                                    {
+                                        <button class="btn btn-sm btn-primary me-2" @onclick="() => SetAsCurrent(question.Id)">
+                                            <i class="bi bi-star"></i> Set as Current
+                                        </button>
+                                    }
+                                    @if (!question.IsAnswered)
+                                    {
+                                        <button class="btn btn-sm btn-success me-2" @onclick="() => MarkAsAnswered(question.Id)">
+                                            <i class="bi bi-check2-circle"></i> Mark as Answered
+                                        </button>
+                                    }
+                                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteQuestion(question.Id)">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string FriendlyName { get; set; } = string.Empty;
+
+    private Room? room;
+    private IEnumerable<Question>? pendingQuestions;
+    private IEnumerable<Question>? approvedQuestions;
+    private bool loading = true;
+    private bool isOwner = false;
+    private string? userId;
+    private string activeTab = "pending";
+    private RoomHubClient? roomHub;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        await LoadRoom();
+
+        if (room != null && userId == room.CreatedByUserId)
+        {
+            isOwner = true;
+            await LoadQuestions();
+            await InitializeSignalR();
+        }
+
+        loading = false;
+    }
+
+    private async Task LoadRoom()
+    {
+        room = await RoomService.GetRoomByFriendlyNameAsync(FriendlyName);
+    }
+
+    private async Task LoadQuestions()
+    {
+        if (room != null)
+        {
+            var allQuestions = await QuestionService.GetQuestionsByRoomIdAsync(room.Id);
+            pendingQuestions = allQuestions.Where(q => !q.IsApproved).OrderBy(q => q.CreatedDate);
+            approvedQuestions = allQuestions.Where(q => q.IsApproved).OrderBy(q => q.IsAnswered).ThenBy(q => q.CreatedDate);
+        }
+    }
+
+    private async Task InitializeSignalR()
+    {
+        if (room is null) return;
+
+        roomHub = new(NavigationManager);
+        
+        roomHub.QuestionSubmitted += async (question) =>
+        {
+            await LoadQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.QuestionApproved += async (question) =>
+        {
+            await LoadQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.QuestionAnswered += async (question) =>
+        {
+            await LoadQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.CurrentQuestionChanged += async (question) =>
+        {
+            await LoadRoom();
+            await InvokeAsync(StateHasChanged);
+        };
+
+        await roomHub.JoinRoomAsOwnerAsync(room.Id);
+    }
+
+    private async Task ApproveQuestion(Guid questionId)
+    {
+        if (userId is null) return;
+
+        try
+        {
+            await QuestionService.ApproveQuestionAsync(questionId, userId, CancellationToken.None);
+            await LoadQuestions();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task MarkAsAnswered(Guid questionId)
+    {
+        if (userId is null) return;
+
+        try
+        {
+            await QuestionService.MarkAsAnsweredAsync(questionId, userId, CancellationToken.None);
+            await LoadQuestions();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task SetAsCurrent(Guid questionId)
+    {
+        if (userId is null || room is null) return;
+
+        try
+        {
+            await RoomService.SetCurrentQuestionAsync(room.Id, questionId, userId, CancellationToken.None);
+            await LoadRoom();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task ClearCurrentQuestion()
+    {
+        if (userId is null || room is null) return;
+
+        try
+        {
+            await RoomService.SetCurrentQuestionAsync(room.Id, null, userId, CancellationToken.None);
+            await LoadRoom();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task DeleteQuestion(Guid questionId)
+    {
+        if (userId is null) return;
+
+        try
+        {
+            await QuestionService.DeleteQuestionAsync(questionId, userId, CancellationToken.None);
+            await LoadQuestions();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (roomHub != null)
+        {
+            await roomHub.DisposeAsync();
+        }
+    }
+}

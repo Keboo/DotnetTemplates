@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults()
     .AddDatabase()
-    .AddTicketing();
+    .AddQAServices();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -66,7 +66,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorApp.Client._Imports).Assembly);
 
-app.MapHub<TicketQueueHub>("/hubs/ticketqueue");
+app.MapHub<RoomHub>("/hubs/room");
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();

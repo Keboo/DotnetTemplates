@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorApp.Data;
 
-public class TicketQueue
+public class Room
 {
     [Key]
     public Guid Id { get; set; }
@@ -11,16 +11,18 @@ public class TicketQueue
     [MaxLength(200)]
     public required string FriendlyName { get; set; }
 
-    public int CurrentNumber { get; set; }
-
-    public int NextNumber { get; set; }
-
     [Required]
     public required string CreatedByUserId { get; set; }
 
     public ApplicationUser? CreatedBy { get; set; }
 
-    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.UtcNow;
+
+    public Guid? CurrentQuestionId { get; set; }
+
+    public Question? CurrentQuestion { get; set; }
+
+    public ICollection<Question> Questions { get; set; } = new List<Question>();
 
     [Timestamp]
     public byte[]? RowVersion { get; set; }

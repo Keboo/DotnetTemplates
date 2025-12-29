@@ -1,0 +1,393 @@
+@page "/room/{FriendlyName}"
+@rendermode InteractiveServer
+@using BlazorApp.Core.QA
+@using BlazorApp.Data
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Security.Claims
+
+@inject IRoomService RoomService
+@inject IQuestionService QuestionService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage LocalStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@implements IAsyncDisposable
+
+<PageTitle>@FriendlyName - Q&A Room</PageTitle>
+
+<div class="container my-4">
+    @if (loading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (room == null)
+    {
+        <div class="alert alert-danger">
+            <h4>Room Not Found</h4>
+            <p>The room "@FriendlyName" does not exist.</p>
+            <a href="/" class="btn btn-primary">Join Another Room</a>
+        </div>
+    }
+    else if (string.IsNullOrEmpty(displayName))
+    {
+        <!-- Name Entry Dialog -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h3 class="text-center mb-4">Welcome to @room.FriendlyName</h3>
+                        <p class="text-center text-muted mb-4">Please enter your name to continue</p>
+
+                        <div class="mb-3">
+                            <label for="displayName" class="form-label">Your Name</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="displayName" 
+                                   @bind="tempDisplayName"
+                                   @onkeypress="HandleNameKeyPress"
+                                   placeholder="Enter your name"
+                                   maxlength="100"
+                                   autofocus />
+                        </div>
+
+                        <div class="d-grid">
+                            <button class="btn btn-primary" 
+                                    @onclick="SaveDisplayName" 
+                                    disabled="@string.IsNullOrWhiteSpace(tempDisplayName)">
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Main Room View -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>@room.FriendlyName</h1>
+            <div>
+                <span class="badge bg-info me-2">@displayName</span>
+                <button class="btn btn-sm btn-outline-secondary" @onclick="ChangeName">
+                    Change Name
+                </button>
+            </div>
+        </div>
+
+        <!-- Current Question Section -->
+        @if (room.CurrentQuestion != null)
+        {
+            <div class="card mb-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-star-fill"></i> Current Question</h5>
+                </div>
+                <div class="card-body">
+                    <h4>@room.CurrentQuestion.QuestionText</h4>
+                    @if (!string.IsNullOrEmpty(room.CurrentQuestion.AuthorName))
+                    {
+                        <p class="text-muted mb-0"><small>Asked by: @room.CurrentQuestion.AuthorName</small></p>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Ask Question Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Ask a Question</h5>
+            </div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="alert alert-success">@successMessage</div>
+                }
+                @if (rateLimitMessage != null)
+                {
+                    <div class="alert alert-warning">
+                        @rateLimitMessage Please wait @remainingSeconds second(s).
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <textarea class="form-control" 
+                              rows="3" 
+                              @bind="newQuestionText"
+                              placeholder="Type your question here..."
+                              maxlength="2000"
+                              disabled="@isSubmitting"></textarea>
+                    <div class="form-text">@newQuestionText.Length / 2000 characters</div>
+                </div>
+
+                <button class="btn btn-primary" 
+                        @onclick="SubmitQuestion" 
+                        disabled="@(string.IsNullOrWhiteSpace(newQuestionText) || isSubmitting || rateLimitMessage != null)">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    }
+                    Submit Question
+                </button>
+            </div>
+        </div>
+
+        <!-- Approved Questions Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Approved Questions</h5>
+            </div>
+            <div class="card-body">
+                @if (approvedQuestions == null || !approvedQuestions.Any())
+                {
+                    <p class="text-muted">No approved questions yet. Be the first to ask!</p>
+                }
+                else
+                {
+                    <div class="list-group">
+                        @foreach (var question in approvedQuestions)
+                        {
+                            <div class="list-group-item @(question.IsAnswered ? "list-group-item-success" : "")">
+                                <div class="d-flex w-100 justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <p class="mb-1">@question.QuestionText</p>
+                                        @if (!string.IsNullOrEmpty(question.AuthorName))
+                                        {
+                                            <small class="text-muted">Asked by: @question.AuthorName</small>
+                                        }
+                                    </div>
+                                    @if (question.IsAnswered)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle-fill"></i> Answered
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string FriendlyName { get; set; } = string.Empty;
+
+    private Room? room;
+    private IEnumerable<Question>? approvedQuestions;
+    private bool loading = true;
+    private string? displayName;
+    private string tempDisplayName = string.Empty;
+    private string newQuestionText = string.Empty;
+    private bool isSubmitting = false;
+    private string? errorMessage;
+    private string? successMessage;
+    private string? rateLimitMessage;
+    private int remainingSeconds;
+    private RoomHubClient? roomHub;
+    private System.Threading.Timer? rateLimitTimer;
+    private string? clientId;
+    private bool hasRendered;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoom();
+        loading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hasRendered = true;
+
+            // Get or create client ID for rate limiting
+            var clientIdResult = await LocalStorage.GetAsync<string>("qa_clientId");
+            if (clientIdResult.Success && !string.IsNullOrEmpty(clientIdResult.Value))
+            {
+                clientId = clientIdResult.Value;
+            }
+            else
+            {
+                clientId = Guid.NewGuid().ToString();
+                await LocalStorage.SetAsync("qa_clientId", clientId);
+            }
+
+            // Try to load display name from storage
+            var nameResult = await LocalStorage.GetAsync<string>("qa_displayName");
+            if (nameResult.Success && !string.IsNullOrEmpty(nameResult.Value))
+            {
+                displayName = nameResult.Value;
+            }
+            else
+            {
+                // Check if user is authenticated
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                if (authState.User.Identity?.IsAuthenticated == true)
+                {
+                    displayName = authState.User.Identity.Name ?? authState.User.FindFirstValue(ClaimTypes.Email);
+                    if (!string.IsNullOrEmpty(displayName))
+                    {
+                        await LocalStorage.SetAsync("qa_displayName", displayName);
+                    }
+                }
+            }
+
+            if (room != null && !string.IsNullOrEmpty(displayName))
+            {
+                await LoadApprovedQuestions();
+                await InitializeSignalR();
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadRoom()
+    {
+        room = await RoomService.GetRoomByFriendlyNameAsync(FriendlyName);
+    }
+
+    private async Task LoadApprovedQuestions()
+    {
+        if (room != null)
+        {
+            approvedQuestions = await QuestionService.GetApprovedQuestionsByRoomIdAsync(room.Id);
+        }
+    }
+
+    private async Task SaveDisplayName()
+    {
+        if (string.IsNullOrWhiteSpace(tempDisplayName))
+        {
+            return;
+        }
+
+        displayName = tempDisplayName.Trim();
+        await LocalStorage.SetAsync("qa_displayName", displayName);
+
+        await LoadApprovedQuestions();
+        await InitializeSignalR();
+    }
+
+    private async Task ChangeName()
+    {
+        tempDisplayName = displayName ?? string.Empty;
+        displayName = null;
+        await LocalStorage.DeleteAsync("qa_displayName");
+    }
+
+    private void HandleNameKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(tempDisplayName))
+        {
+            _ = SaveDisplayName();
+        }
+    }
+
+    private async Task SubmitQuestion()
+    {
+        if (string.IsNullOrWhiteSpace(newQuestionText) || room == null || string.IsNullOrEmpty(clientId))
+        {
+            return;
+        }
+
+        // Check rate limit
+        var canSubmit = await QuestionService.CanSubmitQuestionAsync(clientId);
+        if (!canSubmit)
+        {
+            rateLimitMessage = "You're submitting questions too quickly.";
+            StartRateLimitCountdown();
+            return;
+        }
+
+        isSubmitting = true;
+        errorMessage = null;
+        successMessage = null;
+
+        try
+        {
+            await QuestionService.SubmitQuestionAsync(room.Id, newQuestionText.Trim(), displayName, CancellationToken.None);
+            newQuestionText = string.Empty;
+            successMessage = "Your question has been submitted and is awaiting approval.";
+            StartRateLimitCountdown();
+        }
+        catch (Exception)
+        {
+            errorMessage = "An error occurred while submitting your question. Please try again.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void StartRateLimitCountdown()
+    {
+        remainingSeconds = 10;
+        rateLimitMessage = "You can submit another question in";
+
+        rateLimitTimer?.Dispose();
+        rateLimitTimer = new System.Threading.Timer(async _ =>
+        {
+            remainingSeconds--;
+            if (remainingSeconds <= 0)
+            {
+                rateLimitMessage = null;
+                rateLimitTimer?.Dispose();
+            }
+            await InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+    }
+
+    private async Task InitializeSignalR()
+    {
+        if (room is null) return;
+
+        roomHub = new(NavigationManager);
+
+        roomHub.QuestionApproved += async (question) =>
+        {
+            await LoadApprovedQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.QuestionAnswered += async (question) =>
+        {
+            await LoadApprovedQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.CurrentQuestionChanged += async (question) =>
+        {
+            await LoadRoom();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.QuestionDeleted += async (questionId) =>
+        {
+            await LoadApprovedQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+
+        await roomHub.JoinRoomAsync(room.Id);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        rateLimitTimer?.Dispose();
+        
+        if (roomHub != null)
+        {
+            await roomHub.DisposeAsync();
+        }
+    }
+}

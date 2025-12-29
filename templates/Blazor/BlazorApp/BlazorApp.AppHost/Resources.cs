@@ -17,6 +17,7 @@ public static class Resources
         {
             return builder
                 .AddSqlServer("blazorapp-sql")
+                .WithImageTag("2025-latest") // This pairs with the usage of .UseAzureSql() which has a compatibility level of 170.
                 .WithLifetime(ContainerLifetime.Persistent)
                 .WithContainerName("blazorapp-sql")
                 .WithDataVolume("blazorapp-database")

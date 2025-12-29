@@ -1,0 +1,79 @@
+@page "/"
+@rendermode InteractiveServer
+@using BlazorApp.Core.QA
+
+@inject NavigationManager NavigationManager
+
+<PageTitle>Join Q&A Room</PageTitle>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h1 class="text-center mb-4">Join a Q&A Room</h1>
+                    <p class="text-center text-muted mb-4">
+                        Enter the room name to participate in the Q&A session
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">@errorMessage</div>
+                    }
+
+                    <div class="mb-4">
+                        <label for="roomName" class="form-label">Room Name</label>
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="roomName" 
+                               @bind="roomName"
+                               @onkeypress="HandleKeyPress"
+                               placeholder="Enter room name"
+                               autofocus />
+                    </div>
+
+                    <div class="d-grid">
+                        <button class="btn btn-primary btn-lg" 
+                                @onclick="NavigateToRoom" 
+                                disabled="@string.IsNullOrWhiteSpace(roomName)">
+                            Join Room
+                        </button>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Room owner?</p>
+                        <a href="/my-rooms" class="btn btn-outline-secondary">
+                            Manage My Rooms
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string roomName = string.Empty;
+    private string? errorMessage;
+
+    private void NavigateToRoom()
+    {
+        if (string.IsNullOrWhiteSpace(roomName))
+        {
+            return;
+        }
+
+        errorMessage = null;
+        NavigationManager.NavigateTo($"/room/{Uri.EscapeDataString(roomName.Trim())}");
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(roomName))
+        {
+            NavigateToRoom();
+        }
+    }
+}

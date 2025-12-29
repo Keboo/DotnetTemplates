@@ -1,0 +1,202 @@
+@page "/my-rooms"
+@rendermode InteractiveServer
+@using BlazorApp.Core.QA
+@using BlazorApp.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@attribute [Authorize]
+
+@inject IRoomService RoomService
+@inject NavigationManager NavigationManager
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>My Rooms</PageTitle>
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Q&A Rooms</h1>
+        <button class="btn btn-primary" @onclick="ShowCreateDialog">
+            <i class="bi bi-plus-circle"></i> Create New Room
+        </button>
+    </div>
+
+    @if (loading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (rooms == null || !rooms.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> You haven't created any rooms yet. Click "Create New Room" to get started!
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var room in rooms)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@room.FriendlyName</h5>
+                            <p class="card-text text-muted">
+                                <small>Created: @room.CreatedDate.ToString("g")</small>
+                            </p>
+                            @if (room.CurrentQuestion != null)
+                            {
+                                <div class="alert alert-success mb-2" role="alert">
+                                    <small><strong>Current:</strong> @room.CurrentQuestion.QuestionText</small>
+                                </div>
+                            }
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <button class="btn btn-sm btn-primary me-2" 
+                                    @onclick="() => ManageRoom(room.FriendlyName)">
+                                <i class="bi bi-gear"></i> Manage
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" 
+                                    @onclick="() => ViewPublic(room.FriendlyName)">
+                                <i class="bi bi-eye"></i> Public View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (showCreateDialog)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Room</h5>
+                    <button type="button" class="btn-close" @onclick="CloseCreateDialog"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">@errorMessage</div>
+                    }
+                    <div class="mb-3">
+                        <label for="roomName" class="form-label">Room Name</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="roomName" 
+                               @bind="newRoomName" 
+                               placeholder="Enter a unique room name"
+                               maxlength="200" />
+                        <div class="form-text">This will be used in the URL. Choose a short, memorable name.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseCreateDialog">Cancel</button>
+                    <button type="button" 
+                            class="btn btn-primary" 
+                            @onclick="CreateRoom" 
+                            disabled="@(string.IsNullOrWhiteSpace(newRoomName) || isCreating)">
+                        @if (isCreating)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        Create
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Room>? rooms;
+    private bool loading = true;
+    private bool showCreateDialog = false;
+    private bool isCreating = false;
+    private string newRoomName = string.Empty;
+    private string? errorMessage;
+    private string? userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            await LoadRooms();
+        }
+
+        loading = false;
+    }
+
+    private async Task LoadRooms()
+    {
+        if (!string.IsNullOrEmpty(userId))
+        {
+            rooms = (await RoomService.GetRoomsByUserIdAsync(userId)).ToList();
+        }
+    }
+
+    private void ShowCreateDialog()
+    {
+        newRoomName = string.Empty;
+        errorMessage = null;
+        showCreateDialog = true;
+    }
+
+    private void CloseCreateDialog()
+    {
+        showCreateDialog = false;
+        newRoomName = string.Empty;
+        errorMessage = null;
+    }
+
+    private async Task CreateRoom()
+    {
+        if (string.IsNullOrWhiteSpace(newRoomName) || string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        isCreating = true;
+        errorMessage = null;
+
+        try
+        {
+            await RoomService.CreateRoomAsync(newRoomName.Trim(), userId, CancellationToken.None);
+            await LoadRooms();
+            CloseCreateDialog();
+        }
+        catch (InvalidOperationException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (Exception)
+        {
+            errorMessage = "An error occurred while creating the room. Please try again.";
+        }
+        finally
+        {
+            isCreating = false;
+        }
+    }
+
+    private void ManageRoom(string friendlyName)
+    {
+        NavigationManager.NavigateTo($"/room/{friendlyName}/manage");
+    }
+
+    private void ViewPublic(string friendlyName)
+    {
+        NavigationManager.NavigateTo($"/room/{friendlyName}");
+    }
+}
