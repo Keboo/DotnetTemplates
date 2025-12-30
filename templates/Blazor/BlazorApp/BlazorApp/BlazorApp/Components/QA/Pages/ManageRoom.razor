@@ -109,7 +109,7 @@
         }
 
         <!-- Current Question Section -->
-        <div class="card mb-4">
+        <div class="rz-card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Current Question</h5>
             </div>
@@ -150,7 +150,7 @@
 
         @if (activeTab == "pending")
         {
-            <div class="card">
+            <div class="rz-card">
                 <div class="card-body">
                     @if (pendingQuestions == null || !pendingQuestions.Any())
                     {
@@ -183,7 +183,7 @@
         }
         else
         {
-            <div class="card">
+            <div class="rz-card">
                 <div class="card-body">
                     @if (approvedQuestions == null || !approvedQuestions.Any())
                     {

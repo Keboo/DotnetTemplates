@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 using Radzen;
+using BlazorApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,13 @@ builder.Services.AddRazorComponents()
 
 // Add Radzen services
 builder.Services.AddRadzenComponents();
+
+// Add Radzen Cookie Theme Service for theme persistence
+builder.Services.AddRadzenCookieThemeService(options =>
+{
+    options.Name = Theming.CookieName;
+    options.Duration = TimeSpan.FromDays(365);
+});
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();

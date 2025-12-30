@@ -1,0 +1,35 @@
+@inject ThemeService ThemeService
+@inject CookieThemeService CookieThemeService
+@rendermode InteractiveServer
+
+<RadzenButton Icon="@GetThemeIcon()"
+              Variant="Variant.Text"
+              Click="@ToggleTheme"
+              Title="@GetThemeTooltip()"
+              class="rz-color-white" />
+
+@code {
+    private string currentTheme = Theming.DefaultTheme;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentTheme = ThemeService.Theme ?? Theming.DefaultTheme;
+    }
+
+    private void ToggleTheme()
+    {
+        var newTheme = currentTheme == Theming.LightTheme ? Theming.DarkTheme : Theming.LightTheme;
+        currentTheme = newTheme;
+        ThemeService.SetTheme(newTheme);
+    }
+
+    private string GetThemeIcon()
+    {
+        return currentTheme == Theming.DarkTheme ? "dark_mode" : "light_mode";
+    }
+
+    private string GetThemeTooltip()
+    {
+        return currentTheme == Theming.DarkTheme ? "Switch to light theme" : "Switch to dark theme";
+    }
+}
