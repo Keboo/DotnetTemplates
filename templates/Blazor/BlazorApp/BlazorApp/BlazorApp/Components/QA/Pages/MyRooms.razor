@@ -20,7 +20,7 @@
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
     <MudPaper Elevation="0" Class="mb-4">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-space-between align-center">
             <MudText Typo="Typo.h4">My Q&A Rooms</MudText>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowCreateDialog" StartIcon="@Icons.Material.Filled.AddCircle">
                 Create New Room
@@ -42,7 +42,7 @@
     }
     else
     {
-        <MudGrid>
+        <MudGrid Justify="Justify.FlexStart">
             @foreach (var room in rooms)
             {
                 <MudItem xs="12" sm="6" md="4">
@@ -53,14 +53,14 @@
                             </CardHeaderContent>
                             <CardHeaderActions>
                                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                             Color="Color.Error"
-                                             Size="Size.Small"
-                                             OnClick="() => ShowDeleteConfirmation(room)"
-                                             title="Delete room" />
+                                               Color="Color.Error"
+                                               Size="Size.Medium"
+                                               OnClick="() => ShowDeleteConfirmation(room)"
+                                               title="Delete room" />
                             </CardHeaderActions>
                         </MudCardHeader>
                         <MudCardContent>
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            <MudText Typo="Typo.body2" Color="Color.Default">
                                 Created: @room.CreatedDate.ToString("g")
                             </MudText>
                             @if (room.CurrentQuestion != null)
@@ -71,27 +71,23 @@
                             }
                         </MudCardContent>
                         <MudCardActions>
-                            <MudButton Variant="Variant.Filled"
-                                     Color="Color.Primary"
-                                     Size="Size.Small"
-                                     StartIcon="@Icons.Material.Filled.Settings"
-                                     OnClick="() => ManageRoom(room.FriendlyName)">
-                                Manage
-                            </MudButton>
-                            <MudButton Variant="Variant.Outlined"
-                                     Color="Color.Secondary"
-                                     Size="Size.Small"
-                                     StartIcon="@Icons.Material.Filled.Visibility"
-                                     OnClick="() => ViewPublic(room.FriendlyName)">
-                                Public View
-                            </MudButton>
-                            <MudButton Variant="Variant.Outlined"
-                                     Color="Color.Primary"
-                                     Size="Size.Small"
-                                     StartIcon="@(copiedRoomId == room.Id ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.ContentCopy)"
-                                     OnClick="() => CopyRoomUrl(room.FriendlyName)">
-                                @(copiedRoomId == room.Id ? "Copied!" : "Copy URL")
-                            </MudButton>
+                            <MudTooltip Text="Manage Room">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                           EndIcon="@Icons.Material.Filled.NavigateNext"
+                                           OnClick="() => ManageRoom(room.FriendlyName)">
+                                    Manage
+                                </MudButton>
+                            </MudTooltip>
+                            <MudTooltip Text="Open public view">
+                                <MudIconButton Icon="@Icons.Material.Filled.OpenInNew"
+                                               Color="Color.Default"
+                                               OnClick="() => ViewPublic(room.FriendlyName)" />
+                            </MudTooltip>
+                            <MudTooltip Text="Copy public room link">
+                                <MudIconButton Icon="@(copiedRoomId == room.Id ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.ContentCopy)"
+                                               Color="Color.Default"
+                                               OnClick="() => CopyRoomUrl(room.FriendlyName)" />
+                            </MudTooltip>
                         </MudCardActions>
                     </MudCard>
                 </MudItem>
@@ -100,7 +96,7 @@
     }
 </MudContainer>
 
-<MudDialog @bind-Visible="showCreateDialog">
+<MudDialog @bind-Visible="showCreateDialog" DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
         <MudText Typo="Typo.h6" Class="mb-4">Create New Room</MudText>
         @if (!string.IsNullOrEmpty(errorMessage))
@@ -108,18 +104,20 @@
             <MudAlert Severity="Severity.Error" Class="mb-3">@errorMessage</MudAlert>
         }
         <MudTextField @bind-Value="newRoomName"
-                     Label="Room Name"
-                     Placeholder="Enter a unique room name"
-                     HelperText="This will be used in the URL. Choose a short, memorable name."
-                     MaxLength="200"
-                     Variant="Variant.Outlined" />
+                      Label="Room Name"
+                      Placeholder="Enter a unique room name"
+                      HelperText="This will be used in the URL. Choose a short, memorable name."
+                      MaxLength="200"
+                      OnKeyDown="OnKeyDownAsync"
+                      Variant="Variant.Outlined"
+                      Immediate="true" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="CloseCreateDialog">Cancel</MudButton>
         <MudButton Variant="Variant.Filled"
-                  Color="Color.Primary"
-                  OnClick="CreateRoom"
-                  Disabled="@(string.IsNullOrWhiteSpace(newRoomName) || isCreating)">
+                   Color="Color.Primary"
+                   OnClick="CreateRoom"
+                   Disabled="@(string.IsNullOrWhiteSpace(newRoomName) || isCreating)">
             @if (isCreating)
             {
                 <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
@@ -144,10 +142,10 @@
     <DialogActions>
         <MudButton OnClick="CloseDeleteDialog" Disabled="@isDeleting">Cancel</MudButton>
         <MudButton Variant="Variant.Filled"
-                  Color="Color.Error"
-                  StartIcon="@Icons.Material.Filled.Delete"
-                  OnClick="ConfirmDelete"
-                  Disabled="@isDeleting">
+                   Color="Color.Error"
+                   StartIcon="@Icons.Material.Filled.Delete"
+                   OnClick="ConfirmDelete"
+                   Disabled="@isDeleting">
             @if (isDeleting)
             {
                 <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
@@ -204,6 +202,14 @@
         showCreateDialog = false;
         newRoomName = string.Empty;
         errorMessage = null;
+    }
+
+    private async Task OnKeyDownAsync(KeyboardEventArgs args)
+    {
+        if (args.Key is "Enter" or "NumpadEnter")
+        {
+            await CreateRoom();
+        }
     }
 
     private async Task CreateRoom()

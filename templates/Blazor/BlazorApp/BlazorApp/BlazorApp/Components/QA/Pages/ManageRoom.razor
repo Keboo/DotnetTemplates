@@ -30,7 +30,7 @@
             <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
         </MudStack>
     }
-    else if (room == null)
+    else if (room is null)
     {
         <MudAlert Severity="Severity.Error" Class="my-4">
             <MudText Typo="Typo.h5">Room Not Found</MudText>
@@ -55,12 +55,11 @@
         <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
             <MudText Typo="Typo.h3">Manage: @room.FriendlyName</MudText>
             <MudStack Row="true" Spacing="2">
-                <MudButton Variant="Variant.Outlined"
-                           Color="Color.Primary"
-                           OnClick="CopyRoomUrl"
-                           StartIcon="@(urlCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
-                           title="Copy public room URL">
-                    @(urlCopied ? "Copied!" : "Copy Public URL")
+                <MudButton Href="/my-rooms"
+                           Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.ArrowBack">
+                    Back
                 </MudButton>
                 <MudButton Variant="Variant.Outlined"
                            Color="Color.Error"
@@ -69,11 +68,12 @@
                            title="Delete this room">
                     Delete Room
                 </MudButton>
-                <MudButton Href="/my-rooms"
-                           Variant="Variant.Outlined"
-                           Color="Color.Default"
-                           StartIcon="@Icons.Material.Filled.ArrowBack">
-                    Back
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           OnClick="CopyRoomUrl"
+                           StartIcon="@(urlCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
+                           title="Copy public room URL">
+                    @(urlCopied ? "Copied!" : "Copy Public URL")
                 </MudButton>
             </MudStack>
         </MudStack>

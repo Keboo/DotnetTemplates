@@ -24,7 +24,7 @@
                 <MudTextField @bind-Value="roomName"
                               Label="Room Name"
                               Variant="Variant.Outlined"
-                              onkeypress="HandleKeyPress"
+                              OnKeyUp="HandleKeyPress"
                               Placeholder="Enter room name"
                               Class="mb-6"
                               Immediate="true" />
@@ -70,7 +70,7 @@
 
     private void HandleKeyPress(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(roomName))
+        if (e.Key is "Enter" or "NumpadEnter" && !string.IsNullOrWhiteSpace(roomName))
         {
             NavigateToRoom();
         }

@@ -50,10 +50,11 @@
                     <MudTextField @bind-Value="tempDisplayName"
                                   Label="Your Name"
                                   Variant="Variant.Outlined"
-                                  onkeypress="HandleNameKeyPress"
+                                  OnKeyDown="OnKeyDownAsync"
                                   Placeholder="Enter your name"
                                   MaxLength="100"
-                                  Class="mb-4" />
+                                  Class="mb-4" 
+                                  Immediate="true" />
 
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Primary"
@@ -143,7 +144,8 @@
                               MaxLength="2000"
                               Disabled="@isSubmitting"
                               HelperText="@($"{newQuestionText.Length} / 2000 characters")"
-                              Class="mb-4" />
+                              Class="mb-4" 
+                              Immediate="true" />
 
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
@@ -285,6 +287,14 @@
         }
     }
 
+    private async Task OnKeyDownAsync(KeyboardEventArgs args)
+    {
+        if (args.Key is "Enter" or "NumpadEnter")
+        {
+            await SaveDisplayName();
+        }
+    }
+
     private async Task SaveDisplayName()
     {
         if (string.IsNullOrWhiteSpace(tempDisplayName))
@@ -304,14 +314,6 @@
         tempDisplayName = displayName ?? string.Empty;
         displayName = null;
         await LocalStorage.DeleteAsync("qa_displayName");
-    }
-
-    private void HandleNameKeyPress(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(tempDisplayName))
-        {
-            _ = SaveDisplayName();
-        }
     }
 
     private async Task SubmitQuestion()

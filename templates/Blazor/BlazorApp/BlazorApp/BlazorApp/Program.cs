@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 using MudBlazor.Services;
+using MudBlazor;
 using BlazorApp;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +30,13 @@ builder.Services.AddRazorComponents()
     .AddAuthenticationStateSerialization();
 
 // Add MudBlazor services
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+    config.SnackbarConfiguration.VisibleStateDuration = 2000;
+    config.SnackbarConfiguration.ShowTransitionDuration = 500;
+    config.SnackbarConfiguration.HideTransitionDuration = 500;
+});
 builder.Services.AddScoped<BlazorApp.Services.ThemeService>();
 
 builder.Services.AddCascadingAuthenticationState();
