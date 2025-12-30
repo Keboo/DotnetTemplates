@@ -20,7 +20,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>My Q&A Rooms</h1>
         <button class="btn btn-primary" @onclick="ShowCreateDialog">
-            <i class="bi bi-plus-circle"></i> Create New Room
+            <RadzenIcon Icon="add_circle" Style="font-size: 1rem; vertical-align: middle;" /> Create New Room
         </button>
     </div>
 
@@ -32,10 +32,10 @@
             </div>
         </div>
     }
-    else if (rooms == null || !rooms.Any())
+    else if (rooms is null || !rooms.Any())
     {
         <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> You haven't created any rooms yet. Click "Create New Room" to get started!
+            <RadzenIcon Icon="info" Style="font-size: 1rem; vertical-align: middle;" /> You haven't created any rooms yet. Click "Create New Room" to get started!
         </div>
     }
     else
@@ -44,9 +44,15 @@
             @foreach (var room in rooms)
             {
                 <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100">
+                    <div class="card h-100" style="position: relative;">
+                        <button class="btn btn-sm btn-outline-danger"
+                                @onclick="() => ShowDeleteConfirmation(room)"
+                                title="Delete room"
+                                style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10;">
+                            <RadzenIcon Icon="delete" Style="font-size: 0.875rem; vertical-align: middle;" />
+                        </button>
                         <div class="card-body">
-                            <h5 class="card-title">@room.FriendlyName</h5>
+                            <h5 class="card-title" style="padding-right: 2.5rem;">@room.FriendlyName</h5>
                             <p class="card-text text-muted">
                                 <small>Created: @room.CreatedDate.ToString("g")</small>
                             </p>
@@ -58,18 +64,18 @@
                             }
                         </div>
                         <div class="card-footer bg-transparent">
-                            <button class="btn btn-sm btn-primary me-2" 
+                            <button class="btn btn-sm btn-primary me-2"
                                     @onclick="() => ManageRoom(room.FriendlyName)">
-                                <i class="bi bi-gear"></i> Manage
+                                <RadzenIcon Icon="settings" Style="font-size: 0.875rem; vertical-align: middle;" /> Manage
                             </button>
-                            <button class="btn btn-sm btn-outline-secondary me-2" 
+                            <button class="btn btn-sm btn-outline-secondary me-2"
                                     @onclick="() => ViewPublic(room.FriendlyName)">
-                                <i class="bi bi-eye"></i> Public View
+                                <RadzenIcon Icon="visibility" Style="font-size: 0.875rem; vertical-align: middle;" /> Public View
                             </button>
-                            <button class="btn btn-sm btn-outline-primary" 
+                            <button class="btn btn-sm btn-outline-primary"
                                     @onclick="() => CopyRoomUrl(room.FriendlyName)"
                                     title="Copy public room URL">
-                                <i class="bi @(copiedRoomId == room.Id ? "bi-check-circle" : "bi-clipboard")"></i>
+                                <RadzenIcon Icon="@(copiedRoomId == room.Id ? "check_circle" : "content_copy")" Style="font-size: 0.875rem; vertical-align: middle;" />
                                 @(copiedRoomId == room.Id ? "Copied!" : "Copy URL")
                             </button>
                         </div>
@@ -96,10 +102,10 @@
                     }
                     <div class="mb-3">
                         <label for="roomName" class="form-label">Room Name</label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="roomName" 
-                               @bind="newRoomName" 
+                        <input type="text"
+                               class="form-control"
+                               id="roomName"
+                               @bind="newRoomName"
                                @bind:event="oninput"
                                placeholder="Enter a unique room name"
                                maxlength="200" />
@@ -108,15 +114,53 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="CloseCreateDialog">Cancel</button>
-                    <button type="button" 
-                            class="btn btn-primary" 
-                            @onclick="CreateRoom" 
+                    <button type="button"
+                            class="btn btn-primary"
+                            @onclick="CreateRoom"
                             disabled="@(string.IsNullOrWhiteSpace(newRoomName) || isCreating)">
                         @if (isCreating)
                         {
                             <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                         }
                         Create
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showDeleteDialog && roomToDelete != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Room</h5>
+                    <button type="button" class="btn-close" @onclick="CloseDeleteDialog"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(deleteErrorMessage))
+                    {
+                        <div class="alert alert-danger">@deleteErrorMessage</div>
+                    }
+                    <p>Are you sure you want to delete the room <strong>"@roomToDelete.FriendlyName"</strong>?</p>
+                    <p class="text-danger">
+                        <RadzenIcon Icon="warning" Style="font-size: 1rem; vertical-align: middle;" />
+                        This action cannot be undone. All questions in this room will be permanently deleted.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseDeleteDialog" disabled="@isDeleting">Cancel</button>
+                    <button type="button"
+                            class="btn btn-danger"
+                            @onclick="ConfirmDelete"
+                            disabled="@isDeleting">
+                        @if (isDeleting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        <RadzenIcon Icon="delete" Style="font-size: 0.875rem; vertical-align: middle;" /> Delete Room
                     </button>
                 </div>
             </div>
@@ -133,6 +177,10 @@
     private string? errorMessage;
     private string? userId;
     private Guid? copiedRoomId;
+    private bool showDeleteDialog = false;
+    private bool isDeleting = false;
+    private Room? roomToDelete;
+    private string? deleteErrorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -215,15 +263,63 @@
 
         var baseUri = NavigationManager.BaseUri.TrimEnd('/');
         var roomUrl = $"{baseUri}/room/{friendlyName}";
-        
+
         await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
-        
+
         copiedRoomId = room.Id;
         StateHasChanged();
-        
+
         // Reset the "Copied!" state after 2 seconds
         await Task.Delay(2000);
         copiedRoomId = null;
         StateHasChanged();
+    }
+
+    private void ShowDeleteConfirmation(Room room)
+    {
+        roomToDelete = room;
+        deleteErrorMessage = null;
+        showDeleteDialog = true;
+    }
+
+    private void CloseDeleteDialog()
+    {
+        showDeleteDialog = false;
+        roomToDelete = null;
+        deleteErrorMessage = null;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (roomToDelete == null || string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        isDeleting = true;
+        deleteErrorMessage = null;
+
+        try
+        {
+            await RoomService.DeleteRoomAsync(roomToDelete.Id, userId, CancellationToken.None);
+
+            // Remove the room from the local list
+            rooms?.Remove(roomToDelete);
+
+            CloseDeleteDialog();
+            StateHasChanged();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            deleteErrorMessage = "You are not authorized to delete this room.";
+        }
+        catch (Exception ex)
+        {
+            deleteErrorMessage = $"An error occurred while deleting the room: {ex.Message}";
+        }
+        finally
+        {
+            isDeleting = false;
+        }
     }
 }
