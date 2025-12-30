@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddAspireDocs();
+var docsGroup = builder.AddLogicalGroup("docs");
+builder.AddAspireDocs().WithParentRelationship(docsGroup);
+builder.AddMudBlazorDocs().WithParentRelationship(docsGroup);
 
 var sql = builder.AddSqlServer();
 var db = sql.AddSqlDatabase();
@@ -28,7 +30,6 @@ var dbGate = builder.AddContainer("dbgate", "dbgate/dbgate")
     .WithHttpHealthCheck("/")
     ;
 
-//var blazorappGroup = builder.AddLogicalGroup("apps");
 
 builder.AddProject<Projects.BlazorApp>("blazorapp")
     .WithDependency(db, ConnectionStrings.DatabaseKey);
