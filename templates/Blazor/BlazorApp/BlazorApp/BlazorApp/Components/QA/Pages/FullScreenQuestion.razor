@@ -107,11 +107,9 @@
 <div class="fullscreen-container">
     @if (loading)
     {
-        <div class="text-center loading-spinner">
-            <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
+        <MudStack AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" Style="width: 3rem; height: 3rem;" />
+        </MudStack>
     }
     else if (room is null)
     {

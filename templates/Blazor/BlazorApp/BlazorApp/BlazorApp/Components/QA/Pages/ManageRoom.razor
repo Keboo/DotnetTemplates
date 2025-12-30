@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.SignalR.Client
 @using System.Security.Claims
+@using BlazorApp.Components.Layout
 
 @attribute [Authorize]
 
@@ -15,226 +16,211 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ISignalRTokenProvider TokenProvider
 @inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 @implements IAsyncDisposable
 
 <PageTitle>Manage @FriendlyName</PageTitle>
 
-<div class="container my-4">
+<MudContainer Class="my-4">
     @if (loading)
     {
-        <div class="text-center">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
+        <MudStack AlignItems="AlignItems.Center" Class="my-8">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+        </MudStack>
     }
     else if (room == null)
     {
-        <div class="alert alert-danger">
-            <h4>Room Not Found</h4>
-            <p>The room "@FriendlyName" does not exist.</p>
-            <a href="/my-rooms" class="btn btn-primary">Back to My Rooms</a>
-        </div>
+        <MudAlert Severity="Severity.Error" Class="my-4">
+            <MudText Typo="Typo.h5">Room Not Found</MudText>
+            <MudText>The room "@FriendlyName" does not exist.</MudText>
+            <MudButton Href="/my-rooms" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2">
+                Back to My Rooms
+            </MudButton>
+        </MudAlert>
     }
     else if (!isOwner)
     {
-        <div class="alert alert-warning">
-            <h4>Unauthorized</h4>
-            <p>You don't have permission to manage this room.</p>
-            <a href="/my-rooms" class="btn btn-primary">Back to My Rooms</a>
-        </div>
+        <MudAlert Severity="Severity.Warning" Class="my-4">
+            <MudText Typo="Typo.h5">Unauthorized</MudText>
+            <MudText>You don't have permission to manage this room.</MudText>
+            <MudButton Href="/my-rooms" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2">
+                Back to My Rooms
+            </MudButton>
+        </MudAlert>
     }
     else
     {
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Manage: @room.FriendlyName</h1>
-            <div>
-                <button class="btn btn-outline-primary me-2"
-                        @onclick="CopyRoomUrl"
-                        title="Copy public room URL">
-                    <i class="bi @(urlCopied ? "bi-check-circle" : "bi-clipboard")"></i>
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+            <MudText Typo="Typo.h3">Manage: @room.FriendlyName</MudText>
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           OnClick="CopyRoomUrl"
+                           StartIcon="@(urlCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
+                           title="Copy public room URL">
                     @(urlCopied ? "Copied!" : "Copy Public URL")
-                </button>
-                <button class="btn btn-outline-danger me-2"
-                        @onclick="() => showDeleteConfirmation = true"
-                        title="Delete this room">
-                    <i class="bi bi-trash"></i> Delete Room
-                </button>
-                <a href="/my-rooms" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
-            </div>
-        </div>
-
-        <!-- Delete Confirmation Modal -->
-        @if (showDeleteConfirmation)
-        {
-            <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-danger text-white">
-                            <h5 class="modal-title">
-                                <i class="bi bi-exclamation-triangle-fill"></i> Delete Room
-                            </h5>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete the room <strong>"@room.FriendlyName"</strong>?</p>
-                            <p class="text-danger mb-0">
-                                <i class="bi bi-exclamation-circle"></i>
-                                This action cannot be undone. All questions in this room will be permanently deleted, and all participants will be redirected.
-                            </p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button"
-                                    class="btn btn-secondary"
-                                    @onclick="() => showDeleteConfirmation = false"
-                                    disabled="@isDeletingRoom">
-                                Cancel
-                            </button>
-                            <button type="button"
-                                    class="btn btn-danger"
-                                    @onclick="DeleteRoom"
-                                    disabled="@isDeletingRoom">
-                                @if (isDeletingRoom)
-                                {
-                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                                }
-                                <i class="bi bi-trash"></i> Delete Room
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Error"
+                           OnClick="ShowDeleteConfirmation"
+                           StartIcon="@Icons.Material.Filled.Delete"
+                           title="Delete this room">
+                    Delete Room
+                </MudButton>
+                <MudButton Href="/my-rooms"
+                           Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.ArrowBack">
+                    Back
+                </MudButton>
+            </MudStack>
+        </MudStack>
 
         <!-- Current Question Section -->
-        <div class="rz-card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Current Question</h5>
-            </div>
-            <div class="card-body">
+        <MudCard Class="mb-4">
+            <MudCardHeader Style="background-color: var(--mud-palette-primary); color: white;">
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Current Question</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
                 @if (room.CurrentQuestion != null)
                 {
-                    <div class="alert alert-success">
-                        <h6>@room.CurrentQuestion.QuestionText</h6>
+                    <MudAlert Severity="Severity.Success" Class="mb-3">
+                        <MudText Typo="Typo.h6">@room.CurrentQuestion.QuestionText</MudText>
                         @if (!string.IsNullOrEmpty(room.CurrentQuestion.AuthorName))
                         {
-                            <small class="text-muted">Asked by: @room.CurrentQuestion.AuthorName</small>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">Asked by: @room.CurrentQuestion.AuthorName</MudText>
                         }
-                    </div>
-                    <button class="btn btn-sm btn-warning" @onclick="ClearCurrentQuestion">
+                    </MudAlert>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Warning"
+                               Size="Size.Small"
+                               OnClick="ClearCurrentQuestion">
                         Clear Current Question
-                    </button>
+                    </MudButton>
                 }
                 else
                 {
-                    <p class="text-muted">No question is currently set. Select a question below to make it current.</p>
+                    <MudText Color="Color.Secondary">No question is currently set. Select a question below to make it current.</MudText>
                 }
-            </div>
-        </div>
+            </MudCardContent>
+        </MudCard>
 
         <!-- Questions Tabs -->
-        <ul class="nav nav-tabs mb-3">
-            <li class="nav-item">
-                <button class="nav-link @(activeTab == "pending" ? "active" : "")" @onclick='() => activeTab = "pending"'>
-                    Pending Approval @(pendingQuestions?.Count() > 0 ? $"({pendingQuestions.Count()})" : "")
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link @(activeTab == "approved" ? "active" : "")" @onclick='() => activeTab = "approved"'>
-                    Approved @(approvedQuestions?.Count() > 0 ? $"({approvedQuestions.Count()})" : "")
-                </button>
-            </li>
-        </ul>
-
-        @if (activeTab == "pending")
-        {
-            <div class="rz-card">
-                <div class="card-body">
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Class="mb-4" @bind-ActivePanelIndex="activeTabIndex">
+            <MudTabPanel Text="@GetPendingTabText()">
+                <MudPaper Elevation="0" Class="pa-4">
                     @if (pendingQuestions == null || !pendingQuestions.Any())
                     {
-                        <p class="text-muted">No pending questions.</p>
+                        <MudText Color="Color.Secondary">No pending questions.</MudText>
                     }
                     else
                     {
-                        foreach (var question in pendingQuestions)
-                        {
-                            <div class="border-bottom pb-3 mb-3">
-                                <p class="mb-1"><strong>@question.QuestionText</strong></p>
-                                @if (!string.IsNullOrEmpty(question.AuthorName))
-                                {
-                                    <small class="text-muted">Asked by: @question.AuthorName</small>
-                                }
-                                <small class="text-muted d-block">@question.CreatedDate.ToString("g")</small>
-                                <div class="mt-2">
-                                    <button class="btn btn-sm btn-success me-2" @onclick="() => ApproveQuestion(question.Id)">
-                                        <i class="bi bi-check-circle"></i> Approve
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteQuestion(question.Id)">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    }
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="rz-card">
-                <div class="card-body">
-                    @if (approvedQuestions == null || !approvedQuestions.Any())
-                    {
-                        <p class="text-muted">No approved questions yet.</p>
-                    }
-                    else
-                    {
-                        foreach (var question in approvedQuestions.OrderBy(x => x.IsAnswered))
-                        {
-                            <div class="border-bottom pb-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <p class="mb-1">
-                                            <strong>@question.QuestionText</strong>
-                                            @if (question.IsAnswered)
-                                            {
-                                                <span class="badge bg-success ms-2">Answered</span>
-                                            }
-                                        </p>
+                        <MudStack Spacing="3">
+                            @foreach (var question in pendingQuestions)
+                            {
+                                <MudPaper Elevation="1" Class="pa-3">
+                                    <MudStack Spacing="2">
+                                        <MudText Typo="Typo.body1"><strong>@question.QuestionText</strong></MudText>
                                         @if (!string.IsNullOrEmpty(question.AuthorName))
                                         {
-                                            <small class="text-muted">Asked by: @question.AuthorName</small>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Asked by: @question.AuthorName</MudText>
                                         }
-                                        <small class="text-muted d-block">@question.CreatedDate.ToString("g")</small>
-                                    </div>
-                                </div>
-                                <div class="mt-2">
-                                    @if (room.CurrentQuestionId != question.Id)
-                                    {
-                                        <button class="btn btn-sm btn-primary me-2" @onclick="() => SetAsCurrent(question.Id)">
-                                            <i class="bi bi-star"></i> Set as Current
-                                        </button>
-                                    }
-                                    @if (!question.IsAnswered)
-                                    {
-                                        <button class="btn btn-sm btn-success me-2" @onclick="() => MarkAsAnswered(question.Id)">
-                                            <i class="bi bi-check2-circle"></i> Mark as Answered
-                                        </button>
-                                    }
-                                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteQuestion(question.Id)">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        }
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@question.CreatedDate.ToString("g")</MudText>
+                                        <MudStack Row="true" Spacing="2">
+                                            <MudButton Variant="Variant.Filled"
+                                                       Color="Color.Success"
+                                                       Size="Size.Small"
+                                                       StartIcon="@Icons.Material.Filled.CheckCircle"
+                                                       OnClick="() => ApproveQuestion(question.Id)">
+                                                Approve
+                                            </MudButton>
+                                            <MudButton Variant="Variant.Filled"
+                                                       Color="Color.Error"
+                                                       Size="Size.Small"
+                                                       StartIcon="@Icons.Material.Filled.Delete"
+                                                       OnClick="() => DeleteQuestion(question.Id)">
+                                                Delete
+                                            </MudButton>
+                                        </MudStack>
+                                    </MudStack>
+                                </MudPaper>
+                            }
+                        </MudStack>
                     }
-                </div>
-            </div>
-        }
+                </MudPaper>
+            </MudTabPanel>
+            <MudTabPanel Text="@GetApprovedTabText()">
+                <MudPaper Elevation="0" Class="pa-4">
+                    @if (approvedQuestions == null || !approvedQuestions.Any())
+                    {
+                        <MudText Color="Color.Secondary">No approved questions yet.</MudText>
+                    }
+                    else
+                    {
+                        <MudStack Spacing="3">
+                            @foreach (var question in approvedQuestions.OrderBy(x => x.IsAnswered))
+                            {
+                                <MudPaper Elevation="1" Class="pa-3">
+                                    <MudStack Spacing="2">
+                                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                                            <MudStack Spacing="1" Style="flex: 1;">
+                                                <MudText Typo="Typo.body1">
+                                                    <strong>@question.QuestionText</strong>
+                                                    @if (question.IsAnswered)
+                                                    {
+                                                        <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="ml-2">Answered</MudChip>
+                                                    }
+                                                </MudText>
+                                                @if (!string.IsNullOrEmpty(question.AuthorName))
+                                                {
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Asked by: @question.AuthorName</MudText>
+                                                }
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">@question.CreatedDate.ToString("g")</MudText>
+                                            </MudStack>
+                                        </MudStack>
+                                        <MudStack Row="true" Spacing="2">
+                                            @if (room.CurrentQuestionId != question.Id)
+                                            {
+                                                <MudButton Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           Size="Size.Small"
+                                                           StartIcon="@Icons.Material.Filled.Star"
+                                                           OnClick="() => SetAsCurrent(question.Id)">
+                                                    Set as Current
+                                                </MudButton>
+                                            }
+                                            @if (!question.IsAnswered)
+                                            {
+                                                <MudButton Variant="Variant.Filled"
+                                                           Color="Color.Success"
+                                                           Size="Size.Small"
+                                                           StartIcon="@Icons.Material.Filled.Check"
+                                                           OnClick="() => MarkAsAnswered(question.Id)">
+                                                    Mark as Answered
+                                                </MudButton>
+                                            }
+                                            <MudButton Variant="Variant.Filled"
+                                                       Color="Color.Error"
+                                                       Size="Size.Small"
+                                                       StartIcon="@Icons.Material.Filled.Delete"
+                                                       OnClick="() => DeleteQuestion(question.Id)">
+                                                Delete
+                                            </MudButton>
+                                        </MudStack>
+                                    </MudStack>
+                                </MudPaper>
+                            }
+                        </MudStack>
+                    }
+                </MudPaper>
+            </MudTabPanel>
+        </MudTabs>
     }
-</div>
+</MudContainer>
 
 @code {
     [Parameter]
@@ -246,11 +232,9 @@
     private bool loading = true;
     private bool isOwner = false;
     private string? userId;
-    private string activeTab = "pending";
+    private int activeTabIndex = 0;
     private RoomHubClient? roomHub;
     private bool urlCopied = false;
-    private bool showDeleteConfirmation = false;
-    private bool isDeletingRoom = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -418,11 +402,12 @@
             await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
 
             urlCopied = true;
+            Snackbar.Add("Room URL copied to clipboard!", Severity.Success);
             StateHasChanged();
         }
         catch (Exception)
         {
-            // Handle clipboard error
+            Snackbar.Add("Failed to copy URL to clipboard", Severity.Error);
             return;
         }
 
@@ -432,29 +417,45 @@
         StateHasChanged();
     }
 
+    private async Task ShowDeleteConfirmation()
+    {
+        if (room is null) return;
+
+        var parameters = new DialogParameters
+        {
+            ["ContentText"] = $"Are you sure you want to delete the room \"{room.FriendlyName}\"? This action cannot be undone. All questions in this room will be permanently deleted, and all participants will be redirected.",
+            ["ButtonText"] = "Delete",
+            ["Color"] = Color.Error
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>("Delete Room", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            await DeleteRoom();
+        }
+    }
+
     private async Task DeleteRoom()
     {
         if (userId is null || room is null) return;
 
-        isDeletingRoom = true;
-
         try
         {
             await RoomService.DeleteRoomAsync(room.Id, userId, CancellationToken.None);
+            Snackbar.Add("Room deleted successfully", Severity.Success);
             // Redirect to My Rooms page after successful deletion
             NavigationManager.NavigateTo("/my-rooms");
         }
         catch (UnauthorizedAccessException)
         {
-            // Handle unauthorized access
-            showDeleteConfirmation = false;
-            isDeletingRoom = false;
+            Snackbar.Add("You don't have permission to delete this room", Severity.Error);
         }
         catch (Exception)
         {
-            // Handle other errors
-            showDeleteConfirmation = false;
-            isDeletingRoom = false;
+            Snackbar.Add("An error occurred while deleting the room", Severity.Error);
         }
     }
 
@@ -464,5 +465,17 @@
         {
             await roomHub.DisposeAsync();
         }
+    }
+
+    private string GetPendingTabText()
+    {
+        var count = pendingQuestions?.Count() ?? 0;
+        return count > 0 ? $"Pending Approval ({count})" : "Pending Approval";
+    }
+
+    private string GetApprovedTabText()
+    {
+        var count = approvedQuestions?.Count() ?? 0;
+        return count > 0 ? $"Approved ({count})" : "Approved";
     }
 }

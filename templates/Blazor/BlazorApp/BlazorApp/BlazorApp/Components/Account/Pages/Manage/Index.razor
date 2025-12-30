@@ -10,27 +10,33 @@
 
 <PageTitle>Profile</PageTitle>
 
-<h3>Profile</h3>
+<MudText Typo="Typo.h4" Class="mb-4">Profile</MudText>
 <StatusMessage />
 
-<div class="row">
-    <div class="col-xl-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <input type="text" value="@username" id="username" class="form-control" placeholder="Choose your username." disabled />
-                <label for="username" class="form-label">Username</label>
-            </div>
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.PhoneNumber" id="Input.PhoneNumber" class="form-control" placeholder="Enter your phone number" />
-                <label for="Input.PhoneNumber" class="form-label">Phone number</label>
-                <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </EditForm>
-    </div>
-</div>
+<MudPaper Elevation="2" Class="pa-4" Style="max-width: 600px;">
+    <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert" />
+        
+        <MudTextField Value="@username" 
+                      Label="Username" 
+                      Variant="Variant.Outlined"
+                      Disabled="true"
+                      Class="mb-4" />
+        
+        <MudTextField @bind-Value="Input.PhoneNumber" 
+                      For="@(() => Input.PhoneNumber)"
+                      Label="Phone number" 
+                      Variant="Variant.Outlined"
+                      Class="mb-4" />
+        
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   Size="Size.Large"
+                   FullWidth="true"
+                   ButtonType="ButtonType.Submit">Save</MudButton>
+    </EditForm>
+</MudPaper>
 
 @code {
     private ApplicationUser? user;

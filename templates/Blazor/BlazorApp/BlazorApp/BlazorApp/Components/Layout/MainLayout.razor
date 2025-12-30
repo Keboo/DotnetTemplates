@@ -1,28 +1,21 @@
-﻿@using Microsoft.Extensions.Options
-@inherits LayoutComponentBase
-@inject CookieThemeService CookieThemeService
+﻿@inherits LayoutComponentBase
 
-<RadzenLayout>
-    <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0" JustifyContent="JustifyContent.SpaceBetween" Style="width: 100%;">
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-                <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
-                <RadzenLabel Text="BlazorApp" Style="font-size: 1.2rem; font-weight: bold; margin-left: 1rem;" />
-            </RadzenStack>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Style="margin-right: 1rem;">
-                <ThemeToggle />
-            </RadzenStack>
-        </RadzenStack>
-    </RadzenHeader>
-    <RadzenSidebar @bind-Expanded="@sidebarExpanded">
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => drawerOpen = !drawerOpen)" />
+        <MudText Typo="Typo.h6">BlazorApp</MudText>
+        <MudSpacer />
+        <ThemeToggle />
+    </MudAppBar>
+    <MudDrawer @bind-Open="@drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
-    </RadzenSidebar>
-    <RadzenBody>
-        <div class="rz-p-4">
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
             @Body
-        </div>
-    </RadzenBody>
-</RadzenLayout>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -31,5 +24,5 @@
 </div>
 
 @code {
-    bool sidebarExpanded = true;
+    bool drawerOpen = true;
 }

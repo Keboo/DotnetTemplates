@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-using Radzen;
+using MudBlazor.Services;
 using BlazorApp;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,15 +28,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents()
     .AddAuthenticationStateSerialization();
 
-// Add Radzen services
-builder.Services.AddRadzenComponents();
-
-// Add Radzen Cookie Theme Service for theme persistence
-builder.Services.AddRadzenCookieThemeService(options =>
-{
-    options.Name = Theming.CookieName;
-    options.Duration = TimeSpan.FromDays(365);
-});
+// Add MudBlazor services
+builder.Services.AddMudServices();
+builder.Services.AddScoped<BlazorApp.Services.ThemeService>();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();

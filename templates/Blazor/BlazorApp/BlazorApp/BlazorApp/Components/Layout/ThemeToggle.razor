@@ -1,35 +1,42 @@
-@inject ThemeService ThemeService
-@inject CookieThemeService CookieThemeService
+@inject BlazorApp.Services.ThemeService ThemeService
+@inject ISnackbar Snackbar
 @rendermode InteractiveServer
+@implements IDisposable
 
-<RadzenButton Icon="@GetThemeIcon()"
-              Variant="Variant.Text"
-              Click="@ToggleTheme"
-              Title="@GetThemeTooltip()"
-              class="rz-color-white" />
+<MudIconButton Icon="@GetThemeIcon()"
+               Color="Color.Inherit"
+               OnClick="@ToggleTheme"
+               title="@GetThemeTooltip()" />
 
 @code {
-    private string currentTheme = Theming.DefaultTheme;
-
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        currentTheme = ThemeService.Theme ?? Theming.DefaultTheme;
+        ThemeService.OnThemeChanged += StateHasChanged;
     }
 
     private void ToggleTheme()
     {
-        var newTheme = currentTheme == Theming.LightTheme ? Theming.DarkTheme : Theming.LightTheme;
-        currentTheme = newTheme;
-        ThemeService.SetTheme(newTheme);
+        ThemeService.ToggleTheme();
+        var themeName = (ThemeService.IsDarkMode ?? false) ? "dark" : "light";
+        Snackbar.Add($"Switched to {themeName} theme", Severity.Info);
     }
 
     private string GetThemeIcon()
     {
-        return currentTheme == Theming.DarkTheme ? "dark_mode" : "light_mode";
+        return (ThemeService.IsDarkMode ?? false) 
+            ? Icons.Material.Filled.DarkMode 
+            : Icons.Material.Filled.LightMode;
     }
 
     private string GetThemeTooltip()
     {
-        return currentTheme == Theming.DarkTheme ? "Switch to light theme" : "Switch to dark theme";
+        return (ThemeService.IsDarkMode ?? false) 
+            ? "Switch to light theme" 
+            : "Switch to dark theme";
+    }
+    
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= StateHasChanged;
     }
 }

@@ -2,31 +2,29 @@
 
 @inject NavigationManager NavigationManager
 
-<RadzenPanelMenu>
-    <RadzenPanelMenuItem Text="Home" Icon="home" Path="" Match="NavLinkMatch.All" />
-    <RadzenPanelMenuItem Text="My Rooms" Icon="meeting_room" Path="my-rooms" />
+<MudNavMenu>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <MudNavLink Href="my-rooms" Icon="@Icons.Material.Filled.MeetingRoom">My Rooms</MudNavLink>
     
     <AuthorizeView>
         <Authorized>
-            <RadzenPanelMenuItem Text="@($"{context.User.Identity?.Name}")" Icon="person" Path="Account/Manage" />
-            <RadzenPanelMenuItem Text="Logout" Icon="logout">
-                <Template>
-                    <form action="Account/Logout" method="post" style="display: inline; width: 100%;">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" style="all: unset; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 0.75rem;">
-                            <span class="rz-navigation-item-text">Logout</span>
-                        </button>
-                    </form>
-                </Template>
-            </RadzenPanelMenuItem>
+            <MudNavLink Href="Account/Manage" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink>
+            <MudNavGroup Title="Logout" Icon="@Icons.Material.Filled.Logout" Expanded="false">
+                <form action="Account/Logout" method="post">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Text" Color="Color.Default" FullWidth="true" StartIcon="@Icons.Material.Filled.Logout">
+                        Logout
+                    </MudButton>
+                </form>
+            </MudNavGroup>
         </Authorized>
         <NotAuthorized>
-            <RadzenPanelMenuItem Text="Register" Icon="person_add" Path="Account/Register" />
-            <RadzenPanelMenuItem Text="Login" Icon="login" Path="Account/Login" />
+            <MudNavLink Href="Account/Register" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
+            <MudNavLink Href="Account/Login" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
-</RadzenPanelMenu>
+</MudNavMenu>
 
 @code {
     private string? currentUrl;

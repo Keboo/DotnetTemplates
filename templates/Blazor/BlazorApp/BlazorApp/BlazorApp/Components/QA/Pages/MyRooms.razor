@@ -13,160 +13,149 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>My Rooms</PageTitle>
 
-<div class="container my-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>My Q&A Rooms</h1>
-        <button class="btn btn-primary" @onclick="ShowCreateDialog">
-            <RadzenIcon Icon="add_circle" Style="font-size: 1rem; vertical-align: middle;" /> Create New Room
-        </button>
-    </div>
+<MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
+    <MudPaper Elevation="0" Class="mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <MudText Typo="Typo.h4">My Q&A Rooms</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowCreateDialog" StartIcon="@Icons.Material.Filled.AddCircle">
+                Create New Room
+            </MudButton>
+        </div>
+    </MudPaper>
 
     @if (loading)
     {
-        <div class="text-center">
-            <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+        <div class="d-flex justify-content-center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
         </div>
     }
     else if (rooms is null || !rooms.Any())
     {
-        <div class="alert alert-info">
-            <RadzenIcon Icon="info" Style="font-size: 1rem; vertical-align: middle;" /> You haven't created any rooms yet. Click "Create New Room" to get started!
-        </div>
+        <MudAlert Severity="Severity.Info" Icon="@Icons.Material.Filled.Info">
+            You haven't created any rooms yet. Click "Create New Room" to get started!
+        </MudAlert>
     }
     else
     {
-        <div class="row">
+        <MudGrid>
             @foreach (var room in rooms)
             {
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100" style="position: relative;">
-                        <button class="btn btn-sm btn-outline-danger"
-                                @onclick="() => ShowDeleteConfirmation(room)"
-                                title="Delete room"
-                                style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10;">
-                            <RadzenIcon Icon="delete" Style="font-size: 0.875rem; vertical-align: middle;" />
-                        </button>
-                        <div class="card-body">
-                            <h5 class="card-title" style="padding-right: 2.5rem;">@room.FriendlyName</h5>
-                            <p class="card-text text-muted">
-                                <small>Created: @room.CreatedDate.ToString("g")</small>
-                            </p>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@room.FriendlyName</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                             Color="Color.Error"
+                                             Size="Size.Small"
+                                             OnClick="() => ShowDeleteConfirmation(room)"
+                                             title="Delete room" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                Created: @room.CreatedDate.ToString("g")
+                            </MudText>
                             @if (room.CurrentQuestion != null)
                             {
-                                <div class="alert alert-success mb-2" role="alert">
-                                    <small><strong>Current:</strong> @room.CurrentQuestion.QuestionText</small>
-                                </div>
+                                <MudAlert Severity="Severity.Success" Class="mt-2" Dense="true">
+                                    <MudText Typo="Typo.body2"><strong>Current:</strong> @room.CurrentQuestion.QuestionText</MudText>
+                                </MudAlert>
                             }
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <button class="btn btn-sm btn-primary me-2"
-                                    @onclick="() => ManageRoom(room.FriendlyName)">
-                                <RadzenIcon Icon="settings" Style="font-size: 0.875rem; vertical-align: middle;" /> Manage
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary me-2"
-                                    @onclick="() => ViewPublic(room.FriendlyName)">
-                                <RadzenIcon Icon="visibility" Style="font-size: 0.875rem; vertical-align: middle;" /> Public View
-                            </button>
-                            <button class="btn btn-sm btn-outline-primary"
-                                    @onclick="() => CopyRoomUrl(room.FriendlyName)"
-                                    title="Copy public room URL">
-                                <RadzenIcon Icon="@(copiedRoomId == room.Id ? "check_circle" : "content_copy")" Style="font-size: 0.875rem; vertical-align: middle;" />
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Filled"
+                                     Color="Color.Primary"
+                                     Size="Size.Small"
+                                     StartIcon="@Icons.Material.Filled.Settings"
+                                     OnClick="() => ManageRoom(room.FriendlyName)">
+                                Manage
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined"
+                                     Color="Color.Secondary"
+                                     Size="Size.Small"
+                                     StartIcon="@Icons.Material.Filled.Visibility"
+                                     OnClick="() => ViewPublic(room.FriendlyName)">
+                                Public View
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined"
+                                     Color="Color.Primary"
+                                     Size="Size.Small"
+                                     StartIcon="@(copiedRoomId == room.Id ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.ContentCopy)"
+                                     OnClick="() => CopyRoomUrl(room.FriendlyName)">
                                 @(copiedRoomId == room.Id ? "Copied!" : "Copy URL")
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
             }
-        </div>
+        </MudGrid>
     }
-</div>
+</MudContainer>
 
-@if (showCreateDialog)
-{
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Create New Room</h5>
-                    <button type="button" class="btn-close" @onclick="CloseCreateDialog"></button>
-                </div>
-                <div class="modal-body">
-                    @if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        <div class="alert alert-danger">@errorMessage</div>
-                    }
-                    <div class="mb-3">
-                        <label for="roomName" class="form-label">Room Name</label>
-                        <input type="text"
-                               class="form-control"
-                               id="roomName"
-                               @bind="newRoomName"
-                               @bind:event="oninput"
-                               placeholder="Enter a unique room name"
-                               maxlength="200" />
-                        <div class="form-text">This will be used in the URL. Choose a short, memorable name.</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseCreateDialog">Cancel</button>
-                    <button type="button"
-                            class="btn btn-primary"
-                            @onclick="CreateRoom"
-                            disabled="@(string.IsNullOrWhiteSpace(newRoomName) || isCreating)">
-                        @if (isCreating)
-                        {
-                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                        }
-                        Create
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+<MudDialog @bind-Visible="showCreateDialog">
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-4">Create New Room</MudText>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-3">@errorMessage</MudAlert>
+        }
+        <MudTextField @bind-Value="newRoomName"
+                     Label="Room Name"
+                     Placeholder="Enter a unique room name"
+                     HelperText="This will be used in the URL. Choose a short, memorable name."
+                     MaxLength="200"
+                     Variant="Variant.Outlined" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseCreateDialog">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                  Color="Color.Primary"
+                  OnClick="CreateRoom"
+                  Disabled="@(string.IsNullOrWhiteSpace(newRoomName) || isCreating)">
+            @if (isCreating)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Create
+        </MudButton>
+    </DialogActions>
+</MudDialog>
 
-@if (showDeleteDialog && roomToDelete != null)
-{
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Delete Room</h5>
-                    <button type="button" class="btn-close" @onclick="CloseDeleteDialog"></button>
-                </div>
-                <div class="modal-body">
-                    @if (!string.IsNullOrEmpty(deleteErrorMessage))
-                    {
-                        <div class="alert alert-danger">@deleteErrorMessage</div>
-                    }
-                    <p>Are you sure you want to delete the room <strong>"@roomToDelete.FriendlyName"</strong>?</p>
-                    <p class="text-danger">
-                        <RadzenIcon Icon="warning" Style="font-size: 1rem; vertical-align: middle;" />
-                        This action cannot be undone. All questions in this room will be permanently deleted.
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseDeleteDialog" disabled="@isDeleting">Cancel</button>
-                    <button type="button"
-                            class="btn btn-danger"
-                            @onclick="ConfirmDelete"
-                            disabled="@isDeleting">
-                        @if (isDeleting)
-                        {
-                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                        }
-                        <RadzenIcon Icon="delete" Style="font-size: 0.875rem; vertical-align: middle;" /> Delete Room
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+<MudDialog @bind-Visible="showDeleteDialog">
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-4">Delete Room</MudText>
+        @if (!string.IsNullOrEmpty(deleteErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-3">@deleteErrorMessage</MudAlert>
+        }
+        <MudText>Are you sure you want to delete the room <strong>"@roomToDelete?.FriendlyName"</strong>?</MudText>
+        <MudAlert Severity="Severity.Warning" Icon="@Icons.Material.Filled.Warning" Class="mt-3">
+            This action cannot be undone. All questions in this room will be permanently deleted.
+        </MudAlert>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseDeleteDialog" Disabled="@isDeleting">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                  Color="Color.Error"
+                  StartIcon="@Icons.Material.Filled.Delete"
+                  OnClick="ConfirmDelete"
+                  Disabled="@isDeleting">
+            @if (isDeleting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Delete Room
+        </MudButton>
+    </DialogActions>
+</MudDialog>
 
 @code {
     private List<Room>? rooms;
@@ -267,7 +256,7 @@
         await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
 
         copiedRoomId = room.Id;
-        StateHasChanged();
+        Snackbar.Add("Room URL copied to clipboard!", Severity.Success);
 
         // Reset the "Copied!" state after 2 seconds
         await Task.Delay(2000);
@@ -306,6 +295,7 @@
             // Remove the room from the local list
             rooms?.Remove(roomToDelete);
 
+            Snackbar.Add("Room deleted successfully!", Severity.Success);
             CloseDeleteDialog();
             StateHasChanged();
         }

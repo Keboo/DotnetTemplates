@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
-    <PackageReference Include="Radzen.Blazor" />
+    <PackageReference Include="MudBlazor" />
 
   </ItemGroup>
 

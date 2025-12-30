@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Radzen;
+using MudBlazor.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -7,7 +7,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthenticationStateDeserialization();
 
-// Add Radzen services
-builder.Services.AddRadzenComponents();
+// Add MudBlazor services
+builder.Services.AddMudServices();
 
 await builder.Build().RunAsync();

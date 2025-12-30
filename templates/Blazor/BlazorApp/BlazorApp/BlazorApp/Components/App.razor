@@ -1,4 +1,6 @@
 @using Microsoft.Extensions.Options
+@using MudBlazor
+@using BlazorApp.Components
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,25 +9,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     <ResourcePreloader />
-    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" rel="stylesheet" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["BlazorApp.styles.css"]" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
-    <RadzenTheme Theme="@Theming.DefaultTheme" />
 </head>
 
 <body>
     <Routes />
-    <RadzenDialog />
-    <RadzenNotification />
-    <RadzenTooltip />
-    <RadzenContextMenu />
+    <MudProviders @rendermode="InteractiveAuto" />
     <ReconnectModal />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
     <script src="@Assets["Components/Account/Shared/PasskeySubmit.razor.js"]" type="module"></script>
-    <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
+    <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
 </body>
 
 </html>
@@ -33,29 +32,4 @@
 @code {
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = null!;
-
-    [Inject]
-    private ThemeService ThemeService { get; set; } = null!;
-
-    [Inject]
-    private IOptions<CookieThemeServiceOptions> Options { get; set; } = null!;
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        if (HttpContext != null)
-        {
-            var theme = HttpContext.Request.Cookies[Theming.CookieName];
-
-            if (!string.IsNullOrEmpty(theme))
-            {
-                ThemeService.SetTheme(theme, false);
-            }
-            else
-            {
-                HttpContext.Response.Cookies.Append(Theming.CookieName, Theming.DefaultTheme, new CookieOptions { Secure = Options.Value.IsSecure, Expires = DateTimeOffset.Now.Add(Options.Value.Duration) });
-            }
-        }
-    }
 }
