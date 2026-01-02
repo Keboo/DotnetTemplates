@@ -71,3 +71,18 @@ By default, this template uses the new `.slnx` (XML-based solution) format intro
 [Docs: dotnet sln command](https://learn.microsoft.com/dotnet/core/tools/dotnet-sln?WT.mc_id=DT-MVP-5003472)
 
 If you need to use the legacy `.sln` format, use the `--sln true` parameter when creating the template.
+
+## Deployment
+Deployment is handled with the [Azure Development CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/?WT.mc_id=DT-MVP-5003472).
+
+This can be [installed](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows&WT.mc_id=DT-MVP-5003472) with `winget install microsoft.azd` 
+
+If you don't already have it installed, you will also need to install bicep as this is what 
+
+You will first need to login using `azd auth login` to authenticate with the Azure account that will be used for deployment.
+
+On your first time, you will need to run `azd init` and scan the current directory. It will prompt you to provide a unique name for the app. This information will be stored in a `.azure` directory. It will also generate an `azure.yaml` file as well as a `next-steps.md` file outlining how to continue with publishing.
+
+
+
+

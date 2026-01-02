@@ -478,3 +478,4 @@ $RECYCLE.BIN/
 
 # Ignore live unit testing config
 *.lutconfig 
+.azure

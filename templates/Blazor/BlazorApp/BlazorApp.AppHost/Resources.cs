@@ -1,5 +1,7 @@
 using System.Diagnostics;
 
+using Aspire.Hosting.Azure;
+
 using BlazorApp.AppHost;
 using BlazorApp.Core;
 
@@ -13,14 +15,22 @@ public static class Resources
 {
     extension(IDistributedApplicationBuilder builder)
     {
+        public IResourceBuilder<AzureSqlServerResource> AddAzureSqlServer()
+        {
+            return builder.AddAzureSqlServer("blazorapp-sql");
+        }
+
         public IResourceBuilder<SqlServerServerResource> AddSqlServer()
         {
             return builder
                 .AddSqlServer("blazorapp-sql")
-                .WithImageTag("2025-latest") // This pairs with the usage of .UseAzureSql() which has a compatibility level of 170.
                 .WithLifetime(ContainerLifetime.Persistent)
                 .WithContainerName("blazorapp-sql")
                 .WithDataVolume("blazorapp-database")
+
+                // This pairs with the usage of .UseAzureSql() which has a compatibility level of 170.
+                .WithImageTag("2025-latest")
+                .PublishAsConnectionString()
                 //Give the SQL server container a fixed port number. This can be useful if people want to use external tools 
                 // with re-usable port numbers to connect to the database. The expected range is between 1024-49151.
                 //.WithHostPort(00000)
@@ -29,7 +39,9 @@ public static class Resources
 
         public IResourceBuilder<ExternalServiceResource> AddAspireDocs()
         {
-            IResourceBuilder<ExternalServiceResource> rv = builder.AddExternalService("aspire-docs", "https://aspire.dev/docs/");
+            IResourceBuilder<ExternalServiceResource> rv = builder.AddExternalService("aspire-docs", "https://aspire.dev/docs/")
+                .ExcludeFromManifest()
+                .ExcludeFromMcp();
 
             rv.WithCommand("ShowAspireCLIVersion", "Show CLI Version", async ctx =>
             {
@@ -124,13 +136,17 @@ public static class Resources
 
         public IResourceBuilder<ExternalServiceResource> AddMudBlazorDocs()
         {
-            return builder.AddExternalService("mud-blazor-docs", "https://www.mudblazor.com/docs/");
+            return builder.AddExternalService("mud-blazor-docs", "https://www.mudblazor.com/docs/")
+                .ExcludeFromManifest()
+                .ExcludeFromMcp();
         }
 
         public IResourceBuilder<LogicalGroupResource> AddLogicalGroup(string name)
         {
             var resource = new LogicalGroupResource(name);
-            var resourceBuilder = builder.AddResource(resource);
+            var resourceBuilder = builder.AddResource(resource)
+                .ExcludeFromManifest()
+                .ExcludeFromMcp();
 
             // Add a lifecycle hook to dynamically update state based on children
             resourceBuilder.WithAnnotation(new ResourceSnapshotAnnotation(
