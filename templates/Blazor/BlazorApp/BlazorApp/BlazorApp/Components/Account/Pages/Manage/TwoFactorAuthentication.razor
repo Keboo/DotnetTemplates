@@ -10,63 +10,86 @@
 
 <PageTitle>Two-factor authentication (2FA)</PageTitle>
 
+<MudText Typo="Typo.h4" Class="mb-4">Two-factor authentication (2FA)</MudText>
 <StatusMessage />
-<h3>Two-factor authentication (2FA)</h3>
+
 @if (canTrack)
 {
-    if (is2faEnabled)
-    {
-        if (recoveryCodesLeft == 0)
+    <MudPaper Elevation="2" Class="pa-4 mb-4" Style="max-width: 800px;">
+        @if (is2faEnabled)
         {
-            <div class="alert alert-danger">
-                <strong>You have no recovery codes left.</strong>
-                <p>You must <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a> before you can log in with a recovery code.</p>
-            </div>
-        }
-        else if (recoveryCodesLeft == 1)
-        {
-            <div class="alert alert-danger">
-                <strong>You have 1 recovery code left.</strong>
-                <p>You can <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
-            </div>
-        }
-        else if (recoveryCodesLeft <= 3)
-        {
-            <div class="alert alert-warning">
-                <strong>You have @recoveryCodesLeft recovery codes left.</strong>
-                <p>You should <a href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
-            </div>
+            @if (recoveryCodesLeft == 0)
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-3">
+                    <strong>You have no recovery codes left.</strong>
+                    <p>You must <MudLink Href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</MudLink> before you can log in with a recovery code.</p>
+                </MudAlert>
+            }
+            else if (recoveryCodesLeft == 1)
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-3">
+                    <strong>You have 1 recovery code left.</strong>
+                    <p>You can <MudLink Href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</MudLink>.</p>
+                </MudAlert>
+            }
+            else if (recoveryCodesLeft <= 3)
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-3">
+                    <strong>You have @recoveryCodesLeft recovery codes left.</strong>
+                    <p>You should <MudLink Href="Account/Manage/GenerateRecoveryCodes">generate a new set of recovery codes</MudLink>.</p>
+                </MudAlert>
+            }
+
+            <MudStack Spacing="2" Class="mb-4">
+                @if (isMachineRemembered)
+                {
+                    <form @formname="forget-browser" @onsubmit="OnSubmitForgetBrowserAsync" method="post" style="display: inline-block">
+                        <AntiforgeryToken />
+                        <MudButton Variant="Variant.Filled" 
+                                   Color="Color.Primary" 
+                                   ButtonType="ButtonType.Submit">Forget this browser</MudButton>
+                    </form>
+                }
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Error" 
+                               Href="Account/Manage/Disable2fa">Disable 2FA</MudButton>
+                    <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Primary" 
+                               Href="Account/Manage/GenerateRecoveryCodes">Reset recovery codes</MudButton>
+                </MudStack>
+            </MudStack>
         }
 
-        if (isMachineRemembered)
-        {
-            <form style="display: inline-block" @formname="forget-browser" @onsubmit="OnSubmitForgetBrowserAsync" method="post">
-                <AntiforgeryToken />
-                <button type="submit" class="btn btn-primary">Forget this browser</button>
-            </form>
-        }
-
-        <a href="Account/Manage/Disable2fa" class="btn btn-primary">Disable 2FA</a>
-        <a href="Account/Manage/GenerateRecoveryCodes" class="btn btn-primary">Reset recovery codes</a>
-    }
-
-    <h4>Authenticator app</h4>
-    @if (!hasAuthenticator)
-    {
-        <a href="Account/Manage/EnableAuthenticator" class="btn btn-primary">Add authenticator app</a>
-    }
-    else
-    {
-        <a href="Account/Manage/EnableAuthenticator" class="btn btn-primary">Set up authenticator app</a>
-        <a href="Account/Manage/ResetAuthenticator" class="btn btn-primary">Reset authenticator app</a>
-    }
+        <MudText Typo="Typo.h5" Class="mb-3">Authenticator app</MudText>
+        <MudStack Row="true" Spacing="2">
+            @if (!hasAuthenticator)
+            {
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="Account/Manage/EnableAuthenticator">Add authenticator app</MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Settings"
+                           Href="Account/Manage/EnableAuthenticator">Set up authenticator app</MudButton>
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Error" 
+                           StartIcon="@Icons.Material.Filled.Refresh"
+                           Href="Account/Manage/ResetAuthenticator">Reset authenticator app</MudButton>
+            }
+        </MudStack>
+    </MudPaper>
 }
 else
 {
-    <div class="alert alert-danger">
+    <MudAlert Severity="Severity.Error">
         <strong>Privacy and cookie policy have not been accepted.</strong>
         <p>You must accept the policy before you can enable two factor authentication.</p>
-    </div>
+    </MudAlert>
 }
 
 @code {

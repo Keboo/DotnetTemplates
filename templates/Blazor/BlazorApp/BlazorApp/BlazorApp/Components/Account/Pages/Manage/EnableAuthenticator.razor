@@ -20,49 +20,65 @@
 }
 else
 {
+    <MudText Typo="Typo.h4" Class="mb-4">Configure authenticator app</MudText>
     <StatusMessage Message="@message" />
-    <h3>Configure authenticator app</h3>
-    <div>
-        <p>To use an authenticator app go through the following steps:</p>
-        <ol class="list">
-            <li>
-                <p>
-                    Download a two-factor authenticator app like Microsoft Authenticator for
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
-                    <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
+    
+    <MudPaper Elevation="2" Class="pa-4" Style="max-width: 800px;">
+        <MudText Typo="Typo.body1" Class="mb-3">To use an authenticator app go through the following steps:</MudText>
+        
+        <MudList T="string">
+            <MudListItem T="string">
+                <MudText Typo="Typo.body1" Class="mb-2">
+                    <strong>1.</strong> Download a two-factor authenticator app like Microsoft Authenticator for
+                    <MudLink Href="https://go.microsoft.com/fwlink/?Linkid=825072" Target="_blank">Android</MudLink> and
+                    <MudLink Href="https://go.microsoft.com/fwlink/?Linkid=825073" Target="_blank">iOS</MudLink> or
                     Google Authenticator for
-                    <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
-                    <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
-                </p>
-            </li>
-            <li>
-                <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
-                <div></div>
-                <div data-url="@authenticatorUri"></div>
-            </li>
-            <li>
-                <p>
-                    Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
-                    with a unique code. Enter the code in the confirmation box below.
-                </p>
-                <div class="row">
-                    <div class="col-xl-6">
-                        <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
-                            <DataAnnotationsValidator />
-                            <div class="form-floating mb-3">
-                                <InputText @bind-Value="Input.Code" id="Input.Code" class="form-control" autocomplete="off" placeholder="Enter the code" />
-                                <label for="Input.Code" class="control-label form-label">Verification Code</label>
-                                <ValidationMessage For="() => Input.Code" class="text-danger" />
-                            </div>
-                            <button type="submit" class="w-100 btn btn-lg btn-primary">Verify</button>
-                            <ValidationSummary class="text-danger" role="alert" />
-                        </EditForm>
-                    </div>
-                </div>
-            </li>
-        </ol>
-    </div>
+                    <MudLink Href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en" Target="_blank">Android</MudLink> and
+                    <MudLink Href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" Target="_blank">iOS</MudLink>.
+                </MudText>
+            </MudListItem>
+            
+            <MudListItem T="string">
+                <MudStack Spacing="2" Class="my-3">
+                    <MudText Typo="Typo.body1">
+                        <strong>2.</strong> Scan the QR Code or enter this key <MudChip T="string" Size="Size.Small">@sharedKey</MudChip> into your two factor authenticator app. Spaces and casing do not matter.
+                    </MudText>
+                    <MudAlert Severity="Severity.Info">
+                        Learn how to <MudLink Href="https://go.microsoft.com/fwlink/?Linkid=852423" Target="_blank">enable QR code generation</MudLink>.
+                    </MudAlert>
+                    <div data-url="@authenticatorUri"></div>
+                </MudStack>
+            </MudListItem>
+            
+            <MudListItem T="string">
+                <MudStack Spacing="3" Class="mt-3">
+                    <MudText Typo="Typo.body1">
+                        <strong>3.</strong> Once you have scanned the QR code or input the key above, your two factor authentication app will provide you with a unique code. Enter the code in the confirmation box below.
+                    </MudText>
+                    
+                    <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post" style="max-width: 400px;">
+                        <DataAnnotationsValidator />
+                        <MudTextField Label="Verification Code"
+                                      name="Input.Code"
+                                      Value="@Input.Code"
+                                      Variant="Variant.Outlined"
+                                      autocomplete="off"
+                                      Placeholder="000000"
+                                      Required="true"
+                                      Class="mb-3" />
+                        <ValidationMessage For="() => Input.Code" class="text-danger" />
+                        
+                        <MudButton Variant="Variant.Filled" 
+                                   Color="Color.Primary" 
+                                   Size="Size.Large"
+                                   FullWidth="true"
+                                   ButtonType="ButtonType.Submit">Verify</MudButton>
+                        <ValidationSummary class="text-danger" role="alert" />
+                    </EditForm>
+                </MudStack>
+            </MudListItem>
+        </MudList>
+    </MudPaper>
 }
 
 @code {

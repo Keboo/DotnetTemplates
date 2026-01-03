@@ -31,6 +31,7 @@
                           Label="Email" 
                           Variant="Variant.Outlined"
                           Disabled="true"
+                          Placeholder="@email"
                           Adornment="Adornment.End"
                           AdornmentIcon="@Icons.Material.Filled.CheckCircle"
                           AdornmentColor="Color.Success"
@@ -42,7 +43,8 @@
                 <MudTextField Value="@email" 
                               Label="Email" 
                               Variant="Variant.Outlined"
-                              Disabled="true" />
+                              Disabled="true"
+                              Placeholder="@email" />
                 <MudButton Variant="Variant.Text" 
                            Color="Color.Primary" 
                            ButtonType="ButtonType.Submit"
@@ -50,11 +52,13 @@
             </MudStack>
         }
         
-        <MudTextField @bind-Value="Input.NewEmail" 
-                      For="@(() => Input.NewEmail)"
+        <MudTextField name="Input.NewEmail"
+                      Value="@Input.NewEmail"
                       Label="New email" 
                       Variant="Variant.Outlined"
+                      InputType="InputType.Email"
                       autocomplete="email"
+                      Placeholder="newemail@example.com"
                       Required="true"
                       Class="mb-4" />
         

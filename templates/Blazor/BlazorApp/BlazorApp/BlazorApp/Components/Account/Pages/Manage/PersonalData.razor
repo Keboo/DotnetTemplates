@@ -8,24 +8,34 @@
 
 <PageTitle>Personal Data</PageTitle>
 
+<MudText Typo="Typo.h4" Class="mb-4">Personal Data</MudText>
 <StatusMessage />
-<h3>Personal Data</h3>
 
-<div class="row">
-    <div class="col-md-6">
-        <p>Your account contains personal data that you have given us. This page allows you to download or delete that data.</p>
-        <p>
-            <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
-        </p>
+<MudPaper Elevation="2" Class="pa-4" Style="max-width: 600px;">
+    <MudText Typo="Typo.body1" Class="mb-3">
+        Your account contains personal data that you have given us. This page allows you to download or delete that data.
+    </MudText>
+    <MudAlert Severity="Severity.Warning" Class="mb-4">
+        <strong>Deleting this data will permanently remove your account, and this cannot be recovered.</strong>
+    </MudAlert>
+    
+    <MudStack Spacing="3">
         <form action="Account/Manage/DownloadPersonalData" method="post">
             <AntiforgeryToken />
-            <button class="btn btn-primary" type="submit">Download</button>
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       Size="Size.Large"
+                       StartIcon="@Icons.Material.Filled.Download"
+                       ButtonType="ButtonType.Submit">Download My Data</MudButton>
         </form>
-        <p>
-            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger">Delete</a>
-        </p>
-    </div>
-</div>
+        
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Error" 
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.DeleteForever"
+                   Href="Account/Manage/DeletePersonalData">Delete My Account</MudButton>
+    </MudStack>
+</MudPaper>
 
 @code {
     [CascadingParameter]

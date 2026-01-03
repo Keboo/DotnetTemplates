@@ -22,12 +22,14 @@
                       Label="Username" 
                       Variant="Variant.Outlined"
                       Disabled="true"
+                      Placeholder="@username"
                       Class="mb-4" />
         
-        <MudTextField @bind-Value="Input.PhoneNumber" 
-                      For="@(() => Input.PhoneNumber)"
-                      Label="Phone number" 
+        <MudTextField name="Input.PhoneNumber"
+                      Value="@Input.PhoneNumber"
+                      Label="Phone number"
                       Variant="Variant.Outlined"
+                      Placeholder="555-123-4567"
                       Class="mb-4" />
         
         <MudButton Variant="Variant.Filled" 

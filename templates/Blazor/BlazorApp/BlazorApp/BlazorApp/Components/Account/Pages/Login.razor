@@ -19,30 +19,37 @@
         <MudItem xs="12" md="7">
             <MudPaper Elevation="2" Class="pa-4">
                 <StatusMessage Message="@errorMessage" />
-                <EditForm EditContext="editContext" method="post" OnSubmit="LoginUser" FormName="login">
+                <EditForm EditContext="editContext" asp-route-returnUrl="@ReturnUrl" method="post" OnSubmit="LoginUser" FormName="login">
                     <DataAnnotationsValidator />
                     <MudText Typo="Typo.h6" Class="mb-3">Use a local account to log in.</MudText>
                     <MudDivider Class="mb-4" />
                     <ValidationSummary class="text-danger" role="alert" />
                     
-                    <MudTextField @bind-Value="Input.Email" 
-                                  For="@(() => Input.Email)"
-                                  Label="Email" 
+                    <MudTextField Label="Email"
+                                  name="Input.Email"
+                                  Value="@Input.Email"
                                   Variant="Variant.Outlined"
+                                  InputType="InputType.Email"
                                   autocomplete="username webauthn"
+                                  Placeholder="name@example.com"
                                   Required="true"
                                   Class="mb-4" />
                     
-                    <MudTextField @bind-Value="Input.Password" 
-                                  For="@(() => Input.Password)"
-                                  Label="Password" 
+                    <MudTextField Label="Password"
+                                  name="Input.Password"
+                                  Value="@Input.Password"
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Password"
                                   autocomplete="current-password"
+                                  Placeholder="password"
                                   Required="true"
                                   Class="mb-4" />
                     
-                    <MudCheckBox @bind-Value="Input.RememberMe" Label="Remember me" Class="mb-4" />
+                    <MudCheckBox T="bool"
+                                 Label="Remember me"
+                                 name="Input.RememberMe"
+                                 Value="@Input.RememberMe"
+                                 Class="mb-4" />
                     
                     <MudButton Variant="Variant.Filled" 
                                Color="Color.Primary" 
