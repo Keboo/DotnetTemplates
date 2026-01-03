@@ -43,6 +43,7 @@ else
 
 var blazorApp = builder.AddProject<Projects.BlazorApp>("blazorapp")
     .WithDependency(db, ConnectionStrings.DatabaseKey)
+    .WithUITests()
     .WithExternalHttpEndpoints();
 
 

@@ -23,11 +23,11 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
 
   <!--
   This allows all projects to share the same user secrets file. 
-  If you want project to have their own, set it to a different GUID on each project.
+  If you want project to have their own, set it to a different value on each project.
   See: https://learn.microsoft.com/dotnet/architecture/microservices/secure-net-microservices-web-applications/developer-app-secrets-storage
   -->
   <PropertyGroup Label="User Secrets">
-    <UserSecretsId>12345678-9abc-0123-4567-890abcdef123</UserSecretsId>
+    <UserSecretsId>BlazorApp-secrets</UserSecretsId>
   </PropertyGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 
+using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Azure;
 
 using BlazorApp.AppHost;
@@ -213,6 +214,42 @@ public static class Resources
                 parent.WithAnnotation(parentEndpoint);
             }
 
+            return builder;
+        }
+
+        public IResourceBuilder<TResource> WithUITests()
+        {
+            builder.WithCommand("RunUITests", "Run UI Tests", async ctx =>
+            {
+                if (!builder.Resource.TryGetEndpoints(out var endpoints) || endpoints.FirstOrDefault() is not { } endpoint)
+                {
+                    return CommandResults.Failure("No external HTTP endpoint available for UI tests");
+                }
+                ProcessStartInfo psi = new()
+                {
+                    FileName = "dotnet",
+                    ArgumentList = {
+                        "run",
+                        "--no-build",
+                        "--project",
+                        "BlazorApp.UITests\\BlazorApp.UITests.csproj"
+                    },
+                    WorkingDirectory = "..",
+                    EnvironmentVariables =
+                    {
+                        { "TEST_BASE_URL", $"{endpoint.UriScheme}://{endpoint.TargetHost}:{endpoint.Port}" }
+                    }
+                };
+
+                bool processResult = await builder.Resource.ExecuteProcessAsync(ctx.ServiceProvider, psi);
+                return processResult ? CommandResults.Success() : CommandResults.Failure("UI Tests did not complete successfully");
+            }, new CommandOptions()
+            {
+                IconName = "ChevronDoubleRight",
+                UpdateState = ctx => 
+                    ctx.ResourceSnapshot.HealthStatus == HealthStatus.Healthy 
+                        ? ResourceCommandState.Enabled : ResourceCommandState.Disabled
+            });
             return builder;
         }
     }
