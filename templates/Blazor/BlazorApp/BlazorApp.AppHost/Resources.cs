@@ -225,6 +225,29 @@ public static class Resources
                 {
                     return CommandResults.Failure("No external HTTP endpoint available for UI tests");
                 }
+                string baseUrl = $"{endpoint.UriScheme}://{endpoint.TargetHost}:{endpoint.Port}";
+#pragma warning disable ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                var interactionService = ctx.ServiceProvider.GetRequiredService<IInteractionService>();
+                InteractionInput headlessInput = new()
+                {
+                    Name = "Headless?",
+                    InputType = InputType.Boolean,
+                    Value = bool.TrueString
+                };
+                InteractionInput baseUrlInput = new()
+                {
+                    Name = "Base URL",
+                    InputType = InputType.Text,
+                    Value = baseUrl
+                };
+                var result = await interactionService.PromptInputsAsync("Testing", "Run the UI tests", [
+                    headlessInput,
+                    baseUrlInput
+                ]);
+                if (result.Canceled) return CommandResults.Canceled();
+#pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
+
                 ProcessStartInfo psi = new()
                 {
                     FileName = "dotnet",
@@ -237,7 +260,8 @@ public static class Resources
                     WorkingDirectory = "..",
                     EnvironmentVariables =
                     {
-                        { "TEST_BASE_URL", $"{endpoint.UriScheme}://{endpoint.TargetHost}:{endpoint.Port}" }
+                        { "TEST_BASE_URL", baseUrlInput.Value },
+                        { "HEADED", headlessInput.Value }
                     }
                 };
 

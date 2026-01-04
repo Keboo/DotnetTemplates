@@ -1,5 +1,3 @@
-using Microsoft.Playwright;
-
 namespace BlazorApp.UITests.PageObjects;
 
 /// <summary>
@@ -48,7 +46,7 @@ public class LoginPage
         
         // Look for various indicators that user is logged in
         // Use Count to avoid strict mode violations
-        var logoutFormCount = await _page.Locator("form[action='/Account/Logout']").CountAsync();
+        var logoutFormCount = await LogoutButton.CountAsync();
         var myRoomsLinkCount = await _page.Locator("a[href='/my-rooms']").CountAsync();
         
         return logoutFormCount > 0 || myRoomsLinkCount > 0;

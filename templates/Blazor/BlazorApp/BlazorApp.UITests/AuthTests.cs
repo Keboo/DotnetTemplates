@@ -1,13 +1,11 @@
 using BlazorApp.UITests.PageObjects;
 
-using static BlazorApp.UITests.TestData;
-
 namespace BlazorApp.UITests;
 
 public class AuthTests : UITestBase
 {
     [Test]
-    public async Task RegisterNewAccount_ShouldSucceed()
+    public async Task CanRegiserAndLoginWithNewAccount()
     {
         var registerPage = new RegisterPage(Page);
         await registerPage.NavigateAsync();
@@ -17,22 +15,9 @@ public class AuthTests : UITestBase
 
         var confirmationLink = await registerPage.GetEmailConfirmationLinkAsync();
         await Assert.That(string.IsNullOrEmpty(confirmationLink)).IsFalse().Because("Email confirmation link should be present");
-    }
 
-    [Test]
-    [DependsOn(nameof(RegisterNewAccount_ShouldSucceed))]
-    public async Task LoginWithValidCredentials_ShouldSucceed()
-    {
-        // First register and confirm email
-        var registerPage = new RegisterPage(Page);
-        await registerPage.NavigateAsync();
-        await registerPage.RegisterAsync(TestEmail, TestPassword);
-
-        var confirmationLink = await registerPage.GetEmailConfirmationLinkAsync();
-        await Page.GotoAsync(confirmationLink);
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        // Now login
+        await registerPage.ConfirmAccountAsync();
+        
         var loginPage = new LoginPage(Page);
         await loginPage.NavigateAsync();
         await loginPage.LoginAsync(TestEmail, TestPassword);

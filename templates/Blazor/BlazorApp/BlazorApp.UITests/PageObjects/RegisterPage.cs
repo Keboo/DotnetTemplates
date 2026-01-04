@@ -15,7 +15,9 @@ public class RegisterPage
     private ILocator ConfirmPasswordInput => _page.Locator("input[name='Input.ConfirmPassword']");
     private ILocator RegisterButton => _page.Locator("button[type='submit']:has-text('Register')").First;
     private ILocator ConfirmationMessage => _page.Locator("text=confirm your email");
-    
+    private ILocator ConfirmEmailLink => _page.Locator("a[href*='Account/ConfirmEmail']");
+
+
     public RegisterPage(IPage page)
     {
         _page = page;
@@ -39,8 +41,8 @@ public class RegisterPage
     public async Task<bool> IsConfirmationMessageVisibleAsync()
     {
         // Check for various possible confirmation messages
-        var confirmLink = await _page.Locator("a[href*='Account/ConfirmEmail']").IsVisibleAsync();
-        var confirmText = await _page.Locator("text=confirm your email").IsVisibleAsync();
+        var confirmLink = await ConfirmEmailLink.IsVisibleAsync();
+        var confirmText = await ConfirmationMessage.IsVisibleAsync();
         var registerConfirmation = await _page.Locator("text=RegisterConfirmation").IsVisibleAsync();
         
         return confirmLink || confirmText || registerConfirmation;
@@ -53,7 +55,7 @@ public class RegisterPage
     public async Task<string> GetEmailConfirmationLinkAsync()
     {
         // Look for the confirmation link on the page
-        var linkLocator = _page.Locator("a[href*='Account/ConfirmEmail']");
+        var linkLocator = ConfirmEmailLink;
         await linkLocator.WaitForAsync(new LocatorWaitForOptions { Timeout = TestConfiguration.DefaultTimeout });
         var href = await linkLocator.GetAttributeAsync("href");
         
@@ -69,5 +71,13 @@ public class RegisterPage
         }
         
         return href;
+    }
+
+    public async Task ConfirmAccountAsync()
+    {
+        var confirmationLink = await GetEmailConfirmationLinkAsync();
+        await _page.GotoAsync(confirmationLink);
+        await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        //TODO: Verify confirmation success message
     }
 }

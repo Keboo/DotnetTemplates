@@ -1,15 +1,13 @@
-﻿using Microsoft.Playwright;
-
-namespace BlazorApp.UITests;
+﻿namespace BlazorApp.UITests;
 
 /// <summary>
 /// Placeholder test class - actual tests are in QAWorkflowTests.cs
 /// This file can be used for additional test scenarios
 /// </summary>
-public class Test1 : UITestBase
+public class HomePageTests : UITestBase
 {
     [Test]
-    public async Task SampleTest_CanNavigateToHomePage()
+    public async Task CanNavigateToHomePage()
     {
         await Page.GotoAsync(TestConfiguration.BaseUrl);
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);

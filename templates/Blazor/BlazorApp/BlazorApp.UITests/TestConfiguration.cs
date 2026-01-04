@@ -26,14 +26,13 @@ public static class TestConfiguration
     /// Whether to run browser in headed mode (visible window)
     /// Can be overridden via environment variable HEADED (set to "1" or "true")
     /// </summary>
-    public static bool Headed
+    public static bool Headless
     {
         get
         {
-            return true;
-            //var envValue = Environment.GetEnvironmentVariable("HEADED");
-            //return envValue == "1" || 
-            //       envValue?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
+            var envValue = Environment.GetEnvironmentVariable("HEADLESS");
+            return envValue == "1" ||
+                   envValue?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
         }
     }
     

@@ -29,7 +29,7 @@ public class MyRoomsPage
         await Task.Delay(2000);
     }
     
-    public async Task<string> CreateRoomAsync(string roomName)
+    public async Task CreateRoomAsync(string roomName)
     {
         await CreateRoomButton.ClickAsync();
         
@@ -108,7 +108,7 @@ public class MyRoomsPage
             await _page.GotoAsync($"{TestConfiguration.BaseUrl}/my-rooms");
             await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
             await Task.Delay(2000);
-            return roomName;
+            return;
         }
         
         // If we're still on my-rooms, something might have failed silently
@@ -132,14 +132,14 @@ public class MyRoomsPage
                 await _page.GotoAsync($"{TestConfiguration.BaseUrl}/my-rooms");
                 await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
                 await Task.Delay(2000);
-                return roomName;
+                return;
             }
             
             // Still on my-rooms - operation may have failed
             Console.WriteLine("WARNING: Still on my-rooms page after attempting room creation");
         }
         
-        return roomName;
+        return;
     }
     
     public async Task<bool> RoomExistsAsync(string roomName)
