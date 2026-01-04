@@ -11,8 +11,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Playwright" />
     <PackageReference Include="TUnit" />
-    <PackageReference Include="TUnit.Assertions" />
-    <PackageReference Include="TUnit.Engine" />
   </ItemGroup>
 
   <ItemGroup>

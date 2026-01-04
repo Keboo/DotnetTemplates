@@ -71,6 +71,7 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var question = await context.Questions
+            .AsTracking()
             .FirstOrDefaultAsync(q => q.Id == questionId, cancellationToken)
             ?? throw new InvalidOperationException("Question not found");
 
@@ -94,15 +95,12 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var question = await context.Questions
+            .Include(x => x.Room)
+            .AsTracking()
             .FirstOrDefaultAsync(q => q.Id == questionId, cancellationToken)
             ?? throw new InvalidOperationException("Question not found");
 
-        // Get the room separately to check ownership
-        var room = await context.Rooms
-            .FirstOrDefaultAsync(r => r.Id == question.RoomId, cancellationToken)
-            ?? throw new InvalidOperationException("Room not found");
-
-        if (room.CreatedByUserId != userId)
+        if (question.Room!.CreatedByUserId != userId)
         {
             throw new UnauthorizedAccessException("Only the room owner can approve questions");
         }
@@ -119,6 +117,7 @@ public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFact
 
         var question = await context.Questions
             .Include(x => x.Room)
+            .AsTracking()
             .FirstOrDefaultAsync(q => q.Id == questionId, cancellationToken)
             ?? throw new InvalidOperationException("Question not found");
 

@@ -79,6 +79,7 @@ public class RoomService(IDbContextFactory<ApplicationDbContext> contextFactory,
         await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
 
         var room = await context.Rooms
+            .AsTracking()
             .Include(r => r.CurrentQuestion)
             .FirstOrDefaultAsync(r => r.Id == roomId, cancellationToken)
             ?? throw new InvalidOperationException("Room not found");

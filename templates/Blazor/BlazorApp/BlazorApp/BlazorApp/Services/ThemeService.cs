@@ -3,26 +3,24 @@ namespace BlazorApp.Services;
 public class ThemeService
 {
     public event Action? OnThemeChanged;
-    
-    private bool? _isDarkMode = null; // null = system preference (initial only)
-    
+
     public bool? IsDarkMode
     {
-        get => _isDarkMode;
+        get;
         set
         {
-            if (_isDarkMode != value)
+            if (field != value)
             {
-                _isDarkMode = value;
+                field = value;
                 OnThemeChanged?.Invoke();
             }
         }
-    }
-    
+    } = null;
+
     public void ToggleTheme()
     {
         // Once toggled, always toggle between false (light) and true (dark)
         // If currently null (system), determine current value and toggle it
-        IsDarkMode = !(_isDarkMode ?? false);
+        IsDarkMode = !(IsDarkMode ?? false);
     }
 }
