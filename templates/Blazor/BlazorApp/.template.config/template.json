@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Keboo",
+  "classifications": [
+    "Common",
+    "Aspire",
+    "Blazor"
+  ],
+  "identity": "Keboo.Blazor.Solution",
+  "name": "Keboo Blazor Application",
+  "shortName": "keboo.blazor",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "preferNameDirectory":true,
+  "sourceName": "BlazorApp",
+  "symbols":{
+  },
+  "sources": [
+    {
+      "modifiers": [
+      ]
+    }
+  ]
+}
