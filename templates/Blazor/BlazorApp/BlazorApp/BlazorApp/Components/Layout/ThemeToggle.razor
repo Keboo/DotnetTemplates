@@ -1,0 +1,42 @@
+@inject BlazorApp.Services.ThemeService ThemeService
+@inject ISnackbar Snackbar
+@rendermode InteractiveServer
+@implements IDisposable
+
+<MudIconButton Icon="@GetThemeIcon()"
+               Color="Color.Inherit"
+               OnClick="@ToggleTheme"
+               title="@GetThemeTooltip()" />
+
+@code {
+    protected override void OnInitialized()
+    {
+        ThemeService.OnThemeChanged += StateHasChanged;
+    }
+
+    private void ToggleTheme()
+    {
+        ThemeService.ToggleTheme();
+        var themeName = (ThemeService.IsDarkMode ?? false) ? "dark" : "light";
+        Snackbar.Add($"Switched to {themeName} theme", Severity.Info);
+    }
+
+    private string GetThemeIcon()
+    {
+        return (ThemeService.IsDarkMode ?? false) 
+            ? Icons.Material.Filled.DarkMode 
+            : Icons.Material.Filled.LightMode;
+    }
+
+    private string GetThemeTooltip()
+    {
+        return (ThemeService.IsDarkMode ?? false) 
+            ? "Switch to light theme" 
+            : "Switch to dark theme";
+    }
+    
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= StateHasChanged;
+    }
+}

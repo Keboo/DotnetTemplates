@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-ef": {
+      "version": "10.0.1",
+      "commands": [
+        "dotnet-ef"
+      ],
+      "rollForward": false
+    },
+    "aspire.cli": {
+      "version": "13.0.0",
+      "commands": [
+        "aspire"
+      ],
+      "rollForward": false
+    }
+  }
+}

@@ -1,0 +1,420 @@
+@page "/room/{FriendlyName}"
+@rendermode InteractiveServer
+@using BlazorApp.Core.Auth
+@using BlazorApp.Core.QA
+@using BlazorApp.Data
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Security.Claims
+
+@inject IRoomService RoomService
+@inject IQuestionService QuestionService
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage LocalStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISignalRTokenProvider TokenProvider
+@inject ISnackbar Snackbar
+
+@implements IAsyncDisposable
+
+<PageTitle>@FriendlyName - Q&A Room</PageTitle>
+
+<MudContainer Class="my-4">
+    @if (loading)
+    {
+        <MudStack AlignItems="AlignItems.Center" Class="my-8">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+        </MudStack>
+    }
+    else if (room == null)
+    {
+        <MudAlert Severity="Severity.Error" Class="my-4">
+            <MudText Typo="Typo.h5">Room Not Found</MudText>
+            <MudText>The room "@FriendlyName" does not exist.</MudText>
+            <MudButton Href="/" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2">
+                Join Another Room
+            </MudButton>
+        </MudAlert>
+    }
+    else if (string.IsNullOrEmpty(displayName))
+    {
+        <!-- Name Entry Dialog -->
+        <MudGrid Justify="Justify.Center" Class="my-4">
+            <MudItem xs="12" sm="8" md="6">
+                <MudPaper Elevation="4" Class="pa-6">
+                    <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-4">Welcome to @room.FriendlyName</MudText>
+                    <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-6">
+                        Please enter your name to continue
+                    </MudText>
+
+                    <MudTextField @bind-Value="tempDisplayName"
+                                  Label="Your Name"
+                                  Variant="Variant.Outlined"
+                                  OnKeyDown="OnKeyDownAsync"
+                                  Placeholder="Enter your name"
+                                  MaxLength="100"
+                                  Class="mb-4" 
+                                  Immediate="true" />
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               FullWidth="true"
+                               OnClick="SaveDisplayName"
+                               Disabled="@string.IsNullOrWhiteSpace(tempDisplayName)">
+                        Continue
+                    </MudButton>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <!-- Main Room View -->
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+            <MudText Typo="Typo.h3">@room.FriendlyName</MudText>
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <MudButton Href="@($"/room/{FriendlyName}/fullscreen")"
+                           Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           Size="Size.Small"
+                           Target="_blank"
+                           StartIcon="@Icons.Material.Filled.Fullscreen"
+                           title="Open full screen view for display or OBS overlay">
+                    Full Screen
+                </MudButton>
+                <MudChip T="string" Color="Color.Info" Size="Size.Small">@displayName</MudChip>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           Size="Size.Small"
+                           OnClick="ChangeName">
+                    Change Name
+                </MudButton>
+            </MudStack>
+        </MudStack>
+
+        <!-- Current Question Section -->
+        @if (room.CurrentQuestion != null)
+        {
+            <MudCard Class="mb-4" Outlined="true">
+                <MudCardHeader Style="background-color: var(--mud-palette-primary); color: white;">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">
+                            <MudIcon Icon="@Icons.Material.Filled.Star" Size="Size.Small" /> Current Question
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="mb-2">@room.CurrentQuestion.QuestionText</MudText>
+                    @if (!string.IsNullOrEmpty(room.CurrentQuestion.AuthorName))
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Asked by: @room.CurrentQuestion.AuthorName</MudText>
+                    }
+                </MudCardContent>
+            </MudCard>
+        }
+
+        <!-- Ask Question Section -->
+        <MudCard Class="mb-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Ask a Question</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <MudAlert Severity="Severity.Error" Class="mb-4">@errorMessage</MudAlert>
+                }
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <MudAlert Severity="Severity.Success" Class="mb-4">@successMessage</MudAlert>
+                }
+                @if (rateLimitMessage != null)
+                {
+                    <MudAlert Severity="Severity.Warning" Class="mb-4">
+                        @rateLimitMessage Please wait @remainingSeconds second(s).
+                    </MudAlert>
+                }
+
+                <MudTextField @bind-Value="newQuestionText"
+                              Label="Your Question"
+                              Variant="Variant.Outlined"
+                              Lines="3"
+                              Placeholder="Type your question here..."
+                              MaxLength="2000"
+                              Disabled="@isSubmitting"
+                              HelperText="@($"{newQuestionText.Length} / 2000 characters")"
+                              Class="mb-4" 
+                              Immediate="true" />
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="SubmitQuestion"
+                           Disabled="@(string.IsNullOrWhiteSpace(newQuestionText) || isSubmitting || rateLimitMessage != null)"
+                           StartIcon="@(isSubmitting ? null : Icons.Material.Filled.Send)">
+                    @if (isSubmitting)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    Submit Question
+                </MudButton>
+            </MudCardContent>
+        </MudCard>
+
+        <!-- Approved Questions Section -->
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Upcoming Questions</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (approvedQuestions == null || !approvedQuestions.Any())
+                {
+                    <MudText Color="Color.Secondary">No questions yet. Be the first to ask!</MudText>
+                }
+                else
+                {
+                    <MudStack Spacing="2">
+                        @foreach (var question in approvedQuestions.OrderBy(x => x.IsAnswered))
+                        {
+                            <MudPaper Elevation="1" Class="pa-3" Style="@(question.IsAnswered ? "background-color: #e8f5e9;" : "")">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                                    <MudStack Spacing="1" Style="flex: 1;">
+                                        <MudText Typo="Typo.body1">@question.QuestionText</MudText>
+                                        @if (!string.IsNullOrEmpty(question.AuthorName))
+                                        {
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Asked by: @question.AuthorName</MudText>
+                                        }
+                                    </MudStack>
+                                    @if (question.IsAnswered)
+                                    {
+                                        <MudChip T="string" Color="Color.Success" Size="Size.Small" Icon="@Icons.Material.Filled.CheckCircle">
+                                            Answered
+                                        </MudChip>
+                                    }
+                                </MudStack>
+                            </MudPaper>
+                        }
+                    </MudStack>
+                }
+            </MudCardContent>
+        </MudCard>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string FriendlyName { get; set; } = string.Empty;
+
+    private Room? room;
+    private IEnumerable<Question>? approvedQuestions;
+    private bool loading = true;
+    private string? displayName;
+    private string tempDisplayName = string.Empty;
+    private string newQuestionText = string.Empty;
+    private bool isSubmitting = false;
+    private string? errorMessage;
+    private string? successMessage;
+    private string? rateLimitMessage;
+    private int remainingSeconds;
+    private RoomHubClient? roomHub;
+    private System.Threading.Timer? rateLimitTimer;
+    private string? clientId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoom();
+        loading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Get or create client ID for rate limiting
+            var clientIdResult = await LocalStorage.GetAsync<string>("qa_clientId");
+            if (clientIdResult.Success && !string.IsNullOrEmpty(clientIdResult.Value))
+            {
+                clientId = clientIdResult.Value;
+            }
+            else
+            {
+                clientId = Guid.NewGuid().ToString();
+                await LocalStorage.SetAsync("qa_clientId", clientId);
+            }
+
+            // Try to load display name from storage
+            var nameResult = await LocalStorage.GetAsync<string>("qa_displayName");
+            if (nameResult.Success && !string.IsNullOrEmpty(nameResult.Value))
+            {
+                displayName = nameResult.Value;
+            }
+            else
+            {
+                // Check if user is authenticated
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                if (authState.User.Identity?.IsAuthenticated == true)
+                {
+                    displayName = authState.User.Identity.Name ?? authState.User.FindFirstValue(ClaimTypes.Email);
+                    if (!string.IsNullOrEmpty(displayName))
+                    {
+                        await LocalStorage.SetAsync("qa_displayName", displayName);
+                    }
+                }
+            }
+
+            if (room != null && !string.IsNullOrEmpty(displayName))
+            {
+                await LoadApprovedQuestions();
+                await InitializeSignalR();
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadRoom()
+    {
+        room = await RoomService.GetRoomByFriendlyNameAsync(FriendlyName);
+    }
+
+    private async Task LoadApprovedQuestions()
+    {
+        if (room != null)
+        {
+            approvedQuestions = await QuestionService.GetApprovedQuestionsByRoomIdAsync(room.Id);
+        }
+    }
+
+    private async Task OnKeyDownAsync(KeyboardEventArgs args)
+    {
+        if (args.Key is "Enter" or "NumpadEnter")
+        {
+            await SaveDisplayName();
+        }
+    }
+
+    private async Task SaveDisplayName()
+    {
+        if (string.IsNullOrWhiteSpace(tempDisplayName))
+        {
+            return;
+        }
+
+        displayName = tempDisplayName.Trim();
+        await LocalStorage.SetAsync("qa_displayName", displayName);
+
+        await LoadApprovedQuestions();
+        await InitializeSignalR();
+    }
+
+    private async Task ChangeName()
+    {
+        tempDisplayName = displayName ?? string.Empty;
+        displayName = null;
+        await LocalStorage.DeleteAsync("qa_displayName");
+    }
+
+    private async Task SubmitQuestion()
+    {
+        if (string.IsNullOrWhiteSpace(newQuestionText) || room == null || string.IsNullOrEmpty(clientId))
+        {
+            return;
+        }
+
+        // Check rate limit
+        var canSubmit = await QuestionService.CanSubmitQuestionAsync(clientId);
+        if (!canSubmit)
+        {
+            rateLimitMessage = "You're submitting questions too quickly.";
+            StartRateLimitCountdown();
+            return;
+        }
+
+        isSubmitting = true;
+        errorMessage = null;
+        successMessage = null;
+
+        try
+        {
+            await QuestionService.SubmitQuestionAsync(room.Id, newQuestionText.Trim(), displayName, CancellationToken.None);
+            newQuestionText = string.Empty;
+            successMessage = "Your question has been submitted and is awaiting approval.";
+            StartRateLimitCountdown();
+        }
+        catch (Exception)
+        {
+            errorMessage = "An error occurred while submitting your question. Please try again.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void StartRateLimitCountdown()
+    {
+        remainingSeconds = 10;
+        rateLimitMessage = "You can submit another question in";
+
+        rateLimitTimer?.Dispose();
+        rateLimitTimer = new System.Threading.Timer(async _ =>
+        {
+            remainingSeconds--;
+            if (remainingSeconds <= 0)
+            {
+                rateLimitMessage = null;
+                rateLimitTimer?.Dispose();
+            }
+            await InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+    }
+
+    private async Task InitializeSignalR()
+    {
+        if (room is null) return;
+
+        // Generate the access token server-side before creating the hub connection
+        var token = await TokenProvider.GetAccessTokenAsync();
+        roomHub = new(NavigationManager, token);
+
+        roomHub.QuestionApproved += async (question) =>
+        {
+            await LoadApprovedQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.QuestionAnswered += async (question) =>
+        {
+            await LoadApprovedQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.CurrentQuestionChanged += async (question) =>
+        {
+            await LoadRoom();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.QuestionDeleted += async (questionId) =>
+        {
+            await LoadApprovedQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.RoomDeleted += async (roomId) =>
+        {
+            // Room has been deleted, redirect to home page
+            await InvokeAsync(() => NavigationManager.NavigateTo("/"));
+        };
+
+        await roomHub.JoinRoomAsync(room.Id);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        rateLimitTimer?.Dispose();
+        
+        if (roomHub != null)
+        {
+            await roomHub.DisposeAsync();
+        }
+    }
+}

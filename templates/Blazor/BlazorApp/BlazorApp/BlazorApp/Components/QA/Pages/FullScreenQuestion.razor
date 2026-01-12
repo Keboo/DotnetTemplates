@@ -1,0 +1,214 @@
+@page "/room/{FriendlyName}/fullscreen"
+@layout FullScreenLayout
+@rendermode InteractiveServer
+@using BlazorApp.Core.Auth
+@using BlazorApp.Core.QA
+@using BlazorApp.Data
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject IRoomService RoomService
+@inject NavigationManager NavigationManager
+@inject ISignalRTokenProvider TokenProvider
+
+@implements IAsyncDisposable
+
+<PageTitle>@FriendlyName - Full Screen Q&A Display</PageTitle>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: transparent;
+    }
+
+    .fullscreen-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+    }
+
+    .fullscreen-question {
+        width: 100%;
+        max-width: 90%;
+        text-align: center;
+        animation: fadeIn 0.5s ease-in;
+    }
+    .fullscreen-question.fade-out {
+        animation: fadeOut 0.5s ease-out forwards;
+    }
+    .question-text {
+        font-size: 3.5rem;
+        color: #2d3748;
+        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 2rem;
+    }
+
+    .question-author {
+        font-size: 1.8rem;
+        color: #718096;
+        font-style: italic;
+    }
+
+    .no-question {
+        font-size: 2.5rem;
+        color: #718096;
+        font-weight: 300;
+    }
+
+    .loading-spinner {
+        color: #667eea;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+        to {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .question-text {
+            font-size: 2rem;
+        }
+        
+        .question-author {
+            font-size: 1.2rem;
+        }
+        
+        .question-label {
+            font-size: 1rem;
+        }
+        
+        .fullscreen-question {
+            padding: 2rem;
+        }
+    }
+</style>
+
+<div class="fullscreen-container">
+    @if (loading)
+    {
+        <MudStack AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" Style="width: 3rem; height: 3rem;" />
+        </MudStack>
+    }
+    else if (room is null)
+    {
+        <div class="no-question">
+            Room "@FriendlyName" not found
+        </div>
+    }
+    else if (room.CurrentQuestion is not null)
+    {
+        <div class="fullscreen-question @(isFadingOut ? "fade-out" : "")" @key="room.CurrentQuestion.Id">
+            <div class="question-text">
+                @room.CurrentQuestion.QuestionText
+            </div>
+            @if (!string.IsNullOrEmpty(room.CurrentQuestion.AuthorName))
+            {
+                <div class="question-author">
+                    — @room.CurrentQuestion.AuthorName
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string FriendlyName { get; set; } = string.Empty;
+
+    private Room? room;
+    private bool loading = true;
+    private RoomHubClient? roomHub;
+    private bool isFadingOut = false;
+    private Guid? previousQuestionId = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoom();
+        loading = false;
+
+        if (room != null)
+        {
+            previousQuestionId = room.CurrentQuestion?.Id;
+            await InitializeSignalR();
+        }
+    }
+
+    private async Task LoadRoom()
+    {
+        room = await RoomService.GetRoomByFriendlyNameAsync(FriendlyName);
+    }
+
+    private async Task InitializeSignalR()
+    {
+        if (room is null) return;
+
+        // Generate the access token server-side before creating the hub connection
+        var token = await TokenProvider.GetAccessTokenAsync();
+        roomHub = new(NavigationManager, token);
+
+        roomHub.CurrentQuestionChanged += async (question) =>
+        {
+            // Check if we're clearing the current question (going from question to null)
+            if (room?.CurrentQuestion != null && question == null)
+            {
+                // Trigger fade out animation
+                isFadingOut = true;
+                await InvokeAsync(StateHasChanged);
+                
+                // Wait for animation to complete
+                await Task.Delay(500);
+                
+                // Now update the room
+                await LoadRoom();
+                isFadingOut = false;
+                previousQuestionId = null;
+            }
+            else
+            {
+                // New question or changing questions
+                await LoadRoom();
+                previousQuestionId = room?.CurrentQuestion?.Id;
+            }
+            
+            await InvokeAsync(StateHasChanged);
+        };
+
+        roomHub.RoomDeleted += async (roomId) =>
+        {
+            // Room has been deleted, redirect to home page
+            await InvokeAsync(() => NavigationManager.NavigateTo("/"));
+        };
+
+        await roomHub.JoinRoomAsync(room.Id);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (roomHub is not null)
+        {
+            await roomHub.DisposeAsync();
+        }
+    }
+}

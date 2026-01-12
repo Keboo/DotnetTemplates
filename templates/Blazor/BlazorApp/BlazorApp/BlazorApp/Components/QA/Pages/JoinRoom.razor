@@ -1,0 +1,78 @@
+@page "/"
+@rendermode InteractiveServer
+@using BlazorApp.Core.QA
+
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Join Q&A Room</PageTitle>
+
+<MudContainer Class="my-8">
+    <MudGrid Justify="Justify.Center">
+        <MudItem xs="12" sm="10" md="8" lg="6">
+            <MudPaper Elevation="4" Class="pa-8">
+                <MudText Typo="Typo.h3" Align="Align.Center" Class="mb-4">Join a Q&A Room</MudText>
+                <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-6">
+                    Enter the room name to participate in the Q&A session
+                </MudText>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <MudAlert Severity="Severity.Error" Class="mb-4">@errorMessage</MudAlert>
+                }
+
+                <MudTextField @bind-Value="roomName"
+                              Label="Room Name"
+                              Variant="Variant.Outlined"
+                              OnKeyUp="HandleKeyPress"
+                              Placeholder="Enter room name"
+                              Class="mb-6"
+                              Immediate="true" />
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           FullWidth="true"
+                           OnClick="NavigateToRoom"
+                           Disabled="@string.IsNullOrWhiteSpace(roomName)">
+                    Join Room
+                </MudButton>
+
+                <MudDivider Class="my-6" />
+
+                <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                    <MudText Color="Color.Secondary">Room owner?</MudText>
+                    <MudButton Href="/my-rooms"
+                               Variant="Variant.Outlined"
+                               Color="Color.Default">
+                        Manage My Rooms
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private string roomName = string.Empty;
+    private string? errorMessage;
+
+    private void NavigateToRoom()
+    {
+        if (string.IsNullOrWhiteSpace(roomName))
+        {
+            return;
+        }
+
+        errorMessage = null;
+        NavigationManager.NavigateTo($"/room/{Uri.EscapeDataString(roomName.Trim())}");
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or "NumpadEnter" && !string.IsNullOrWhiteSpace(roomName))
+        {
+            NavigateToRoom();
+        }
+    }
+}

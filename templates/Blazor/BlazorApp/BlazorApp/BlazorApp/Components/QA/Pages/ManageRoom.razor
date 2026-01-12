@@ -1,0 +1,481 @@
+@page "/room/{FriendlyName}/manage"
+@rendermode InteractiveServer
+@using BlazorApp.Core.Auth
+@using BlazorApp.Core.QA
+@using BlazorApp.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Security.Claims
+@using BlazorApp.Components.Layout
+
+@attribute [Authorize]
+
+@inject IRoomService RoomService
+@inject IQuestionService QuestionService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISignalRTokenProvider TokenProvider
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+@implements IAsyncDisposable
+
+<PageTitle>Manage @FriendlyName</PageTitle>
+
+<MudContainer Class="my-4">
+    @if (loading)
+    {
+        <MudStack AlignItems="AlignItems.Center" Class="my-8">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+        </MudStack>
+    }
+    else if (room is null)
+    {
+        <MudAlert Severity="Severity.Error" Class="my-4">
+            <MudText Typo="Typo.h5">Room Not Found</MudText>
+            <MudText>The room "@FriendlyName" does not exist.</MudText>
+            <MudButton Href="/my-rooms" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2">
+                Back to My Rooms
+            </MudButton>
+        </MudAlert>
+    }
+    else if (!isOwner)
+    {
+        <MudAlert Severity="Severity.Warning" Class="my-4">
+            <MudText Typo="Typo.h5">Unauthorized</MudText>
+            <MudText>You don't have permission to manage this room.</MudText>
+            <MudButton Href="/my-rooms" Variant="Variant.Filled" Color="Color.Primary" Class="mt-2">
+                Back to My Rooms
+            </MudButton>
+        </MudAlert>
+    }
+    else
+    {
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+            <MudText Typo="Typo.h3">Manage: @room.FriendlyName</MudText>
+            <MudStack Row="true" Spacing="2">
+                <MudButton Href="/my-rooms"
+                           Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.ArrowBack">
+                    Back
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Error"
+                           OnClick="ShowDeleteConfirmation"
+                           StartIcon="@Icons.Material.Filled.Delete"
+                           title="Delete this room">
+                    Delete Room
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           OnClick="CopyRoomUrl"
+                           StartIcon="@(urlCopied ? Icons.Material.Filled.Check : Icons.Material.Filled.ContentCopy)"
+                           title="Copy public room URL">
+                    @(urlCopied ? "Copied!" : "Copy Public URL")
+                </MudButton>
+            </MudStack>
+        </MudStack>
+
+        <!-- Current Question Section -->
+        <MudCard Class="mb-4">
+            <MudCardHeader Style="background-color: var(--mud-palette-primary); color: white;">
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Current Question</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (room.CurrentQuestion != null)
+                {
+                    <MudAlert Severity="Severity.Success" Class="mb-3">
+                        <MudText Typo="Typo.h6">@room.CurrentQuestion.QuestionText</MudText>
+                        @if (!string.IsNullOrEmpty(room.CurrentQuestion.AuthorName))
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">Asked by: @room.CurrentQuestion.AuthorName</MudText>
+                        }
+                    </MudAlert>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Warning"
+                               Size="Size.Small"
+                               OnClick="ClearCurrentQuestion">
+                        Clear Current Question
+                    </MudButton>
+                }
+                else
+                {
+                    <MudText Color="Color.Secondary">No question is currently set. Select a question below to make it current.</MudText>
+                }
+            </MudCardContent>
+        </MudCard>
+
+        <!-- Questions Tabs -->
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Class="mb-4" @bind-ActivePanelIndex="activeTabIndex">
+            <MudTabPanel Text="@GetPendingTabText()">
+                <MudPaper Elevation="0" Class="pa-4">
+                    @if (pendingQuestions == null || !pendingQuestions.Any())
+                    {
+                        <MudText Color="Color.Secondary">No pending questions.</MudText>
+                    }
+                    else
+                    {
+                        <MudStack Spacing="3">
+                            @foreach (var question in pendingQuestions)
+                            {
+                                <MudPaper Elevation="1" Class="pa-3">
+                                    <MudStack Spacing="2">
+                                        <MudText Typo="Typo.body1"><strong>@question.QuestionText</strong></MudText>
+                                        @if (!string.IsNullOrEmpty(question.AuthorName))
+                                        {
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">Asked by: @question.AuthorName</MudText>
+                                        }
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@question.CreatedDate.ToString("g")</MudText>
+                                        <MudStack Row="true" Spacing="2">
+                                            <MudButton Variant="Variant.Filled"
+                                                       Color="Color.Success"
+                                                       Size="Size.Small"
+                                                       StartIcon="@Icons.Material.Filled.CheckCircle"
+                                                       OnClick="() => ApproveQuestion(question.Id)">
+                                                Approve
+                                            </MudButton>
+                                            <MudButton Variant="Variant.Filled"
+                                                       Color="Color.Error"
+                                                       Size="Size.Small"
+                                                       StartIcon="@Icons.Material.Filled.Delete"
+                                                       OnClick="() => DeleteQuestion(question.Id)">
+                                                Delete
+                                            </MudButton>
+                                        </MudStack>
+                                    </MudStack>
+                                </MudPaper>
+                            }
+                        </MudStack>
+                    }
+                </MudPaper>
+            </MudTabPanel>
+            <MudTabPanel Text="@GetApprovedTabText()">
+                <MudPaper Elevation="0" Class="pa-4">
+                    @if (approvedQuestions == null || !approvedQuestions.Any())
+                    {
+                        <MudText Color="Color.Secondary">No approved questions yet.</MudText>
+                    }
+                    else
+                    {
+                        <MudStack Spacing="3">
+                            @foreach (var question in approvedQuestions.OrderBy(x => x.IsAnswered))
+                            {
+                                <MudPaper Elevation="1" Class="pa-3">
+                                    <MudStack Spacing="2">
+                                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                                            <MudStack Spacing="1" Style="flex: 1;">
+                                                <MudText Typo="Typo.body1">
+                                                    <strong>@question.QuestionText</strong>
+                                                    @if (question.IsAnswered)
+                                                    {
+                                                        <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="ml-2">Answered</MudChip>
+                                                    }
+                                                </MudText>
+                                                @if (!string.IsNullOrEmpty(question.AuthorName))
+                                                {
+                                                    <MudText Typo="Typo.caption" Color="Color.Secondary">Asked by: @question.AuthorName</MudText>
+                                                }
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">@question.CreatedDate.ToString("g")</MudText>
+                                            </MudStack>
+                                        </MudStack>
+                                        <MudStack Row="true" Spacing="2">
+                                            @if (room.CurrentQuestionId != question.Id)
+                                            {
+                                                <MudButton Variant="Variant.Filled"
+                                                           Color="Color.Primary"
+                                                           Size="Size.Small"
+                                                           StartIcon="@Icons.Material.Filled.Star"
+                                                           OnClick="() => SetAsCurrent(question.Id)">
+                                                    Set as Current
+                                                </MudButton>
+                                            }
+                                            @if (!question.IsAnswered)
+                                            {
+                                                <MudButton Variant="Variant.Filled"
+                                                           Color="Color.Success"
+                                                           Size="Size.Small"
+                                                           StartIcon="@Icons.Material.Filled.Check"
+                                                           OnClick="() => MarkAsAnswered(question.Id)">
+                                                    Mark as Answered
+                                                </MudButton>
+                                            }
+                                            <MudButton Variant="Variant.Filled"
+                                                       Color="Color.Error"
+                                                       Size="Size.Small"
+                                                       StartIcon="@Icons.Material.Filled.Delete"
+                                                       OnClick="() => DeleteQuestion(question.Id)">
+                                                Delete
+                                            </MudButton>
+                                        </MudStack>
+                                    </MudStack>
+                                </MudPaper>
+                            }
+                        </MudStack>
+                    }
+                </MudPaper>
+            </MudTabPanel>
+        </MudTabs>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string FriendlyName { get; set; } = string.Empty;
+
+    private Room? room;
+    private IEnumerable<Question>? pendingQuestions;
+    private IEnumerable<Question>? approvedQuestions;
+    private bool loading = true;
+    private bool isOwner = false;
+    private string? userId;
+    private int activeTabIndex = 0;
+    private RoomHubClient? roomHub;
+    private bool urlCopied = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        await LoadRoom();
+
+        if (room != null && userId == room.CreatedByUserId)
+        {
+            isOwner = true;
+            await LoadQuestions();
+            await InitializeSignalR();
+        }
+
+        loading = false;
+    }
+
+    private async Task LoadRoom()
+    {
+        room = await RoomService.GetRoomByFriendlyNameAsync(FriendlyName);
+    }
+
+    private async Task LoadQuestions()
+    {
+        if (room != null)
+        {
+            var allQuestions = await QuestionService.GetQuestionsByRoomIdAsync(room.Id);
+            pendingQuestions = allQuestions.Where(q => !q.IsApproved).OrderBy(q => q.CreatedDate);
+            approvedQuestions = allQuestions.Where(q => q.IsApproved).OrderBy(q => q.IsAnswered).ThenBy(q => q.CreatedDate);
+        }
+    }
+
+    private async Task InitializeSignalR()
+    {
+        if (room is null) return;
+
+        // Generate the access token server-side before creating the hub connection
+        var token = await TokenProvider.GetAccessTokenAsync();
+        roomHub = new(NavigationManager, token);
+
+        roomHub.QuestionSubmitted += async (question) =>
+        {
+            await LoadQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.QuestionApproved += async (question) =>
+        {
+            await LoadQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.QuestionAnswered += async (question) =>
+        {
+            await LoadQuestions();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.CurrentQuestionChanged += async (question) =>
+        {
+            await LoadRoom();
+            await InvokeAsync(StateHasChanged);
+        };
+        roomHub.RoomDeleted += async (roomId) =>
+        {
+            // Room has been deleted, redirect to My Rooms page
+            await InvokeAsync(() => NavigationManager.NavigateTo("/my-rooms"));
+        };
+
+        try
+        {
+            await roomHub.JoinRoomAsOwnerAsync(room.Id);
+        }
+        catch (Exception ex)
+        {
+            // If user is not the owner or not authenticated, redirect to public room view
+            Console.WriteLine($"Failed to join as owner: {ex.Message}");
+            NavigationManager.NavigateTo($"/room/{room.FriendlyName}");
+        }
+    }
+
+    private async Task ApproveQuestion(Guid questionId)
+    {
+        if (userId is null) return;
+
+        try
+        {
+            await QuestionService.ApproveQuestionAsync(questionId, userId, CancellationToken.None);
+            await LoadQuestions();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task MarkAsAnswered(Guid questionId)
+    {
+        if (userId is null) return;
+
+        try
+        {
+            await QuestionService.MarkAsAnsweredAsync(questionId, userId, CancellationToken.None);
+            await LoadQuestions();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task SetAsCurrent(Guid questionId)
+    {
+        if (userId is null || room is null) return;
+
+        try
+        {
+            await RoomService.SetCurrentQuestionAsync(room.Id, questionId, userId, CancellationToken.None);
+            await LoadRoom();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task ClearCurrentQuestion()
+    {
+        if (userId is null || room is null) return;
+
+        try
+        {
+            await RoomService.SetCurrentQuestionAsync(room.Id, null, userId, CancellationToken.None);
+            await LoadRoom();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task DeleteQuestion(Guid questionId)
+    {
+        if (userId is null) return;
+
+        try
+        {
+            await QuestionService.DeleteQuestionAsync(questionId, userId, CancellationToken.None);
+            await LoadQuestions();
+        }
+        catch (Exception)
+        {
+            // Handle error
+        }
+    }
+
+    private async Task CopyRoomUrl()
+    {
+        if (room is null) return;
+
+        try
+        {
+
+            var baseUri = NavigationManager.BaseUri.TrimEnd('/');
+            var roomUrl = $"{baseUri}/room/{room.FriendlyName}";
+
+            await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
+
+            urlCopied = true;
+            Snackbar.Add("Room URL copied to clipboard!", Severity.Success);
+            StateHasChanged();
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Failed to copy URL to clipboard", Severity.Error);
+            return;
+        }
+
+        // Reset the "Copied!" state after 2 seconds
+        await Task.Delay(2000);
+        urlCopied = false;
+        StateHasChanged();
+    }
+
+    private async Task ShowDeleteConfirmation()
+    {
+        if (room is null) return;
+
+        var parameters = new DialogParameters
+        {
+            ["ContentText"] = $"Are you sure you want to delete the room \"{room.FriendlyName}\"? This action cannot be undone. All questions in this room will be permanently deleted, and all participants will be redirected.",
+            ["ButtonText"] = "Delete",
+            ["Color"] = Color.Error
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>("Delete Room", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            await DeleteRoom();
+        }
+    }
+
+    private async Task DeleteRoom()
+    {
+        if (userId is null || room is null) return;
+
+        try
+        {
+            await RoomService.DeleteRoomAsync(room.Id, userId, CancellationToken.None);
+            Snackbar.Add("Room deleted successfully", Severity.Success);
+            // Redirect to My Rooms page after successful deletion
+            NavigationManager.NavigateTo("/my-rooms");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Snackbar.Add("You don't have permission to delete this room", Severity.Error);
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("An error occurred while deleting the room", Severity.Error);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (roomHub != null)
+        {
+            await roomHub.DisposeAsync();
+        }
+    }
+
+    private string GetPendingTabText()
+    {
+        var count = pendingQuestions?.Count() ?? 0;
+        return count > 0 ? $"Pending Approval ({count})" : "Pending Approval";
+    }
+
+    private string GetApprovedTabText()
+    {
+        var count = approvedQuestions?.Count() ?? 0;
+        return count > 0 ? $"Approved ({count})" : "Approved";
+    }
+}
