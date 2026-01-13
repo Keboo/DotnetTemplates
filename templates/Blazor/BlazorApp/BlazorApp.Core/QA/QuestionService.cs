@@ -10,6 +10,7 @@ namespace BlazorApp.Core.QA;
 
 public class QuestionService(IDbContextFactory<ApplicationDbContext> contextFactory, IHubContext<RoomHub> hubContext) : IQuestionService
 {
+    //TODO: This does not horizontally scale
     private static readonly ConcurrentDictionary<string, DateTimeOffset> _lastSubmissionTimes = new();
     private static readonly TimeSpan _rateLimitWindow = TimeSpan.FromSeconds(10);
 
