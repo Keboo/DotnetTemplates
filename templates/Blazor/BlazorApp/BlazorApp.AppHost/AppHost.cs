@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+builder.AddAzureContainerAppEnvironment("cae-blazorapp");
+
 var docsGroup = builder.AddLogicalGroup("docs");
 builder.AddAspireDocs().WithParentRelationship(docsGroup);
 builder.AddMudBlazorDocs().WithParentRelationship(docsGroup);
@@ -44,7 +46,15 @@ else
 var blazorApp = builder.AddProject<Projects.BlazorApp>("blazorapp")
     .WithDependency(db, ConnectionStrings.DatabaseKey)
     .WithUITests()
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .PublishAsAzureContainerApp((infra, app) => app.Template.Scale.MaxReplicas = 1);
 
+if (builder.ExecutionContext.IsPublishMode)
+{
+    // Enable migrations on startup for Azure deployments
+    // Applying migrations on startup is not recommended for production scenarios.
+    // See: https://learn.microsoft.com/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli&WT.mc_id=DT-MVP-5003472
+    blazorApp.WithEnvironment("RunMigrationsOnStartup", "true");
+}
 
 builder.Build().Run();

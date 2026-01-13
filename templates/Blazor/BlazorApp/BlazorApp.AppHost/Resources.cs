@@ -1,6 +1,5 @@
 using System.Diagnostics;
 
-using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Azure;
 
 using BlazorApp.AppHost;
@@ -313,20 +312,20 @@ public static class Resources
                 {
                     FileName = "dotnet",
                     ArgumentList = {
-                    "ef",
-                    "migrations",
-                    "--startup-project",
-                    "./BlazorApp.AppHost",
-                    "--project",
-                    "./BlazorApp.Data",
-                    "--no-build",
-                    "add",
-                    migrationNameResult.Data.Value
+                        "ef",
+                        "migrations",
+                        "--startup-project",
+                        "./BlazorApp.AppHost",
+                        "--project",
+                        "./BlazorApp.Data",
+                        "--no-build",
+                        "add",
+                        migrationNameResult.Data.Value
                     },
                     WorkingDirectory = "..",
                     EnvironmentVariables =
                     {
-                    { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
+                        { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
                     }
                 };
                 bool processResult = await database.ExecuteProcessAsync(ctx, psi);
@@ -362,19 +361,19 @@ public static class Resources
                 {
                     FileName = "dotnet",
                     ArgumentList = {
-                    "ef",
-                    "migrations",
-                    "--startup-project",
-                    "./BlazorApp.AppHost",
-                    "--project",
-                    "./BlazorApp.Data",
-                    "--no-build",
-                    "remove"
+                        "ef",
+                        "migrations",
+                        "--startup-project",
+                        "./BlazorApp.AppHost",
+                        "--project",
+                        "./BlazorApp.Data",
+                        "--no-build",
+                        "remove"
                     },
                     WorkingDirectory = "..",
                     EnvironmentVariables =
                     {
-                    { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
+                        { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
                     }
                 };
 
