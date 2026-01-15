@@ -9,7 +9,6 @@ builder.AddAzureContainerAppEnvironment("cae-blazorapp");
 
 var docsGroup = builder.AddLogicalGroup("docs");
 builder.AddAspireDocs().WithParentRelationship(docsGroup);
-builder.AddMudBlazorDocs().WithParentRelationship(docsGroup);
 
 IResourceBuilder<IResourceWithConnectionString> db;
 
@@ -48,6 +47,17 @@ var blazorApp = builder.AddProject<Projects.BlazorApp>("blazorapp")
     .WithUITests()
     .WithExternalHttpEndpoints()
     .PublishAsAzureContainerApp((infra, app) => app.Template.Scale.MaxReplicas = 1);
+
+// Add the React frontend (Vite dev server) in development
+if (!builder.ExecutionContext.IsPublishMode)
+{
+    var frontendApp = builder.AddNpmApp("frontend", "../BlazorApp/BlazorApp.Web", "dev")
+        .WithHttpEndpoint(env: "PORT")
+        .WithExternalHttpEndpoints()
+        .WithReference(blazorApp)
+        .WaitFor(blazorApp)
+        .PublishAsDockerFile();
+}
 
 if (builder.ExecutionContext.IsPublishMode)
 {

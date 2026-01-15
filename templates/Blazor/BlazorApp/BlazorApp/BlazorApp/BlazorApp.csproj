@@ -2,19 +2,45 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <SpaRoot>..\BlazorApp.Web\</SpaRoot>
+    <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
+    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <EnableDefaultRazorComponentItems>false</EnableDefaultRazorComponentItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Exclude old Blazor components and services from build -->
+    <Compile Remove="Components\**" />
+    <Compile Remove="Services\**" />
+    <Content Remove="Components\**" />
+    <Content Remove="Services\**" />
+    <EmbeddedResource Remove="Components\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Components\**" />
+    <None Remove="Services\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\BlazorApp.Core\BlazorApp.Core.csproj" />
     <ProjectReference Include="..\..\BlazorApp.Data\BlazorApp.Data.csproj" />
     <ProjectReference Include="..\..\BlazorApp.ServiceDefaults\BlazorApp.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\BlazorApp.Client\BlazorApp.Client.csproj" />
+    <ProjectReference Include="..\BlazorApp.Web\BlazorApp.Web.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
-    <PackageReference Include="MudBlazor" />
-
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- Copy the React build output to wwwroot -->
+    <ItemGroup>
+      <DistFiles Include="$(SpaRoot)dist\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 
 </Project>

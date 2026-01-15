@@ -8,6 +8,7 @@ public class QuestionDto()
 {
     internal QuestionDto(Question question) : this()
     {
+        Id = question.Id;
         RoomId = question.RoomId;
         QuestionText = question.QuestionText;
         AuthorName = question.AuthorName;
@@ -17,6 +18,7 @@ public class QuestionDto()
         LastModifiedDate = question.LastModifiedDate;
     }
 
+    public Guid Id { get; set; }
     public Guid RoomId { get; set; }
     public string QuestionText { get; set; } = "";
     public string? AuthorName { get; set; }
