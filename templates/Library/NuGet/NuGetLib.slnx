@@ -4,6 +4,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
     <File Path="NuGet.config" />
     <File Path="NuGetPackageReadme.md" />
   </Folder>
