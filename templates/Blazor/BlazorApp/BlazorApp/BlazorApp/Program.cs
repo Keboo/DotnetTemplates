@@ -1,18 +1,11 @@
-using BlazorApp.Components;
-using BlazorApp.Components.Account;
 using BlazorApp.Core;
 using BlazorApp.Core.Hubs;
 using BlazorApp.Data;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
-using MudBlazor.Services;
-using MudBlazor;
-using BlazorApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,24 +17,33 @@ builder.AddServiceDefaults()
 builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// Add MudBlazor services
-builder.Services.AddMudServices(config =>
+// Add CORS for frontend in development
+builder.Services.AddCors(options =>
 {
-    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
-    config.SnackbarConfiguration.VisibleStateDuration = 2000;
-    config.SnackbarConfiguration.ShowTransitionDuration = 500;
-    config.SnackbarConfiguration.HideTransitionDuration = 500;
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            // In development, allow any localhost origin for Vite dev server
+            policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else
+        {
+            // In production, restrict to specific origins
+            policy.WithOrigins("https://yourdomain.com")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+    });
 });
-builder.Services.AddScoped<BlazorApp.Services.ThemeService>();
-
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 // Add authorization policies
 builder.Services.AddAuthorization(options =>
@@ -60,7 +62,15 @@ var authBuilder = builder.Services.AddAuthentication(options =>
     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 });
 
-authBuilder.AddIdentityCookies();
+authBuilder.AddIdentityCookies(options =>
+{
+    // Configure cookie for cross-origin requests in development
+    options.ApplicationCookie?.Configure(cookieOptions =>
+    {
+        cookieOptions.Cookie.SameSite = SameSiteMode.None;
+        cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
+});
 
 authBuilder.AddJwtBearer(options =>
 {
@@ -88,13 +98,27 @@ authBuilder.AddJwtBearer(options =>
                 context.Token = accessToken;
             }
             return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("JWT authentication failed: {Exception}", context.Exception.Message);
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("JWT authentication challenge: {Error} - {ErrorDescription}", context.Error, context.ErrorDescription);
+            return Task.CompletedTask;
         }
     };
 });
 
 builder.Services.AddSignalR();
 
-builder.Services.AddScoped<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+// No-op email sender for now (can be replaced with real implementation)
+builder.Services.AddScoped<IEmailSender<ApplicationUser>>(sp => 
+    new NoOpEmailSender<ApplicationUser>());
 
 var app = builder.Build();
 
@@ -103,35 +127,50 @@ app.MapDefaultEndpoints();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.UseMigrationsEndPoint();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/Error");
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
+
+// Enable CORS
+app.UseCors("AllowFrontend");
+
+// Serve static files from React build (production only)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseAntiforgery();
-
-app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BlazorApp.Client._Imports).Assembly);
+app.MapControllers();
 
 // SignalR hub uses JWT authentication when token present, allows anonymous otherwise
 // Method-level [Authorize] enforces authentication for owner operations
 app.MapHub<RoomHub>("/hubs/room")
     .RequireAuthorization("SignalRPolicy");
 
-// Add additional endpoints required by the Identity /Account Razor components.
-app.MapAdditionalIdentityEndpoints();
+// SPA fallback for production
+if (!app.Environment.IsDevelopment())
+{
+    app.MapFallbackToFile("index.html");
+}
 
 app.Run();
+
+// Simple no-op email sender
+internal class NoOpEmailSender<TUser> : IEmailSender<TUser> where TUser : class
+{
+    public Task SendConfirmationLinkAsync(TUser user, string email, string confirmationLink) => Task.CompletedTask;
+    public Task SendPasswordResetLinkAsync(TUser user, string email, string resetLink) => Task.CompletedTask;
+    public Task SendPasswordResetCodeAsync(TUser user, string email, string resetCode) => Task.CompletedTask;
+}

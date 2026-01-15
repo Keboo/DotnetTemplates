@@ -18,6 +18,6 @@
   <Project Path="BlazorApp.Data/BlazorApp.Data.csproj" />
   <Project Path="BlazorApp.ServiceDefaults/BlazorApp.ServiceDefaults.csproj" />
   <Project Path="BlazorApp.UITests/BlazorApp.UITests.csproj" Id="a75465c6-4ed1-4ab4-b492-9697c5727ffc" />
-  <Project Path="BlazorApp/BlazorApp.Client/BlazorApp.Client.csproj" />
+  <Project Path="BlazorApp/BlazorApp.Web/BlazorApp.Web.csproj" />
   <Project Path="BlazorApp/BlazorApp/BlazorApp.csproj" />
 </Solution>
