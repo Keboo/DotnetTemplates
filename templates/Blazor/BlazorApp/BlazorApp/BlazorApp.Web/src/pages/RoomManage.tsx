@@ -158,17 +158,6 @@ export default function RoomManage() {
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h4">Manage: {room.friendlyName}</Typography>
         <Box>
-          {room.currentQuestionId && (
-            <Button
-              variant="outlined"
-              color="warning"
-              onClick={handleClearCurrent}
-              sx={{ mr: 1 }}
-              data-testid="clear-current-question-button"
-            >
-              Clear Current Question
-            </Button>
-          )}
           <Button
             variant="outlined"
             startIcon={<VisibilityIcon />}
@@ -267,9 +256,15 @@ export default function RoomManage() {
                           Mark Answered
                         </Button>
                       )}
-                      <Button size="small" onClick={() => handleSetCurrent(question.id)}>
-                        Set Current
-                      </Button>
+                      {room.currentQuestionId === question.id ? (
+                        <Button size="small" onClick={handleClearCurrent}>
+                          Clear Current
+                        </Button>
+                      ) : (
+                        <Button size="small" onClick={() => handleSetCurrent(question.id)}>
+                          Set Current
+                        </Button>
+                      )}
                       <IconButton color="error" onClick={() => handleDelete(question.id)}>
                         <DeleteIcon />
                       </IconButton>
