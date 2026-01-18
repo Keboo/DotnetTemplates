@@ -164,9 +164,9 @@ public class RoomsController(
         return NoContent();
     }
 
-    [HttpPut("{roomId:guid}/current-question/{questionId:guid}")]
+    [HttpPut("{roomId:guid}/current-question/{questionId:guid?}")]
     [Authorize]
-    public async Task<IActionResult> SetCurrentQuestion(Guid roomId, Guid questionId, CancellationToken cancellationToken)
+    public async Task<IActionResult> SetCurrentQuestion(Guid roomId, Guid? questionId, CancellationToken cancellationToken)
     {
         var userId = userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId))

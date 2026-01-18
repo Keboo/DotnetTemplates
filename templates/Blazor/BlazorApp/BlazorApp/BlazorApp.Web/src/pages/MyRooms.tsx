@@ -19,6 +19,7 @@ import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/ico
 import { useSnackbar } from 'notistack'
 import { RoomDto } from '@/types'
 import { apiClient } from '@/services/apiClient'
+import JoinRoomForm from '@/components/JoinRoomForm'
 
 export default function MyRooms() {
   const [rooms, setRooms] = useState<RoomDto[]>([])
@@ -137,6 +138,13 @@ export default function MyRooms() {
           ))}
         </Grid2>
       )}
+
+      <Box sx={{ mt: 6, maxWidth: 600, mx: 'auto' }}>
+        <JoinRoomForm 
+          title="Join an Existing Room"
+          description="Enter a room name to join a Q&A session."
+        />
+      </Box>
 
       <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)}>
         <DialogTitle>Create New Room</DialogTitle>
