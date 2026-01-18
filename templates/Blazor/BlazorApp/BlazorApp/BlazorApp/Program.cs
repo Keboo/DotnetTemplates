@@ -1,6 +1,7 @@
 using BlazorApp.Core;
 using BlazorApp.Core.Hubs;
 using BlazorApp.Data;
+using BlazorApp.Middleware;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -143,6 +144,9 @@ else
 
 // Enable CORS
 app.UseCors("AllowFrontend");
+
+// Add exception handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Serve static files from React build (production only)
 if (!app.Environment.IsDevelopment())
