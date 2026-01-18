@@ -11,11 +11,11 @@ export default function QuestionDisplay() {
   const [currentQuestion, setCurrentQuestion] = useState<QuestionDto | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useRoomHub(room?.id, undefined, {
-    onCurrentQuestionChanged: async (questionId) => {
+  useRoomHub(room?.id, false, {
+    onCurrentQuestionChanged: async (question) => {
       if (!room) return
 
-      if (!questionId) {
+      if (!question) {
         setCurrentQuestion(null)
         return
       }
@@ -24,14 +24,13 @@ export default function QuestionDisplay() {
         const questions = await apiClient.get<QuestionDto[]>(
           `/api/rooms/${room.id}/questions/approved`
         )
-        const question = questions.find((q) => q.id === questionId)
-        setCurrentQuestion(question || null)
+        setCurrentQuestion(questions.find((q) => q.id === question.id) || null)
       } catch (error) {
         console.error('Failed to load current question:', error)
       }
     },
-    onQuestionAnswered: (questionId) => {
-      if (currentQuestion?.id === questionId) {
+    onQuestionAnswered: (question) => {
+      if (currentQuestion?.id === question.id) {
         setCurrentQuestion({ ...currentQuestion, isAnswered: true })
       }
     },

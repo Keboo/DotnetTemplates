@@ -51,7 +51,8 @@ var backend = builder.AddProject<Projects.BlazorApp>("backend")
 // Add the React frontend (Vite dev server) in development
 if (!builder.ExecutionContext.IsPublishMode)
 {
-    var frontendApp = builder.AddNpmApp("frontend", "../BlazorApp/BlazorApp.Web", "dev")
+    var frontendApp = builder.AddJavaScriptApp("frontend", "../BlazorApp/BlazorApp.Web", "dev")
+        .WithNpm(install: true)
         .WithHttpEndpoint(env: "PORT")
         .WithExternalHttpEndpoints()
         .WithDependency(backend)
