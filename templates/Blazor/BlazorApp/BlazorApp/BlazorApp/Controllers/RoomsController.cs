@@ -177,6 +177,20 @@ public class RoomsController(
         await roomService.SetCurrentQuestionAsync(roomId, questionId, userId, cancellationToken);
         return NoContent();
     }
+
+    [HttpDelete("{roomId:guid}/current-question")]
+    [Authorize]
+    public async Task<IActionResult> ClearCurrentQuestion(Guid roomId, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        await roomService.SetCurrentQuestionAsync(roomId, null, userId, cancellationToken);
+        return NoContent();
+    }
 }
 
 public record CreateRoomRequest(string FriendlyName);
