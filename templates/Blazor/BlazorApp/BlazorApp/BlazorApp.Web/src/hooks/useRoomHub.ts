@@ -1,25 +1,38 @@
 import { useEffect, useRef, useState } from 'react'
 import { RoomHubConnection, RoomHubEvents } from '@/services/roomHub'
+import { HubConnectionState } from '@microsoft/signalr'
 
 export function useRoomHub(
   roomId: string | undefined,
-  accessToken?: string,
+  asOwner: boolean,
   events?: Partial<RoomHubEvents>
 ) {
   const [connected, setConnected] = useState(false)
   const hubRef = useRef<RoomHubConnection | null>(null)
+  const eventsRef = useRef(events)
+  
+  // Keep events ref up to date
+  useEffect(() => {
+    eventsRef.current = events
+  }, [events])
 
   useEffect(() => {
     if (!roomId) return
 
-    const hub = new RoomHubConnection('', accessToken)
+    let cancelled = false
+    
+    // Use backend URL from vite config (via define)
+    const baseUrl = __API_BASE_URL__
+    
+    console.info('[useRoomHub] Initializing RoomHubConnection with baseUrl:', baseUrl)
+    const hub = new RoomHubConnection(baseUrl)
     hubRef.current = hub
 
     // Register events
-    if (events) {
-      Object.entries(events).forEach(([event, handler]) => {
+    if (eventsRef.current) {
+      Object.entries(eventsRef.current).forEach(([event, handler]) => {
         if (handler) {
-          hub.on(event as keyof RoomHubEvents, handler as any)
+          hub.on(event as keyof RoomHubEvents, handler)
         }
       })
     }
@@ -28,33 +41,39 @@ export function useRoomHub(
     const initHub = async () => {
       try {
         await hub.start()
+        if (cancelled) {
+          await hub.stop()
+          return
+        }
         setConnected(true)
         
-        if (accessToken) {
+        if (asOwner) {
+          // Join as owner - authentication is handled via cookies
           await hub.joinAsOwner(roomId)
         } else {
           await hub.joinAsParticipant(roomId)
         }
       } catch (error) {
-        console.error('Failed to connect to hub:', error)
-        setConnected(false)
+        if (!cancelled) {
+          console.error('Failed to connect to hub:', error)
+          setConnected(false)
+        }
       }
     }
 
     initHub()
 
     return () => {
+      cancelled = true
+      setConnected(false)
+      
       const cleanup = async () => {
-        if (hub && roomId) {
+        if (hub) {
           try {
             // Only try to leave if connection is still active
             const state = hub.getState()
-            if (state === 1) { // HubConnectionState.Connected = 1
-              if (accessToken) {
-                await hub.leaveAsOwner(roomId)
-              } else {
-                await hub.leaveAsParticipant(roomId)
-              }
+            if (state === HubConnectionState.Connected && roomId) {
+              await hub.leaveAsOwner(roomId)
             }
             await hub.stop()
           } catch (error) {
@@ -64,7 +83,7 @@ export function useRoomHub(
       }
       cleanup()
     }
-  }, [roomId, accessToken])
+  }, [roomId])
 
   return { connected, hub: hubRef.current }
 }

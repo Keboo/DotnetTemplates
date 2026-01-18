@@ -29,23 +29,56 @@ export default function Room() {
   })
   const { enqueueSnackbar } = useSnackbar()
 
+  const refetchQuestions = async () => {
+    if (!room?.id) return
+    try {
+      const questionsData = await apiClient.get<QuestionDto[]>(
+        `/api/rooms/${room.id}/questions/approved`
+      )
+      setQuestions(questionsData)
+    } catch (error) {
+      console.error('Failed to refetch questions:', error)
+    }
+  }
+
+  const updateOrRefetch = (question: QuestionDto, updater: (q: QuestionDto) => QuestionDto) => {
+    setQuestions((prev) => {
+      const exists = prev.some((q) => q.id === question.id)
+      if (!exists) {
+        refetchQuestions()
+        return prev
+      }
+      return prev.map((q) => (q.id === question.id ? updater(q) : q))
+    })
+  }
+
   // SignalR connection for real-time updates
-  useRoomHub(room?.id, undefined, {
-    onQuestionApproved: (questionId) => {
+  useRoomHub(room?.id, false, {
+    onQuestionSubmitted: (question) => {
       setQuestions((prev) =>
-        prev.map((q) => (q.id === questionId ? { ...q, isApproved: true } : q))
+        prev.map((q) => (q.id === question.id ? { ...q, isApproved: true } : q))
       )
     },
-    onQuestionAnswered: (questionId) => {
-      setQuestions((prev) =>
-        prev.map((q) => (q.id === questionId ? { ...q, isAnswered: true } : q))
-      )
+    onQuestionAnswered: (question) => {
+      updateOrRefetch(question, (q) => ({ ...q, isAnswered: true }))
+    },
+    onQuestionApproved: (question) => {
+      updateOrRefetch(question, (q) => ({ ...q, isApproved: true }))
     },
     onQuestionDeleted: (questionId) => {
       setQuestions((prev) => prev.filter((q) => q.id !== questionId))
     },
-    onCurrentQuestionChanged: (questionId) => {
-      setRoom((prev) => (prev ? { ...prev, currentQuestionId: questionId || undefined } : null))
+    onCurrentQuestionChanged: (question) => {
+      if (question) {
+        setQuestions((prev) => {
+          const exists = prev.some((q) => q.id === question.id)
+          if (!exists) {
+            refetchQuestions()
+          }
+          return prev
+        })
+      }
+      setRoom((prev) => (prev ? { ...prev, currentQuestionId: question?.id || undefined } : null))
     },
   })
 
@@ -61,7 +94,7 @@ export default function Room() {
           `/api/rooms/${roomData.id}/questions/approved`
         )
         setQuestions(questionsData)
-      } catch (error) {
+      } catch {
         enqueueSnackbar('Room not found', { variant: 'error' })
       } finally {
         setLoading(false)
@@ -168,7 +201,7 @@ export default function Room() {
 
       <Paper elevation={3} sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
-          Approved Questions
+          Upcoming Questions
         </Typography>
         {questions.length === 0 ? (
           <Typography color="text.secondary">No questions yet. Be the first to ask!</Typography>

@@ -41,7 +41,7 @@ public static class RoomHubExtensions
         public async Task SendRoomDeletedAsync(Guid roomId, CancellationToken cancellationToken = default)
         {
             string group = GetRoomGroupName(roomId);
-            await hubContext.Clients.Group(group).SendAsync(RoomHub.RoomDeletedEvent, roomId, cancellationToken);
+            await hubContext.Clients.Group(group).SendAsync(RoomDeletedEvent, roomId, cancellationToken);
         }
     }
 }

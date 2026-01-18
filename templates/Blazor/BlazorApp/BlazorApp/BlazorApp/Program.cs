@@ -48,10 +48,12 @@ builder.Services.AddCors(options =>
 // Add authorization policies
 builder.Services.AddAuthorization(options =>
 {
-    // Policy that allows anonymous but uses JWT when authenticated
+    // Policy that allows both cookie and JWT authentication for SignalR
     options.AddPolicy("SignalRPolicy", policy =>
     {
-        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+        policy.AddAuthenticationSchemes(
+            IdentityConstants.ApplicationScheme, 
+            JwtBearerDefaults.AuthenticationScheme);
         policy.RequireAssertion(_ => true); // Always allow
     });
 });

@@ -7,11 +7,11 @@ import {
 import { QuestionDto, RoomDto } from '@/types'
 
 export type RoomHubEvents = {
-  onQuestionCreated: (question: QuestionDto) => void
-  onQuestionApproved: (questionId: string) => void
-  onQuestionAnswered: (questionId: string) => void
+  onQuestionSubmitted: (question: QuestionDto) => void
+  onQuestionApproved: (question: QuestionDto) => void
+  onQuestionAnswered: (question: QuestionDto) => void
   onQuestionDeleted: (questionId: string) => void
-  onCurrentQuestionChanged: (questionId: string | null) => void
+  onCurrentQuestionChanged: (question: QuestionDto | null) => void
   onRoomUpdated: (room: RoomDto) => void
 }
 
@@ -20,8 +20,7 @@ export class RoomHubConnection {
   private events: Partial<RoomHubEvents> = {}
 
   constructor(
-    private baseUrl: string = '',
-    private accessToken?: string
+    private baseUrl: string = ''
   ) {}
 
   async start(): Promise<void> {
@@ -29,35 +28,37 @@ export class RoomHubConnection {
       return
     }
 
-    const url = `${this.baseUrl}/hubs/room${this.accessToken ? `?access_token=${this.accessToken}` : ''}`
+    const url = `${this.baseUrl}/hubs/room`
 
-    console.log('[RoomHub] Starting connection to:', url.replace(/access_token=[^&]+/, 'access_token=***'))
+    console.log('[RoomHub] Starting connection to:', url)
 
     this.connection = new HubConnectionBuilder()
-      .withUrl(url)
+      .withUrl(url, {
+        withCredentials: true  // Enable cookies for authentication
+      })
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Information)
       .build()
 
     // Register event handlers
-    this.connection.on('QuestionCreated', (question: QuestionDto) => {
-      this.events.onQuestionCreated?.(question)
+    this.connection.on('QuestionSubmitted', (question: QuestionDto) => {
+      this.events.onQuestionSubmitted?.(question)
     })
 
-    this.connection.on('QuestionApproved', (questionId: string) => {
-      this.events.onQuestionApproved?.(questionId)
+    this.connection.on('QuestionApproved', (question: QuestionDto) => {
+      this.events.onQuestionApproved?.(question)
     })
 
-    this.connection.on('QuestionAnswered', (questionId: string) => {
-      this.events.onQuestionAnswered?.(questionId)
+    this.connection.on('QuestionAnswered', (question: QuestionDto) => {
+      this.events.onQuestionAnswered?.(question)
     })
 
     this.connection.on('QuestionDeleted', (questionId: string) => {
       this.events.onQuestionDeleted?.(questionId)
     })
 
-    this.connection.on('CurrentQuestionChanged', (questionId: string | null) => {
-      this.events.onCurrentQuestionChanged?.(questionId)
+    this.connection.on('CurrentQuestionChanged', (question: QuestionDto | null) => {
+      this.events.onCurrentQuestionChanged?.(question)
     })
 
     this.connection.on('RoomUpdated', (room: RoomDto) => {

@@ -17,14 +17,12 @@ import {
 } from '@mui/material'
 import {
   Check as CheckIcon,
-  Close as CloseIcon,
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
 } from '@mui/icons-material'
 import { useSnackbar } from 'notistack'
 import { QuestionDto, RoomDto } from '@/types'
 import { apiClient } from '@/services/apiClient'
-import { useAuth } from '@/contexts/AuthContext'
 import { useRoomHub } from '@/hooks/useRoomHub'
 
 export default function RoomManage() {
@@ -32,30 +30,31 @@ export default function RoomManage() {
   const [room, setRoom] = useState<RoomDto | null>(null)
   const [questions, setQuestions] = useState<QuestionDto[]>([])
   const [loading, setLoading] = useState(true)
-  const [accessToken, setAccessToken] = useState<string | undefined>()
-  const { user } = useAuth()
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
 
-  // SignalR connection with owner access
-  useRoomHub(room?.id, accessToken, {
-    onQuestionCreated: (question) => {
+  // SignalR connection with owner access (uses cookie authentication)
+  useRoomHub(room?.id, true, {
+    onQuestionSubmitted: (question) => {
       setQuestions((prev) => [...prev, question])
       enqueueSnackbar('New question received!', { variant: 'info' })
     },
-    onQuestionApproved: (questionId) => {
+    onQuestionApproved: (question) => {
       setQuestions((prev) =>
-        prev.map((q) => (q.id === questionId ? { ...q, isApproved: true } : q))
+        prev.map((q) => (q.id === question.id ? { ...q, isApproved: true } : q))
       )
     },
-    onQuestionAnswered: (questionId) => {
+    onQuestionAnswered: (question) => {
       setQuestions((prev) =>
-        prev.map((q) => (q.id === questionId ? { ...q, isAnswered: true } : q))
+        prev.map((q) => (q.id === question.id ? { ...q, isAnswered: true } : q))
       )
     },
     onQuestionDeleted: (questionId) => {
       setQuestions((prev) => prev.filter((q) => q.id !== questionId))
     },
+    onCurrentQuestionChanged: (question) => {
+      setRoom((prev) => (prev ? { ...prev, currentQuestionId: question?.id || undefined } : null))
+    }
   })
 
   useEffect(() => {
@@ -66,15 +65,11 @@ export default function RoomManage() {
         const roomData = await apiClient.get<RoomDto>(`/api/rooms/name/${friendlyName}`)
         setRoom(roomData)
 
-        // Get access token for SignalR owner connection
-        const token = await apiClient.get<string>(`/api/auth/signalr-token`)
-        setAccessToken(token)
-
         const questionsData = await apiClient.get<QuestionDto[]>(
           `/api/rooms/${roomData.id}/questions`
         )
         setQuestions(questionsData)
-      } catch (error) {
+      } catch {
         enqueueSnackbar('Failed to load room', { variant: 'error' })
         navigate('/my-rooms')
       } finally {
@@ -91,7 +86,7 @@ export default function RoomManage() {
     try {
       await apiClient.put(`/api/rooms/${room.id}/questions/${questionId}/approve`)
       enqueueSnackbar('Question approved', { variant: 'success' })
-    } catch (error) {
+    } catch {
       enqueueSnackbar('Failed to approve question', { variant: 'error' })
     }
   }
@@ -102,7 +97,7 @@ export default function RoomManage() {
     try {
       await apiClient.put(`/api/rooms/${room.id}/questions/${questionId}/answer`)
       enqueueSnackbar('Question marked as answered', { variant: 'success' })
-    } catch (error) {
+    } catch {
       enqueueSnackbar('Failed to mark question as answered', { variant: 'error' })
     }
   }
@@ -114,7 +109,7 @@ export default function RoomManage() {
       await apiClient.put(`/api/rooms/${room.id}/current-question/${questionId}`)
       setRoom({ ...room, currentQuestionId: questionId })
       enqueueSnackbar('Current question updated', { variant: 'success' })
-    } catch (error) {
+    } catch {
       enqueueSnackbar('Failed to update current question', { variant: 'error' })
     }
   }
@@ -126,7 +121,7 @@ export default function RoomManage() {
     try {
       await apiClient.delete(`/api/rooms/${room.id}/questions/${questionId}`)
       enqueueSnackbar('Question deleted', { variant: 'success' })
-    } catch (error) {
+    } catch {
       enqueueSnackbar('Failed to delete question', { variant: 'error' })
     }
   }

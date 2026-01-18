@@ -1,6 +1,7 @@
 using BlazorApp.Core.QA;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
@@ -42,9 +43,9 @@ public class RoomHub(IRoomService roomService, ILogger<RoomHub> logger) : Hub
     /// <summary>
     /// Allows only authenticated users who own the room to join as owner.
     /// Verifies room ownership before adding to owner group.
-    /// Requires JWT Bearer authentication via access token.
+    /// Supports both cookie authentication (browser) and JWT Bearer (other clients).
     /// </summary>
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = $"Identity.Application,{JwtBearerDefaults.AuthenticationScheme}")]
     public async Task JoinRoomAsOwner(string roomId)
     {
         logger.LogInformation("Connection {ConnectionId} attempting to join room {RoomId} as owner", Context.ConnectionId, roomId);
@@ -66,7 +67,7 @@ public class RoomHub(IRoomService roomService, ILogger<RoomHub> logger) : Hub
 
         // Verify the room exists
         var room = await roomService.GetRoomByIdAsync(roomGuid);
-        if (room == null)
+        if (room is null)
         {
             logger.LogWarning("Room {RoomId} not found for connection {ConnectionId}", roomId, Context.ConnectionId);
             throw new HubException("Room not found.");

@@ -94,26 +94,6 @@ public class AuthController(
             IsAuthenticated = true
         });
     }
-
-    [HttpGet("signalr-token")]
-    [Authorize]
-    public async Task<IActionResult> GetSignalRToken()
-    {
-        var userId = userManager.GetUserId(User);
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Unauthorized();
-        }
-
-        return Ok("");
-        //var token = await tokenProvider.GetAccessTokenAsync();
-        //if (string.IsNullOrEmpty(token))
-        //{
-        //    return Problem("Failed to generate token");
-        //}
-        //
-        //return Ok(token);
-    }
 }
 
 public record LoginRequest(string Email, string Password, bool? RememberMe);
