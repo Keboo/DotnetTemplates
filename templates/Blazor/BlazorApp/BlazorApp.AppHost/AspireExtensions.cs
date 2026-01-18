@@ -98,6 +98,11 @@ internal static class AspireExtensions
             resourceBuilder.WaitFor(dependency);
             return resourceBuilder.WithReference(dependency, connectionName);
         }
+        public IResourceBuilder<T> WithDependency(IResourceBuilder<IResourceWithServiceDiscovery> dependency)
+        {
+            resourceBuilder.WaitFor(dependency);
+            return resourceBuilder.WithReference(dependency);
+        }
     }
 
     extension(ProcessStartInfo startInfo)

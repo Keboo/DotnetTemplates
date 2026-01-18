@@ -42,7 +42,7 @@ else
         ;
 }
 
-var blazorApp = builder.AddProject<Projects.BlazorApp>("blazorapp")
+var backend = builder.AddProject<Projects.BlazorApp>("backend")
     .WithDependency(db, ConnectionStrings.DatabaseKey)
     .WithUITests()
     .WithExternalHttpEndpoints()
@@ -54,8 +54,7 @@ if (!builder.ExecutionContext.IsPublishMode)
     var frontendApp = builder.AddNpmApp("frontend", "../BlazorApp/BlazorApp.Web", "dev")
         .WithHttpEndpoint(env: "PORT")
         .WithExternalHttpEndpoints()
-        .WithReference(blazorApp)
-        .WaitFor(blazorApp)
+        .WithDependency(backend)
         .PublishAsDockerFile();
 }
 
@@ -64,7 +63,7 @@ if (builder.ExecutionContext.IsPublishMode)
     // Enable migrations on startup for Azure deployments
     // Applying migrations on startup is not recommended for production scenarios.
     // See: https://learn.microsoft.com/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli&WT.mc_id=DT-MVP-5003472
-    blazorApp.WithEnvironment("RunMigrationsOnStartup", "true");
+    backend.WithEnvironment("RunMigrationsOnStartup", "true");
 }
 
 builder.Build().Run();
