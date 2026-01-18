@@ -114,6 +114,18 @@ export default function RoomManage() {
     }
   }
 
+  const handleClearCurrent = async () => {
+    if (!room) return
+
+    try {
+      await apiClient.delete(`/api/rooms/${room.id}/current-question`)
+      setRoom({ ...room, currentQuestionId: undefined })
+      enqueueSnackbar('Current question cleared', { variant: 'success' })
+    } catch {
+      enqueueSnackbar('Failed to clear current question', { variant: 'error' })
+    }
+  }
+
   const handleDelete = async (questionId: string) => {
     if (!room) return
     if (!confirm('Are you sure you want to delete this question?')) return
@@ -145,13 +157,26 @@ export default function RoomManage() {
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h4">Manage: {room.friendlyName}</Typography>
-        <Button
-          variant="outlined"
-          startIcon={<VisibilityIcon />}
-          onClick={() => navigate(`/room/${friendlyName}`)}
-        >
-          View Public Room
-        </Button>
+        <Box>
+          {room.currentQuestionId && (
+            <Button
+              variant="outlined"
+              color="warning"
+              onClick={handleClearCurrent}
+              sx={{ mr: 1 }}
+              data-testid="clear-current-question-button"
+            >
+              Clear Current Question
+            </Button>
+          )}
+          <Button
+            variant="outlined"
+            startIcon={<VisibilityIcon />}
+            onClick={() => navigate(`/room/${friendlyName}`)}
+          >
+            View Public Room
+          </Button>
+        </Box>
       </Box>
 
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>

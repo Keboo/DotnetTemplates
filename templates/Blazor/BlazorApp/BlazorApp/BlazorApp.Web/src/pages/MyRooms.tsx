@@ -32,7 +32,7 @@ export default function MyRooms() {
     try {
       const data = await apiClient.get<RoomDto[]>('/api/rooms/my')
       setRooms(data)
-    } catch (error) {
+    } catch {
       enqueueSnackbar('Failed to load rooms', { variant: 'error' })
     } finally {
       setLoading(false)
@@ -69,7 +69,7 @@ export default function MyRooms() {
       await apiClient.delete(`/api/rooms/${roomId}`)
       setRooms(rooms.filter((r) => r.id !== roomId))
       enqueueSnackbar('Room deleted successfully', { variant: 'success' })
-    } catch (error) {
+    } catch {
       enqueueSnackbar('Failed to delete room', { variant: 'error' })
     }
   }
