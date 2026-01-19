@@ -4,17 +4,17 @@
   "classifications": [
     "Common",
     "Aspire",
-    "Blazor"
+    "React"
   ],
-  "identity": "Keboo.Blazor.Solution",
-  "name": "Keboo Blazor Application",
-  "shortName": "keboo.blazor",
+  "identity": "Keboo.Aspire.React.Solution",
+  "name": "Keboo React Application",
+  "shortName": "keboo.react",
   "tags": {
     "language": "C#",
     "type": "solution"
   },
   "preferNameDirectory":true,
-  "sourceName": "BlazorApp",
+  "sourceName": "ReactApp",
   "symbols":{
   },
   "sources": [

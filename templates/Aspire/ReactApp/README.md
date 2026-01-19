@@ -53,7 +53,7 @@ This template uses a `global.json` file to specify the required .NET SDK version
 ## Key Features
 
 ### Progressive Web App (PWA) Support
-Both the Blazor WebAssembly client (`BlazorApp.Client`) and the React/Vite frontend (`BlazorApp.Web`) include full PWA support with:
+Both the Blazor WebAssembly client (`ReactApp.Client`) and the React/Vite frontend (`ReactApp.Web`) include full PWA support with:
 - Service worker for offline functionality
 - Web app manifest for install-to-homescreen capability
 - Caching strategies for improved performance
@@ -65,7 +65,7 @@ The Blazor client includes service workers that are automatically managed by the
 **React/Vite PWA:**
 The React frontend uses `vite-plugin-pwa` with Workbox for advanced caching strategies. 
 
-To **enable** PWA functionality, change this line in `BlazorApp.Web/src/main.tsx`:
+To **enable** PWA functionality, change this line in `ReactApp.Web/src/main.tsx`:
 ```typescript
 // Change from:
 serviceWorkerRegistration.unregister()
