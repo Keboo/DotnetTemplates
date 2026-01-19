@@ -1,0 +1,321 @@
+@page "/my-rooms"
+@rendermode InteractiveServer
+@using ReactApp.Core.QA
+@using ReactApp.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@attribute [Authorize]
+
+@inject IRoomService RoomService
+@inject NavigationManager NavigationManager
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>My Rooms</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
+    <MudPaper Elevation="0" Class="mb-4">
+        <div class="d-flex justify-space-between align-center">
+            <MudText Typo="Typo.h4">My Q&A Rooms</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ShowCreateDialog" StartIcon="@Icons.Material.Filled.AddCircle">
+                Create New Room
+            </MudButton>
+        </div>
+    </MudPaper>
+
+    @if (loading)
+    {
+        <div class="d-flex justify-content-center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </div>
+    }
+    else if (rooms is null || !rooms.Any())
+    {
+        <MudAlert Severity="Severity.Info" Icon="@Icons.Material.Filled.Info">
+            You haven't created any rooms yet. Click "Create New Room" to get started!
+        </MudAlert>
+    }
+    else
+    {
+        <MudGrid Justify="Justify.FlexStart">
+            @foreach (var room in rooms)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@room.FriendlyName</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Color="Color.Error"
+                                               Size="Size.Medium"
+                                               OnClick="() => ShowDeleteConfirmation(room)"
+                                               title="Delete room" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText Typo="Typo.body2" Color="Color.Default">
+                                Created: @room.CreatedDate.ToString("g")
+                            </MudText>
+                            @if (room.CurrentQuestion != null)
+                            {
+                                <MudAlert Severity="Severity.Success" Class="mt-2" Dense="true">
+                                    <MudText Typo="Typo.body2"><strong>Current:</strong> @room.CurrentQuestion.QuestionText</MudText>
+                                </MudAlert>
+                            }
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudTooltip Text="Manage Room">
+                                <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                           EndIcon="@Icons.Material.Filled.NavigateNext"
+                                           OnClick="() => ManageRoom(room.FriendlyName)">
+                                    Manage
+                                </MudButton>
+                            </MudTooltip>
+                            <MudTooltip Text="Open public view">
+                                <MudIconButton Icon="@Icons.Material.Filled.OpenInNew"
+                                               Color="Color.Default"
+                                               OnClick="() => ViewPublic(room.FriendlyName)" />
+                            </MudTooltip>
+                            <MudTooltip Text="Copy public room link">
+                                <MudIconButton Icon="@(copiedRoomId == room.Id ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.ContentCopy)"
+                                               Color="Color.Default"
+                                               OnClick="() => CopyRoomUrl(room.FriendlyName)" />
+                            </MudTooltip>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+<MudDialog @bind-Visible="showCreateDialog" DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-4">Create New Room</MudText>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-3">@errorMessage</MudAlert>
+        }
+        <MudTextField @bind-Value="newRoomName"
+                      Label="Room Name"
+                      Placeholder="Enter a unique room name"
+                      HelperText="This will be used in the URL. Choose a short, memorable name."
+                      MaxLength="200"
+                      OnKeyDown="OnKeyDownAsync"
+                      Variant="Variant.Outlined"
+                      Immediate="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseCreateDialog">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="CreateRoom"
+                   Disabled="@(string.IsNullOrWhiteSpace(newRoomName) || isCreating)">
+            @if (isCreating)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Create
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-Visible="showDeleteDialog">
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-4">Delete Room</MudText>
+        @if (!string.IsNullOrEmpty(deleteErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-3">@deleteErrorMessage</MudAlert>
+        }
+        <MudText>Are you sure you want to delete the room <strong>"@roomToDelete?.FriendlyName"</strong>?</MudText>
+        <MudAlert Severity="Severity.Warning" Icon="@Icons.Material.Filled.Warning" Class="mt-3">
+            This action cannot be undone. All questions in this room will be permanently deleted.
+        </MudAlert>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CloseDeleteDialog" Disabled="@isDeleting">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Error"
+                   StartIcon="@Icons.Material.Filled.Delete"
+                   OnClick="ConfirmDelete"
+                   Disabled="@isDeleting">
+            @if (isDeleting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Delete Room
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<Room>? rooms;
+    private bool loading = true;
+    private bool showCreateDialog = false;
+    private bool isCreating = false;
+    private string newRoomName = string.Empty;
+    private string? errorMessage;
+    private string? userId;
+    private Guid? copiedRoomId;
+    private bool showDeleteDialog = false;
+    private bool isDeleting = false;
+    private Room? roomToDelete;
+    private string? deleteErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            await LoadRooms();
+        }
+
+        loading = false;
+    }
+
+    private async Task LoadRooms()
+    {
+        if (!string.IsNullOrEmpty(userId))
+        {
+            rooms = (await RoomService.GetRoomsByUserIdAsync(userId)).ToList();
+        }
+    }
+
+    private void ShowCreateDialog()
+    {
+        newRoomName = string.Empty;
+        errorMessage = null;
+        showCreateDialog = true;
+    }
+
+    private void CloseCreateDialog()
+    {
+        showCreateDialog = false;
+        newRoomName = string.Empty;
+        errorMessage = null;
+    }
+
+    private async Task OnKeyDownAsync(KeyboardEventArgs args)
+    {
+        if (args.Key is "Enter" or "NumpadEnter")
+        {
+            await CreateRoom();
+        }
+    }
+
+    private async Task CreateRoom()
+    {
+        if (string.IsNullOrWhiteSpace(newRoomName) || string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        isCreating = true;
+        errorMessage = null;
+
+        try
+        {
+            var roomName = newRoomName.Trim();
+            await RoomService.CreateRoomAsync(roomName, userId, CancellationToken.None);
+            // Navigate to the manage page for the newly created room
+            NavigationManager.NavigateTo($"/room/{roomName}/manage");
+        }
+        catch (InvalidOperationException ex)
+        {
+            errorMessage = ex.Message;
+            isCreating = false;
+        }
+        catch (Exception)
+        {
+            errorMessage = "An error occurred while creating the room. Please try again.";
+            isCreating = false;
+        }
+    }
+
+    private void ManageRoom(string friendlyName)
+    {
+        NavigationManager.NavigateTo($"/room/{friendlyName}/manage");
+    }
+
+    private void ViewPublic(string friendlyName)
+    {
+        NavigationManager.NavigateTo($"/room/{friendlyName}");
+    }
+
+    private async Task CopyRoomUrl(string friendlyName)
+    {
+        var room = rooms?.FirstOrDefault(r => r.FriendlyName == friendlyName);
+        if (room == null) return;
+
+        var baseUri = NavigationManager.BaseUri.TrimEnd('/');
+        var roomUrl = $"{baseUri}/room/{friendlyName}";
+
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", roomUrl);
+
+        copiedRoomId = room.Id;
+        Snackbar.Add("Room URL copied to clipboard!", Severity.Success);
+
+        // Reset the "Copied!" state after 2 seconds
+        await Task.Delay(2000);
+        copiedRoomId = null;
+        StateHasChanged();
+    }
+
+    private void ShowDeleteConfirmation(Room room)
+    {
+        roomToDelete = room;
+        deleteErrorMessage = null;
+        showDeleteDialog = true;
+    }
+
+    private void CloseDeleteDialog()
+    {
+        showDeleteDialog = false;
+        roomToDelete = null;
+        deleteErrorMessage = null;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (roomToDelete == null || string.IsNullOrEmpty(userId))
+        {
+            return;
+        }
+
+        isDeleting = true;
+        deleteErrorMessage = null;
+
+        try
+        {
+            await RoomService.DeleteRoomAsync(roomToDelete.Id, userId, CancellationToken.None);
+
+            // Remove the room from the local list
+            rooms?.Remove(roomToDelete);
+
+            Snackbar.Add("Room deleted successfully!", Severity.Success);
+            CloseDeleteDialog();
+            StateHasChanged();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            deleteErrorMessage = "You are not authorized to delete this room.";
+        }
+        catch (Exception ex)
+        {
+            deleteErrorMessage = $"An error occurred while deleting the room: {ex.Message}";
+        }
+        finally
+        {
+            isDeleting = false;
+        }
+    }
+}

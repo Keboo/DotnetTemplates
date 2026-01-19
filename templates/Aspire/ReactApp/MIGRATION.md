@@ -4,7 +4,7 @@ This project has been migrated from Blazor WebAssembly to React with TypeScript 
 
 ## Architecture
 
-### Frontend (BlazorApp.Web)
+### Frontend (ReactApp.Web)
 - **Framework**: React 18 with TypeScript
 - **UI Library**: Material-UI (MUI) v6
 - **Build Tool**: Vite 6
@@ -13,7 +13,7 @@ This project has been migrated from Blazor WebAssembly to React with TypeScript 
 - **State Management**: React Context API
 - **Notifications**: Notistack
 
-### Backend (BlazorApp)
+### Backend (ReactApp)
 - **Framework**: ASP.NET Core 10
 - **Authentication**: ASP.NET Core Identity with cookie-based auth
 - **API**: RESTful Web API controllers
@@ -23,8 +23,8 @@ This project has been migrated from Blazor WebAssembly to React with TypeScript 
 ## Project Structure
 
 ```
-BlazorApp/
-├── BlazorApp.Web/              # React TypeScript frontend
+ReactApp/
+├── ReactApp.Web/              # React TypeScript frontend
 │   ├── src/
 │   │   ├── components/         # Reusable React components
 │   │   ├── contexts/           # React Context providers (Auth, Theme)
@@ -35,14 +35,14 @@ BlazorApp/
 │   ├── package.json            # npm dependencies
 │   ├── tsconfig.json           # TypeScript configuration
 │   ├── vite.config.ts          # Vite build configuration
-│   └── BlazorApp.Web.csproj    # MSBuild wrapper
+│   └── ReactApp.Web.csproj    # MSBuild wrapper
 │
-└── BlazorApp/                  # ASP.NET Core backend
+└── ReactApp/                  # ASP.NET Core backend
     ├── Controllers/            # Web API controllers
     │   ├── AuthController.cs   # Login/Register/Logout
     │   └── RoomsController.cs  # Room and Question API
     ├── Program.cs              # App configuration
-    └── BlazorApp.csproj
+    └── ReactApp.csproj
 ```
 
 ## Development Workflow
@@ -53,13 +53,13 @@ BlazorApp/
 
 1. Start the ASP.NET Core backend:
    ```powershell
-   cd BlazorApp\BlazorApp
+   cd ReactApp\ReactApp
    dotnet run
    ```
 
 2. In a separate terminal, start the Vite dev server:
    ```powershell
-   cd BlazorApp\BlazorApp.Web
+   cd ReactApp\ReactApp.Web
    npm run dev
    ```
 
@@ -68,12 +68,12 @@ BlazorApp/
 **Option 2: Production Build**
 
 ```powershell
-cd BlazorApp\BlazorApp
+cd ReactApp\ReactApp
 dotnet publish -c Release
 ```
 
 This will:
-1. Run `npm install` in BlazorApp.Web
+1. Run `npm install` in ReactApp.Web
 2. Run `npm run build` to create production React build
 3. Copy the `dist/` output to `wwwroot/` in the published output
 
@@ -121,18 +121,18 @@ This will:
 
 ## Testing
 
-UI tests in `BlazorApp.UITests` will need to be updated for React DOM structure. Update page object selectors to use `data-testid` attributes instead of Blazor-specific selectors.
+UI tests in `ReactApp.UITests` will need to be updated for React DOM structure. Update page object selectors to use `data-testid` attributes instead of Blazor-specific selectors.
 
 ## Migration Notes
 
 ### Removed
-- Blazor WebAssembly client project (`BlazorApp.Client`)
+- Blazor WebAssembly client project (`ReactApp.Client`)
 - Razor components and pages
 - MudBlazor (replaced with Material-UI)
 - Blazor-specific services (ThemeService, IdentityRedirectManager, etc.)
 
 ### Added
-- React TypeScript SPA (`BlazorApp.Web`)
+- React TypeScript SPA (`ReactApp.Web`)
 - Web API controllers for REST endpoints
 - Material-UI component library
 - Vite build tooling

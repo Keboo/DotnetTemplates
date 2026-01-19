@@ -13,7 +13,7 @@ The easiest way to run the application is using the Aspire AppHost, which orches
 
 ```powershell
 # Navigate to the AppHost project
-cd BlazorApp.AppHost
+cd ReactApp.AppHost
 
 # Run the Aspire AppHost
 dotnet run
@@ -21,7 +21,7 @@ dotnet run
 
 This will:
 - Start the SQL Server container (or use Azure SQL if in publish mode)
-- Start the backend API (BlazorApp)
+- Start the backend API (ReactApp)
 - Start the Vite dev server for the React frontend
 - Open the Aspire dashboard where you can monitor all services
 
@@ -42,7 +42,7 @@ If you prefer to run services individually:
 dotnet restore
 
 # Install npm packages for React frontend
-cd BlazorApp\BlazorApp.Web
+cd ReactApp\ReactApp.Web
 npm install
 cd ..\..
 ```
@@ -51,14 +51,14 @@ cd ..\..
 
 **Terminal 1 - Backend (ASP.NET Core):**
 ```powershell
-cd BlazorApp\BlazorApp
+cd ReactApp\ReactApp
 dotnet run
 ```
 This starts the backend API at `https://localhost:5000`
 
 **Terminal 2 - Frontend (React + Vite):**
 ```powershell
-cd BlazorApp\BlazorApp.Web
+cd ReactApp\ReactApp.Web
 npm run dev
 ```
 This starts Vite dev server at `http://localhost:5173` with HMR (Hot Module Replacement)
@@ -80,13 +80,13 @@ The Vite dev server automatically proxies API calls (`/api/*` and `/hubs/*`) to 
 When running with Aspire, you get:
 
 ```powershell
-cd BlazorApp\BlazorApp
+cd ReactApp\ReactApp
 dotnet publish -c Release -o ./publish
 ```
 
 This will:
 1. Build the ASP.NET Core backend
-2. Run `npm install` in BlazorApp.Web
+2. Run `npm install` in ReactApp.Web
 3. Run `npm run build` to create optimized React production build
 4. Copy React build output to `wwwroot/` in the publish folder
 
@@ -95,7 +95,7 @@ The published application can be deployed to Azure App Service, IIS, or any ASP.
 ## Project Structure Overview
 
 ```
-BlazorApp.Web/               # React Frontend
+ReactApp.Web/               # React Frontend
 ├── src/
 │   ├── components/          # Layout, ProtectedRoute
 │   ├── contexts/            # AuthContext, ThemeContext
@@ -107,10 +107,10 @@ BlazorApp.Web/               # React Frontend
 ├── vite.config.ts
 └── tsconfig.json
 
-BlazorApp/                   # ASP.NET Core Backend
+ReactApp/                   # ASP.NET Core Backend
 ├── Controllers/             # AuthController, RoomsController
 ├── Program.cs               # App configuration, middleware
-└── BlazorApp.csproj
+└── ReactApp.csproj
 ```
 
 ## Key Technologies
@@ -124,7 +124,7 @@ BlazorApp/                   # ASP.NET Core Backend
 **Aspire:**
 ```powershell
 # Run everything with Aspire
-cd BlazorApp.AppHost
+cd ReactApp.AppHost
 dotnet run
 
 # Publish Aspire manifest for deployment
@@ -134,7 +134,7 @@ dotnet publish
 **React Frontend:**
 ```powershell
 # Run linting
-cd BlazorApp\BlazorApp.Web
+cd ReactApp\ReactApp.Web
 npm run lint
 
 # Build React for production
@@ -162,10 +162,10 @@ When running in development, Swagger UI is available at:
 **Solution**: Check terminal output for the dashboard URL, typically http://localhost:15888
 
 **Problem**: Frontend service fails to start in Aspire  
-**Solution**: Ensure Node.js is installed and `npm install` has been run in `BlazorApp/BlazorApp.Web`
+**Solution**: Ensure Node.js is installed and `npm install` has been run in `ReactApp/ReactApp.Web`
 
 **Problem**: npm packages not found  
-**Solution**: Run `npm install` in `BlazorApp\BlazorApp.Web`
+**Solution**: Run `npm install` in `ReactApp\ReactApp.Web`
 
 **Problem**: Backend API not responding  
 **Solution**: Ensure `dotnet run` is running and listening on port 5000, or check Aspire dashboard
@@ -178,7 +178,7 @@ When running in development, Swagger UI is available at:
 
 ## Next Steps
 
-- Update UI tests in `BlazorApp.UITests` to work with React DOM
+- Update UI tests in `ReactApp.UITests` to work with React DOM
 - Configure email service for Identity (currently using no-op sender)
 - Add environment-specific configuration
 - Set up CI/CD pipeline for automated builds

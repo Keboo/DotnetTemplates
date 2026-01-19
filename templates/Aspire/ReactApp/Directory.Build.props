@@ -27,7 +27,7 @@ See: https://learn.microsoft.com/visualstudio/msbuild/customize-your-build
   See: https://learn.microsoft.com/dotnet/architecture/microservices/secure-net-microservices-web-applications/developer-app-secrets-storage
   -->
   <PropertyGroup Label="User Secrets">
-    <UserSecretsId>BlazorApp-secrets</UserSecretsId>
+    <UserSecretsId>ReactApp-secrets</UserSecretsId>
   </PropertyGroup>
 
 </Project>

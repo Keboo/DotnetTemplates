@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".config/dotnet-tools.json" />
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="AGENTS.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="exclusions.dic" />
+    <File Path="global.json" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="ReactApp.AppHost/ReactApp.AppHost.csproj" />
+  <Project Path="ReactApp.Core.Tests/ReactApp.Core.Tests.csproj" />
+  <Project Path="ReactApp.Core/ReactApp.Core.csproj" />
+  <Project Path="ReactApp.Data/ReactApp.Data.csproj" />
+  <Project Path="ReactApp.ServiceDefaults/ReactApp.ServiceDefaults.csproj" />
+  <Project Path="ReactApp.UITests/ReactApp.UITests.csproj" Id="a75465c6-4ed1-4ab4-b492-9697c5727ffc" />
+  <Project Path="ReactApp/ReactApp.Web/ReactApp.Web.csproj" />
+  <Project Path="ReactApp/ReactApp/ReactApp.csproj" />
+</Solution>
