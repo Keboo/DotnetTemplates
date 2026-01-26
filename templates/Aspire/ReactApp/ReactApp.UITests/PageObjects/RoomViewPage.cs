@@ -10,12 +10,10 @@ public class RoomViewPage
     private readonly IPage _page;
     
     //  Locators
-    private ILocator DisplayNameInput => _page.Locator("input[placeholder*='name'], input[type='text']").First;
-    private ILocator SetNameButton => _page.Locator("button:has-text('Set Name'), button:has-text('OK'), button[type='submit']").First;
-    private ILocator QuestionTextInput => _page.Locator("textarea, input[placeholder*='question'], .mud-input-root input, .mud-input-root textarea").First;
-    private ILocator SubmitQuestionButton => _page.Locator("button:has-text('Submit'), button:has-text('Ask')").First;
-    private ILocator CurrentQuestionCard => _page.Locator("[class*='current-question'], .current-question, h3:has-text('Current Question')").First;
-    private ILocator ApprovedQuestionsList => _page.Locator("[class*='approved-questions'], .approved-questions");
+    private ILocator DisplayNameInput => _page.GetByTestId("author-name-input");
+    private ILocator QuestionTextInput => _page.GetByTestId("question-text-input");
+    private ILocator SubmitQuestionButton => _page.GetByTestId("submit-question-button");
+    private ILocator CurrentQuestionSection => _page.Locator("div:has-text('Current Question:')").First;
     
     public RoomViewPage(IPage page)
     {
@@ -32,137 +30,22 @@ public class RoomViewPage
     
     public async Task SetDisplayNameAsync(string displayName)
     {
-        await Task.Delay(3000);
+        // In React app, the author name field is directly on the room page
+        // No dialog needed - just fill in the field
+        await Task.Delay(1000);
         
-        // Try to wait for the display name dialog to appear
-        try
-        {
-            await DisplayNameInput.WaitForAsync(new LocatorWaitForOptions 
-            { 
-                State = WaitForSelectorState.Visible, 
-                Timeout = 5000 
-            });
-            
-            // Dialog appeared, fill it in
-            await DisplayNameInput.FillAsync(displayName);
-            await Task.Delay(500);
-            
-            // Click the Continue button - it's in a MudPaper, not a MudDialog
-            var dialogSetButton = _page.Locator("button:has-text('Continue')").First;
-            
-            try
-            {
-                await dialogSetButton.ClickAsync(new LocatorClickOptions { Timeout = 3000 });
-            }
-            catch
-            {
-                // If normal click fails, try force
-                await dialogSetButton.ClickAsync(new LocatorClickOptions { Force = true });
-            }
-            
-            await Task.Delay(5000);
-        }
-        catch
-        {
-            // Dialog didn't appear - name might already be set
-            // Wait a bit for form to be ready anyway
-            await Task.Delay(2000);
-        }
-        
-        // Check what's actually on the page if submit button doesn't appear
-        var submitButtonCount = await SubmitQuestionButton.CountAsync();
-        Console.WriteLine($"Submit button count: {submitButtonCount}");
-        
-        if (submitButtonCount == 0)
-        {
-            var bodyText = await _page.Locator("body").TextContentAsync();
-            var hasError = bodyText?.Contains("An unhandled error has occurred") == true;
-            Console.WriteLine($"Error visible: {hasError}");
-            
-            if (hasError)
-            {
-                Console.WriteLine("Error detected, refreshing page...");
-                
-                // Reload the page to clear the error
-                await _page.ReloadAsync();
-                await Task.Delay(5000);
-                
-                // Try the dialog flow again
-                var dialogCount2 = await DisplayNameInput.CountAsync();
-                Console.WriteLine($"Dialog count after reload: {dialogCount2}");
-                
-                if (dialogCount2 > 0)
-                {
-                    // Take screenshot to see what's on page
-                    await _page.ScreenshotAsync(new PageScreenshotOptions 
-                    { 
-                        Path = $"after-reload-{DateTimeOffset.Now.Ticks}.png",
-                        FullPage = true
-                    });
-                    
-                    var postReloadText = await _page.Locator("body").TextContentAsync();
-                    Console.WriteLine($"Page content after reload: {postReloadText?.Substring(0, Math.Min(800, postReloadText.Length))}");
-                    
-                    await DisplayNameInput.FillAsync(displayName);
-                    await Task.Delay(500);
-                    
-                    var dialogSetButton2 = _page.Locator("button:has-text('Continue')").First;
-                    try
-                    {
-                        await dialogSetButton2.ClickAsync(new LocatorClickOptions { Timeout = 5000 });
-                    }
-                    catch
-                    {
-                        // Try force click if normal click fails
-                        await dialogSetButton2.ClickAsync(new LocatorClickOptions { Force = true, Timeout = 5000 });
-                    }
-                    await Task.Delay(5000);
-                }
-                else
-                {
-                    Console.WriteLine("Dialog didn't reappear after reload - checking if form is now visible");
-                }
-            }
-            else
-            {
-                // Take screenshot for debugging
-                await _page.ScreenshotAsync(new PageScreenshotOptions 
-                { 
-                    Path = $"no-submit-button-{DateTimeOffset.Now.Ticks}.png",
-                    FullPage = true
-                });
-                
-                // Check if there's an error message or empty state
-                var pageText = await _page.Locator("body").TextContentAsync();
-                var textLength = pageText?.Length ?? 0;
-                Console.WriteLine($"Page text when submit button missing: {pageText?.Substring(0, Math.Min(500, textLength))}");
-            }
-        }
-        
-        // Verify the question form is ready by waiting for submit button
-        await SubmitQuestionButton.WaitForAsync(new LocatorWaitForOptions 
+        await DisplayNameInput.WaitForAsync(new LocatorWaitForOptions 
         { 
             State = WaitForSelectorState.Visible, 
-            Timeout = 15000 
+            Timeout = 10000 
         });
+        
+        await DisplayNameInput.FillAsync(displayName);
+        await Task.Delay(300);
     }
     
     public async Task SubmitQuestionAsync(string questionText)
     {
-        // Check if page loaded with errors
-        var has404 = await _page.Locator("text=Room Not Found, text=404").CountAsync() > 0;
-        var hasError = await _page.Locator("#blazor-error-ui").IsVisibleAsync();
-        
-        if (has404 || hasError)
-        {
-            // Take screenshot for debugging
-            await _page.ScreenshotAsync(new PageScreenshotOptions 
-            { 
-                Path = $"submit-question-error-{DateTimeOffset.Now.Ticks}.png" 
-            });
-            throw new Exception($"Room page loaded with error. Current URL: {_page.Url}. Has404: {has404}, HasError: {hasError}");
-        }
-        
         // Wait for submit button to be available (indicates form is ready)
         await SubmitQuestionButton.WaitForAsync(new LocatorWaitForOptions 
         { 
@@ -170,30 +53,11 @@ public class RoomViewPage
             Timeout = 10000 
         });
         
-        // Wait for question input to be available - try multiple selectors
-        try
-        {
-            var textareaCount = await _page.Locator("textarea").CountAsync();
-            if (textareaCount > 0)
-            {
-                await _page.Locator("textarea").First.FillAsync(questionText);
-            }
-            else
-            {
-                // Try input field instead
-                await _page.Locator("input[type='text']").Last.FillAsync(questionText);
-            }
-        }
-        catch (Exception ex)
-        {
-            // Take a screenshot for debugging
-            await _page.ScreenshotAsync(new PageScreenshotOptions 
-            { 
-                Path = $"submit-question-error-{DateTimeOffset.Now.Ticks}.png" 
-            });
-            throw new Exception($"Could not find question input. Page URL: {_page.Url}. Error: {ex.Message}");
-        }
+        // Fill in the question
+        await QuestionTextInput.FillAsync(questionText);
+        await Task.Delay(300);
         
+        // Submit the question
         await SubmitQuestionButton.ClickAsync();
         
         // Wait for submission to complete
@@ -208,7 +72,7 @@ public class RoomViewPage
     
     public async Task<bool> IsCurrentQuestionVisibleAsync()
     {
-        return await CurrentQuestionCard.IsVisibleAsync();
+        return await CurrentQuestionSection.IsVisibleAsync();
     }
     
     public async Task<string?> GetCurrentQuestionTextAsync()
@@ -219,7 +83,7 @@ public class RoomViewPage
         }
         
         // Get the text content of the current question
-        var text = await CurrentQuestionCard.TextContentAsync();
+        var text = await CurrentQuestionSection.TextContentAsync();
         return text?.Trim();
     }
     
