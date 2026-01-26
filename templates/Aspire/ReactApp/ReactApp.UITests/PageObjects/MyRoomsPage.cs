@@ -25,7 +25,6 @@ public class MyRoomsPage
         await _page.GotoAsync($"{TestConfiguration.BaseUrl}/my-rooms");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         
-        // Wait for page to fully render (Blazor components)
         await Task.Delay(2000);
     }
     
@@ -40,7 +39,6 @@ public class MyRoomsPage
         // Clear any existing value and fill
         await RoomNameInput.ClearAsync();
         
-        // Use PressSequentiallyAsync to simulate typing, which triggers Blazor's input events
         await RoomNameInput.PressSequentiallyAsync(roomName, new LocatorPressSequentiallyOptions { Delay = 50 });
         await Task.Delay(500);
         
@@ -70,7 +68,6 @@ public class MyRoomsPage
         await dialogCreateButton.ClickAsync();
         Console.WriteLine("Clicked create button in dialog");
         
-        // Wait for Blazor to process and navigate
         await Task.Delay(4000);
         
         // Check what happened after clicking create
@@ -79,7 +76,6 @@ public class MyRoomsPage
         Console.WriteLine($"URL after create: {currentUrl}");
         
         // Check for ACTUAL validation errors (not empty state messages)
-        // Look specifically for MudBlazor error classes within input fields or the modal dialog
         var errorLocator = _page.Locator(".mud-dialog .mud-input-error, .mud-dialog .mud-error-text, .mud-dialog .validation-message");
         var errorCount = await errorLocator.CountAsync();
         if (errorCount > 0)

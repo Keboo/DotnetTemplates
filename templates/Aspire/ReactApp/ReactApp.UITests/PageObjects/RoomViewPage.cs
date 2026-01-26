@@ -24,17 +24,14 @@ public class RoomViewPage
     
     public async Task NavigateAsync(string roomName)
     {
-        // Navigate to room using lowercase (Blazor routing and SQL Like are case-insensitive)
         await _page.GotoAsync($"{TestConfiguration.BaseUrl}/room/{roomName.ToLower()}");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         
-        // Wait for Blazor components to load
         await Task.Delay(2000);
     }
     
     public async Task SetDisplayNameAsync(string displayName)
     {
-        // Wait for page to fully load and Blazor to initialize
         await Task.Delay(3000);
         
         // Try to wait for the display name dialog to appear
@@ -63,7 +60,6 @@ public class RoomViewPage
                 await dialogSetButton.ClickAsync(new LocatorClickOptions { Force = true });
             }
             
-            // Wait for dialog to close and Blazor to re-render
             await Task.Delay(5000);
         }
         catch
@@ -79,18 +75,17 @@ public class RoomViewPage
         
         if (submitButtonCount == 0)
         {
-            // Check if there's a Blazor error by checking page text
             var bodyText = await _page.Locator("body").TextContentAsync();
-            var hasBlazorError = bodyText?.Contains("An unhandled error has occurred") == true;
-            Console.WriteLine($"Blazor error visible: {hasBlazorError}");
+            var hasError = bodyText?.Contains("An unhandled error has occurred") == true;
+            Console.WriteLine($"Error visible: {hasError}");
             
-            if (hasBlazorError)
+            if (hasError)
             {
-                Console.WriteLine("Blazor error detected, refreshing page...");
+                Console.WriteLine("Error detected, refreshing page...");
                 
                 // Reload the page to clear the error
                 await _page.ReloadAsync();
-                await Task.Delay(5000); // Give more time for Blazor to initialize after reload
+                await Task.Delay(5000);
                 
                 // Try the dialog flow again
                 var dialogCount2 = await DisplayNameInput.CountAsync();
@@ -156,16 +151,16 @@ public class RoomViewPage
     {
         // Check if page loaded with errors
         var has404 = await _page.Locator("text=Room Not Found, text=404").CountAsync() > 0;
-        var hasBlazorError = await _page.Locator("#blazor-error-ui").IsVisibleAsync();
+        var hasError = await _page.Locator("#blazor-error-ui").IsVisibleAsync();
         
-        if (has404 || hasBlazorError)
+        if (has404 || hasError)
         {
             // Take screenshot for debugging
             await _page.ScreenshotAsync(new PageScreenshotOptions 
             { 
                 Path = $"submit-question-error-{DateTimeOffset.Now.Ticks}.png" 
             });
-            throw new Exception($"Room page loaded with error. Current URL: {_page.Url}. Has404: {has404}, HasBlazorError: {hasBlazorError}");
+            throw new Exception($"Room page loaded with error. Current URL: {_page.Url}. Has404: {has404}, HasError: {hasError}");
         }
         
         // Wait for submit button to be available (indicates form is ready)

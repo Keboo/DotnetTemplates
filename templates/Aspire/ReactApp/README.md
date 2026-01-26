@@ -1,5 +1,5 @@
-# Blazor Web App template
-This template creates a [Blazor Web App](https://learn.microsoft.com/aspnet/core/blazor/?view=aspnetcore-9.0&WT.mc_id=DT-MVP-5003472) solution with .NET Aspire orchestration, Identity authentication, and unit tests.
+# Aspire React App template
+This template creates a [React Web App](https://react.dev/) solution with .NET Aspire orchestration, Identity authentication, and unit tests.
 
 
 ## Template
@@ -53,26 +53,14 @@ This template uses a `global.json` file to specify the required .NET SDK version
 ## Key Features
 
 ### Progressive Web App (PWA) Support
-Both the Blazor WebAssembly client (`ReactApp.Client`) and the React/Vite frontend (`ReactApp.Web`) include full PWA support with:
+Both the ReactApp.Web includes full PWA support with:
 - Service worker for offline functionality
 - Web app manifest for install-to-homescreen capability
 - Caching strategies for improved performance
 - App icons (192x192 and 512x512)
 
-**Blazor Client PWA:**
-The Blazor client includes service workers that are automatically managed by the framework. In production, the service worker caches assets for offline use.
-
 **React/Vite PWA:**
 The React frontend uses `vite-plugin-pwa` with Workbox for advanced caching strategies. 
-
-To **enable** PWA functionality, change this line in `ReactApp.Web/src/main.tsx`:
-```typescript
-// Change from:
-serviceWorkerRegistration.unregister()
-
-// To:
-serviceWorkerRegistration.register()
-```
 
 Features include:
 - Automatic service worker registration and updates

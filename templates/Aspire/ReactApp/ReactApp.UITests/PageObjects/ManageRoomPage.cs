@@ -53,7 +53,7 @@ public class ManageRoomPage
             // If intercepted, force the click
             await PendingTab.ClickAsync(new LocatorClickOptions { Force = true });
         }
-        await Task.Delay(1500); // Increased delay to give Blazor time to render
+        await Task.Delay(1500);
         
         // Dismiss any Snackbars that might be covering the page
         var snackbarCount = await _page.Locator(".mud-snackbar").CountAsync();
@@ -85,7 +85,7 @@ public class ManageRoomPage
         {
             await approveButton.ClickAsync();
             Console.WriteLine("Clicked approve button");
-            await Task.Delay(2000); // Wait for SignalR and Blazor to process the approval
+            await Task.Delay(2000);
             
             // Take screenshot to see what happened
             await _page.ScreenshotAsync(new PageScreenshotOptions 
