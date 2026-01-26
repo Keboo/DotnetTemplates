@@ -9,18 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Exclude old Blazor components and services from build -->
-    <Compile Remove="Components\**" />
-    <Compile Remove="Services\**" />
-    <Content Remove="Components\**" />
-    <Content Remove="Services\**" />
-    <EmbeddedResource Remove="Components\**" />
-    <EmbeddedResource Remove="Services\**" />
-    <None Remove="Components\**" />
-    <None Remove="Services\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\ReactApp.Core\ReactApp.Core.csproj" />
     <ProjectReference Include="..\..\ReactApp.Data\ReactApp.Data.csproj" />
     <ProjectReference Include="..\..\ReactApp.ServiceDefaults\ReactApp.ServiceDefaults.csproj" />

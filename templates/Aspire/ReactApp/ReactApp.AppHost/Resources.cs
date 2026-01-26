@@ -134,13 +134,6 @@ public static class Resources
             }
         }
 
-        public IResourceBuilder<ExternalServiceResource> AddMudBlazorDocs()
-        {
-            return builder.AddExternalService("mud-blazor-docs", "https://www.mudblazor.com/docs/")
-                .ExcludeFromManifest()
-                .ExcludeFromMcp();
-        }
-
         public IResourceBuilder<LogicalGroupResource> AddLogicalGroup(string name)
         {
             var resource = new LogicalGroupResource(name);
