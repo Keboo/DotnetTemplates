@@ -8,10 +8,10 @@ public class LoginPage
     private readonly IPage _page;
     
     // Locators
-    private ILocator EmailInput => _page.Locator("input[name='Input.Email']");
-    private ILocator PasswordInput => _page.Locator("input[name='Input.Password']");
-    private ILocator LoginButton => _page.GetByRole(AriaRole.Button, new() { Name = "Log in", Exact = true });
-    private ILocator LogoutButton => _page.Locator("form[action='/Account/Logout'] button");
+    private ILocator EmailInput => _page.GetByTestId("email-input");
+    private ILocator PasswordInput => _page.GetByTestId("password-input");
+    private ILocator LoginButton => _page.GetByTestId("login-button");
+    private ILocator LogoutButton => _page.Locator("button:has-text('Logout')");
     
     public LoginPage(IPage page)
     {
@@ -20,7 +20,7 @@ public class LoginPage
     
     public async Task NavigateAsync()
     {
-        await _page.GotoAsync($"{TestConfiguration.BaseUrl}/Account/Login");
+        await _page.GotoAsync($"{TestConfiguration.BaseUrl}/login");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
     
@@ -39,17 +39,17 @@ public class LoginPage
         var url = _page.Url;
         
         // If we're still on the login page, we're not logged in
-        if (url.Contains("/Account/Login"))
+        if (url.Contains("/login"))
         {
             return false;
         }
         
         // Look for various indicators that user is logged in
         // Use Count to avoid strict mode violations
-        var logoutFormCount = await LogoutButton.CountAsync();
+        var logoutButtonCount = await LogoutButton.CountAsync();
         var myRoomsLinkCount = await _page.Locator("a[href='/my-rooms']").CountAsync();
         
-        return logoutFormCount > 0 || myRoomsLinkCount > 0;
+        return logoutButtonCount > 0 || myRoomsLinkCount > 0;
     }
     
     public async Task LogoutAsync()
