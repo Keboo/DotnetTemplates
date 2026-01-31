@@ -7,18 +7,20 @@ public class AuthTests : UITestBase
     [Test]
     public async Task CanRegiserAndLoginWithNewAccount()
     {
+        // Register a new user - this automatically logs them in
         var registerPage = new RegisterPage(Page);
         await registerPage.NavigateAsync(FrontendBaseUri);
         await registerPage.RegisterAsync(TestEmail, TestPassword);
 
-        await Assert.That(await registerPage.IsConfirmationMessageVisibleAsync()).IsTrue().Because("Registration confirmation message should be visible");
+        await Assert.That(await registerPage.IsConfirmationMessageVisibleAsync()).IsTrue().Because("User should be redirected to my-rooms after registration");
 
-        var confirmationLink = await registerPage.GetEmailConfirmationLinkAsync();
-        await Assert.That(string.IsNullOrEmpty(confirmationLink)).IsFalse().Because("Email confirmation link should be present");
-
-        await registerPage.ConfirmAccountAsync();
-        
+        // Verify user is logged in by checking for logout button or my-rooms access
         var loginPage = new LoginPage(Page);
+        await Assert.That(await loginPage.IsLoggedInAsync()).IsTrue().Because("User should be logged in after successful registration");
+
+        // Log out and log back in to verify login flow works
+        await loginPage.LogoutAsync();
+        
         await loginPage.NavigateAsync(FrontendBaseUri);
         await loginPage.LoginAsync(TestEmail, TestPassword);
 

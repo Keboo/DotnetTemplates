@@ -24,12 +24,8 @@ public class RoomWorkflowTests : AuthedUserTestBase
         await myRoomsPage.NavigateAsync(FrontendBaseUri);
         await myRoomsPage.CreateRoomAsync(TestRoomName);
 
-        // Instead of checking if room exists in list, try to navigate to it
-        // If it exists, the navigation will succeed
-        await Page.GotoAsync($"{FrontendBaseUri.AbsoluteUri}/room/{TestRoomName.ToLower()}");
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-
-        // If we get here without error, the room exists
+        // After room creation, verify the room appears in the My Rooms list
+        await myRoomsPage.NavigateAsync(FrontendBaseUri);
         
         await Assert.That(myRoomsPage.RoomExistsAsync(TestRoomName))
             .IsTrue()

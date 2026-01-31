@@ -9,10 +9,10 @@ public class RegisterPage
 {
     private readonly IPage _page;
     
-    // Locators
-    private ILocator EmailInput => _page.GetByTestId("email-input");
-    private ILocator PasswordInput => _page.GetByTestId("password-input");
-    private ILocator ConfirmPasswordInput => _page.GetByTestId("confirm-password-input");
+    // Locators - MUI TextFields need to target the actual input inside the wrapper
+    private ILocator EmailInput => _page.GetByTestId("email-input").Locator("input");
+    private ILocator PasswordInput => _page.GetByTestId("password-input").Locator("input");
+    private ILocator ConfirmPasswordInput => _page.GetByTestId("confirm-password-input").Locator("input");
     private ILocator RegisterButton => _page.GetByTestId("register-button");
     private ILocator SuccessMessage => _page.Locator("text=Registration successful");
 
@@ -35,21 +35,17 @@ public class RegisterPage
         await ConfirmPasswordInput.FillAsync(password);
         await RegisterButton.ClickAsync();
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        
+        // Wait for navigation to my-rooms after successful registration
+        await _page.WaitForURLAsync("**/my-rooms", new PageWaitForURLOptions { Timeout = 10000 });
     }
     
     public async Task<bool> IsConfirmationMessageVisibleAsync()
     {
         // React app redirects to /my-rooms on successful registration
-        // Check if we're on my-rooms page or if success snackbar was shown
+        // User is now logged in and on my-rooms page
         var url = _page.Url;
-        if (url.Contains("/my-rooms"))
-        {
-            return true;
-        }
-        
-        // Check for success message (snackbar)
-        var successCount = await SuccessMessage.CountAsync();
-        return successCount > 0;
+        return url.Contains("/my-rooms");
     }
     
     /// <summary>

@@ -42,12 +42,12 @@ public class ManageRoomPage
     
     public async Task ApproveQuestionAsync(string questionText)
     {
-        // In React app, all questions are displayed in tables, no tabs
-        await Task.Delay(500);
-        
-        // Find the table row with the question and click approve
+        // Wait for the question to appear via SignalR
         var questionRow = _page.Locator($"tr:has-text('{questionText}')").First;
-        var approveButton = questionRow.Locator("button").GetByRole(AriaRole.Button).First;
+        await questionRow.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        
+        // Find the approve button within the row using data-testid
+        var approveButton = questionRow.GetByTestId("approve-question-button");
         
         await approveButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await approveButton.ClickAsync();
