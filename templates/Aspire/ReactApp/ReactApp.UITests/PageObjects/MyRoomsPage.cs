@@ -9,9 +9,9 @@ public class MyRoomsPage
 {
     private readonly IPage _page;
     
-    // Locators
+    // Locators - MUI TextFields need to target the actual input inside the wrapper
     private ILocator CreateRoomButton => _page.GetByTestId("create-room-button");
-    private ILocator RoomNameInput => _page.GetByTestId("room-name-dialog-input");
+    private ILocator RoomNameInput => _page.GetByTestId("room-name-dialog-input").Locator("input");
     private ILocator CreateButton => _page.GetByTestId("create-room-dialog-button");
     private ILocator CancelButton => _page.Locator("button:has-text('Cancel')");
     

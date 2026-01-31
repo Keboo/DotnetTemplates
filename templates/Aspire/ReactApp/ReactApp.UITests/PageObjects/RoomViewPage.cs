@@ -9,9 +9,9 @@ public class RoomViewPage
 {
     private readonly IPage _page;
     
-    //  Locators
-    private ILocator DisplayNameInput => _page.GetByTestId("author-name-input");
-    private ILocator QuestionTextInput => _page.GetByTestId("question-text-input");
+    // Locators - MUI TextFields need to target the actual input/textarea inside the wrapper
+    private ILocator DisplayNameInput => _page.GetByTestId("author-name-input").Locator("input");
+    private ILocator QuestionTextInput => _page.GetByTestId("question-text-input").Locator("textarea").First;
     private ILocator SubmitQuestionButton => _page.GetByTestId("submit-question-button");
     private ILocator CurrentQuestionSection => _page.Locator("div:has-text('Current Question:')").First;
     
@@ -22,7 +22,7 @@ public class RoomViewPage
     
     public async Task NavigateAsync(Uri baseUri, string roomName)
     {
-        await _page.GotoAsync($"{baseUri.AbsoluteUri}room/{roomName.ToLower()}");
+        await _page.GotoAsync($"{baseUri.AbsoluteUri}room/{roomName}");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         
         await Task.Delay(2000);
