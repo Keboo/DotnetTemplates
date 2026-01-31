@@ -20,9 +20,9 @@ public class MyRoomsPage
         _page = page;
     }
     
-    public async Task NavigateAsync()
+    public async Task NavigateAsync(Uri baseUri)
     {
-        await _page.GotoAsync($"{TestConfiguration.BaseUrl}/my-rooms");
+        await _page.GotoAsync($"{baseUri.AbsoluteUri}my-rooms");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         
         await Task.Delay(2000);

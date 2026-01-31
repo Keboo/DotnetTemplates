@@ -1,3 +1,11 @@
+using Aspire.Hosting;
+using Aspire.Hosting.ApplicationModel;
+using Aspire.Hosting.Testing;
+
+using Microsoft.Extensions.Configuration;
+
+using ReactApp.AppHost;
+
 namespace ReactApp.UITests;
 
 /// <summary>
@@ -5,6 +13,9 @@ namespace ReactApp.UITests;
 /// </summary>
 public abstract class UITestBase : IAsyncDisposable
 {
+    private static TimeSpan AspireDefaultTimeout { get; set; } = TimeSpan.FromMinutes(2);
+    private static DistributedApplication _aspireAppHost = null!;
+
     private const string STATE_FILE = ".state.json";
 
     private IPlaywright? _playwright;
@@ -20,8 +31,56 @@ public abstract class UITestBase : IAsyncDisposable
 
     protected string? StateId { get; set; }
 
+    protected static Uri FrontendBaseUri => _aspireAppHost.GetEndpoint(Resources.Frontend);
+
     protected static CancellationToken CancellationToken =>
         TestContext.Current?.Execution.CancellationToken ?? CancellationToken.None;
+
+    [Before(TestSession)]
+    public static async Task StartAspireHost()
+    {
+        var appHost = await DistributedApplicationTestingBuilder
+            .CreateAsync<Projects.ReactApp_AppHost>([], (x, i) =>
+            {
+                i.Configuration!.AddInMemoryCollection(
+                [
+                    new(Resources.ContainerSuffixKey, "UITests")
+                ]);
+            });
+
+        // Force the database to run in an in-memory containers
+        var sqlServer = appHost.Resources.OfType<SqlServerServerResource>()
+            .First(x => x.Name == Resources.SqlServer);
+        foreach (var annotation in sqlServer.Annotations
+            .ToList())
+        {
+            if (annotation is ContainerMountAnnotation or ContainerLifetimeAnnotation)
+                sqlServer.Annotations.Remove(annotation);
+        }
+
+        // Build the aspire host
+        var app = _aspireAppHost = await appHost.BuildAsync(CancellationToken)
+            .WaitAsync(AspireDefaultTimeout, CancellationToken);
+
+        // Start the aspire host
+        await app.StartAsync(CancellationToken)
+            .WaitAsync(AspireDefaultTimeout, CancellationToken);
+
+        // Wait for the front end to start
+        await app.ResourceNotifications.WaitForResourceHealthyAsync(
+            Resources.Frontend, CancellationToken)
+            .WaitAsync(AspireDefaultTimeout, CancellationToken);
+    }
+
+    [After(TestSession)]
+    public static async Task StopAspireHost()
+    {
+        if (_aspireAppHost != null)
+        {
+            await _aspireAppHost.DisposeAsync();
+            _aspireAppHost = null!;
+        }
+    }
 
     [Before(Test)]
     public async Task TestSetup()
@@ -50,8 +109,8 @@ public abstract class UITestBase : IAsyncDisposable
     {
         var launchOptions = new BrowserTypeLaunchOptions
         {
-            Headless = TestConfiguration.Headless,
-            SlowMo = TestConfiguration.SlowMo
+            Headless = PlaywrightConfiguration.Headless,
+            SlowMo = PlaywrightConfiguration.SlowMo
         };
 
         return await playwright.Chromium.LaunchAsync(launchOptions);

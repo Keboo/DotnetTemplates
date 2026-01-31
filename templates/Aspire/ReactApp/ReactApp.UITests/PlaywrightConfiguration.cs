@@ -3,15 +3,8 @@ namespace ReactApp.UITests;
 /// <summary>
 /// Configuration settings for UI tests
 /// </summary>
-public static class TestConfiguration
+public static class PlaywrightConfiguration
 {
-    /// <summary>
-    /// Base URL for the application under test
-    /// Can be overridden via environment variable TEST_BASE_URL
-    /// </summary>
-    public static string BaseUrl => 
-        Environment.GetEnvironmentVariable("TEST_BASE_URL") ?? "https://ReactApp.dev.localhost:7147";
-    
     /// <summary>
     /// Timeout for page navigation and element visibility
     /// </summary>

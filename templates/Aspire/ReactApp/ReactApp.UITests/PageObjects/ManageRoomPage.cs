@@ -1,5 +1,3 @@
-using Microsoft.Playwright;
-
 namespace ReactApp.UITests.PageObjects;
 
 /// <summary>
@@ -26,9 +24,9 @@ public class ManageRoomPage
         _page = page;
     }
     
-    public async Task NavigateAsync(string roomName)
+    public async Task NavigateAsync(Uri baseUri, string roomName)
     {
-        await _page.GotoAsync($"{TestConfiguration.BaseUrl}/room/{roomName}/manage");
+        await _page.GotoAsync($"{baseUri.AbsoluteUri}room/{roomName}/manage");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
     

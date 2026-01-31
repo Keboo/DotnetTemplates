@@ -6,7 +6,7 @@
         "dotnetRunMessages": true,
         "launchBrowser": false,
         "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-        "applicationUrl": "https://ReactApp.dev.localhost:7147;http://ReactApp.dev.localhost:5285",
+        "applicationUrl": "https://reactapp.dev.localhost:7147;http://reactapp.dev.localhost:5285",
         "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development"
         }

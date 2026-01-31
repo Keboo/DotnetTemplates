@@ -20,9 +20,9 @@ public class RoomViewPage
         _page = page;
     }
     
-    public async Task NavigateAsync(string roomName)
+    public async Task NavigateAsync(Uri baseUri, string roomName)
     {
-        await _page.GotoAsync($"{TestConfiguration.BaseUrl}/room/{roomName.ToLower()}");
+        await _page.GotoAsync($"{baseUri.AbsoluteUri}room/{roomName.ToLower()}");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         
         await Task.Delay(2000);
@@ -91,7 +91,7 @@ public class RoomViewPage
     {
         if (timeout == 0)
         {
-            timeout = TestConfiguration.SignalRTimeout;
+            timeout = PlaywrightConfiguration.SignalRTimeout;
         }
         
         var questionLocator = _page.Locator($"text={questionText}");
@@ -106,7 +106,7 @@ public class RoomViewPage
     {
         if (timeout == 0)
         {
-            timeout = TestConfiguration.SignalRTimeout;
+            timeout = PlaywrightConfiguration.SignalRTimeout;
         }
         
         var questionLocator = _page.Locator($"text={questionText}");

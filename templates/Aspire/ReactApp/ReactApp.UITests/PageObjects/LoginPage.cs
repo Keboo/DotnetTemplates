@@ -18,9 +18,9 @@ public class LoginPage
         _page = page;
     }
     
-    public async Task NavigateAsync()
+    public async Task NavigateAsync(Uri baseUri)
     {
-        await _page.GotoAsync($"{TestConfiguration.BaseUrl}/login");
+        await _page.GotoAsync($"{baseUri}login");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
     

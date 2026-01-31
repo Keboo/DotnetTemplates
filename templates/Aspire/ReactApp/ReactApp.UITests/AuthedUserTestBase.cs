@@ -15,19 +15,19 @@ public abstract class AuthedUserTestBase : UITestBase
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await CreateBrowserAsync(playwright);
         await using var context = await CreateBrowserContextAsync(browser);
-
+        
         IPage? page = null;
         try
         {
             page = await context.NewPageAsync();
 
             var registerPage = new RegisterPage(page);
-            await registerPage.NavigateAsync();
+            await registerPage.NavigateAsync(FrontendBaseUri);
             await registerPage.RegisterAsync(Username, Password);
             await registerPage.ConfirmAccountAsync();
 
             var loginPage = new LoginPage(page);
-            await loginPage.NavigateAsync();
+            await loginPage.NavigateAsync(FrontendBaseUri);
             await loginPage.LoginAsync(Username, Password);
 
             AuthStateId = await SaveStateAsync(context);

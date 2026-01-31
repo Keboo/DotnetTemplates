@@ -89,6 +89,7 @@ export default defineConfig({
     '__API_BASE_URL__': JSON.stringify(backendUrl),
   },
   server: {
+    host: process.env.VITE_HOST_URL || 'localhost',
     port: parseInt(process.env.PORT || '5173'),
     proxy: {
       '/api': {
