@@ -156,7 +156,7 @@ export default function RoomManage() {
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4">Manage: {room.friendlyName}</Typography>
+        <Typography variant="h4" component="h1">Manage: {room.friendlyName}</Typography>
         <Box>
           <Button
             variant="outlined"
@@ -169,7 +169,7 @@ export default function RoomManage() {
       </Box>
 
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" component="h2" gutterBottom>
           Pending Questions ({pendingQuestions.length})
         </Typography>
         <TableContainer>
@@ -214,7 +214,7 @@ export default function RoomManage() {
       </Paper>
 
       <Paper elevation={3} sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" component="h2" gutterBottom>
           Approved Questions ({approvedQuestions.length})
         </Typography>
         <TableContainer>

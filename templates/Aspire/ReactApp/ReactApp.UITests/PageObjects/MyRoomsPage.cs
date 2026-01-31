@@ -1,33 +1,18 @@
-using Microsoft.Playwright;
-
 namespace ReactApp.UITests.PageObjects;
 
 /// <summary>
 /// Page Object Model for My Rooms page (authenticated user's room list)
 /// </summary>
-public class MyRoomsPage
-{
-    private readonly IPage _page;
-    
+public class MyRoomsPage(IPage page) : TestPageBase(page)
+{   
     // Locators - MUI TextFields need to target the actual input inside the wrapper
-    private ILocator CreateRoomButton => _page.GetByTestId("create-room-button");
-    private ILocator RoomNameInput => _page.GetByTestId("room-name-dialog-input").Locator("input");
-    private ILocator CreateButton => _page.GetByTestId("create-room-dialog-button");
-    private ILocator CancelButton => _page.Locator("button:has-text('Cancel')");
-    
-    public MyRoomsPage(IPage page)
-    {
-        _page = page;
-    }
-    
-    public async Task NavigateAsync(Uri baseUri)
-    {
-        await _page.GotoAsync($"{baseUri.AbsoluteUri}my-rooms");
-        await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        
-        await Task.Delay(2000);
-    }
-    
+    private ILocator CreateRoomButton => Page.GetByTestId("create-room-button");
+    private ILocator RoomNameInput => Page.GetByTestId("room-name-dialog-input").Locator("input");
+    private ILocator CreateButton => Page.GetByTestId("create-room-dialog-button");
+    private ILocator CancelButton => Page.Locator("button:has-text('Cancel')");
+
+    public Task NavigateAsync(Uri baseUrl) => PerformNavigationAsync(baseUrl, "my-rooms");
+
     public async Task CreateRoomAsync(string roomName)
     {
         await CreateRoomButton.ClickAsync();
@@ -47,7 +32,7 @@ public class MyRoomsPage
         await Task.Delay(2000);
         
         // Wait for navigation back to my-rooms or for room to appear in list
-        await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
     
     public async Task<bool> RoomExistsAsync(string roomName)
@@ -56,7 +41,8 @@ public class MyRoomsPage
         await Task.Delay(1000);
         
         // Look for room in the cards by finding the heading with the room name
-        var roomCard = _page.Locator($"h6:has-text('{roomName}')");
+        // MUI Typography with component="h2" renders as <h2> element
+        var roomCard = Page.Locator($"h2:has-text('{roomName}')");
         var count = await roomCard.CountAsync();
         
         return count > 0;
@@ -65,16 +51,16 @@ public class MyRoomsPage
     public async Task NavigateToManageRoomAsync(string roomName)
     {
         // Find the manage link for the specific room
-        var manageLink = _page.Locator($"a[href*='/room/{roomName}/manage']").First;
+        var manageLink = Page.Locator($"a[href*='/room/{roomName}/manage']").First;
         await manageLink.ClickAsync();
-        await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
     
     public async Task NavigateToViewRoomAsync(string roomName)
     {
         // Find the view link for the specific room
-        var viewLink = _page.Locator($"a[href*='/room/{roomName}']").First;
+        var viewLink = Page.Locator($"a[href*='/room/{roomName}']").First;
         await viewLink.ClickAsync();
-        await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

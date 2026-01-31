@@ -1,31 +1,20 @@
-using Microsoft.Playwright;
-
 namespace ReactApp.UITests.PageObjects;
 
 /// <summary>
 /// Page Object Model for the public Room View page
 /// </summary>
-public class RoomViewPage
+public class RoomViewPage(IPage page) : TestPageBase(page)
 {
-    private readonly IPage _page;
-    
     // Locators - MUI TextFields need to target the actual input/textarea inside the wrapper
-    private ILocator DisplayNameInput => _page.GetByTestId("author-name-input").Locator("input");
-    private ILocator QuestionTextInput => _page.GetByTestId("question-text-input").Locator("textarea").First;
-    private ILocator SubmitQuestionButton => _page.GetByTestId("submit-question-button");
-    private ILocator CurrentQuestionSection => _page.Locator("div:has-text('Current Question:')").First;
+    private ILocator DisplayNameInput => Page.GetByTestId("author-name-input").Locator("input");
+    private ILocator QuestionTextInput => Page.GetByTestId("question-text-input").Locator("textarea").First;
+    private ILocator SubmitQuestionButton => Page.GetByTestId("submit-question-button");
+    private ILocator CurrentQuestionSection => Page.Locator("div:has-text('Current Question:')").First;
     
-    public RoomViewPage(IPage page)
-    {
-        _page = page;
-    }
     
     public async Task NavigateAsync(Uri baseUri, string roomName)
     {
-        await _page.GotoAsync($"{baseUri.AbsoluteUri}room/{roomName}");
-        await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        
-        await Task.Delay(2000);
+        await PerformNavigationAsync(baseUri, $"room/{roomName}");
     }
     
     public async Task SetDisplayNameAsync(string displayName)
@@ -66,7 +55,7 @@ public class RoomViewPage
     
     public async Task<bool> IsQuestionVisibleAsync(string questionText)
     {
-        var questionLocator = _page.Locator($"text={questionText}");
+        var questionLocator = Page.Locator($"text={questionText}");
         return await questionLocator.IsVisibleAsync();
     }
     
@@ -94,7 +83,7 @@ public class RoomViewPage
             timeout = PlaywrightConfiguration.SignalRTimeout;
         }
         
-        var questionLocator = _page.Locator($"text={questionText}");
+        var questionLocator = Page.Locator($"text={questionText}");
         await questionLocator.WaitForAsync(new LocatorWaitForOptions 
         { 
             State = WaitForSelectorState.Visible,
@@ -109,7 +98,7 @@ public class RoomViewPage
             timeout = PlaywrightConfiguration.SignalRTimeout;
         }
         
-        var questionLocator = _page.Locator($"text={questionText}");
+        var questionLocator = Page.Locator($"text={questionText}");
         await questionLocator.WaitForAsync(new LocatorWaitForOptions 
         { 
             State = WaitForSelectorState.Hidden,

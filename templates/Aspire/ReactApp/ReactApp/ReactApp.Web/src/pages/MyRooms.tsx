@@ -109,7 +109,7 @@ export default function MyRooms() {
             <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={room.id}>
               <Card>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography variant="h6" component="h2" gutterBottom>
                     {room.friendlyName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">

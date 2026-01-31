@@ -1,3 +1,5 @@
+using ReactApp.UITests.PageObjects;
+
 namespace ReactApp.UITests;
 
 /// <summary>
@@ -9,11 +11,19 @@ public class HomePageTests : UITestBase
     [Test]
     public async Task CanNavigateToHomePage()
     {
-        await Page.GotoAsync(FrontendBaseUri.AbsoluteUri);
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-        
-        // Verify page loaded - look for input field or any visible element
-        var roomInput = Page.Locator("input[type='text'], input[placeholder*='room']").First;
-        await roomInput.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible });
+        HomePage homePage = new(Page);
+        await homePage.NavigateAsync(FrontendBaseUri);
+
+        await homePage.AssertIsLoadedAsync();
+    }
+
+    [Test]
+    [Category(TestCategories.Accessibility)]
+    public async Task HomePageIsAccessible()
+    {
+        HomePage homePage = new(Page);
+        await homePage.NavigateAsync(FrontendBaseUri);
+
+        await AssertNoAccessibilityViolations();
     }
 }
