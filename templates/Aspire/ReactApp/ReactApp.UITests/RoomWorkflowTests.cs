@@ -101,6 +101,53 @@ public class RoomWorkflowTests : AuthedUserTestBase
         // Cleanup
         await page2.CloseAsync();
     }
+
+    [Test]
+    [Category(TestCategories.Accessibility)]
+    public async Task MyRoomsPageIsAccessible()
+    {
+        var myRoomsPage = new MyRoomsPage(Page);
+        await myRoomsPage.NavigateAsync(FrontendBaseUri);
+        await myRoomsPage.CreateRoomAsync(TestRoomName);
+        
+        // Wait for snackbar to disappear (it has insufficient contrast from notistack library)
+        await Page.WaitForSelectorAsync(".notistack-MuiContent", new PageWaitForSelectorOptions 
+        { 
+            State = WaitForSelectorState.Hidden,
+            Timeout = 10000 
+        });
+        
+        await AssertNoAccessibilityViolations();
+    }
+
+    [Test]
+    [Category(TestCategories.Accessibility)]
+    public async Task RoomViewPageIsAccessible()
+    {
+        MyRoomsPage myRoomsPage = new(Page);
+        await myRoomsPage.NavigateAsync(FrontendBaseUri);
+        await myRoomsPage.CreateRoomAsync(TestRoomName);
+
+        RoomViewPage roomViewPage = new(Page);
+        await roomViewPage.NavigateAsync(FrontendBaseUri, TestRoomName);
+        await roomViewPage.SetDisplayNameAsync("Test User");
+
+        await AssertNoAccessibilityViolations();
+    }
+
+    [Test]
+    [Category(TestCategories.Accessibility)]
+    public async Task ManageRoomPageIsAccessible()
+    {
+        MyRoomsPage myRoomsPage = new(Page);
+        await myRoomsPage.NavigateAsync(FrontendBaseUri);
+        await myRoomsPage.CreateRoomAsync(TestRoomName);
+
+        ManageRoomPage managePage = new(Page);
+        await managePage.NavigateAsync(FrontendBaseUri, TestRoomName);
+
+        await AssertNoAccessibilityViolations();
+    }
 }
 
 

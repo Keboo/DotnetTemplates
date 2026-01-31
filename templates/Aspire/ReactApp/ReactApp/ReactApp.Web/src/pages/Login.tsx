@@ -69,7 +69,7 @@ export default function Login() {
           <Box sx={{ mt: 2, textAlign: 'center' }}>
             <Typography variant="body2">
               Don't have an account?{' '}
-              <Link to="/register" style={{ textDecoration: 'none' }}>
+              <Link to="/register">
                 Register
               </Link>
             </Typography>

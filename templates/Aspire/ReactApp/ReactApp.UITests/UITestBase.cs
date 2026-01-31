@@ -2,9 +2,13 @@ using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Testing;
 
+using Deque.AxeCore.Commons;
+using Deque.AxeCore.Playwright;
+
 using Microsoft.Extensions.Configuration;
 
 using ReactApp.AppHost;
+using ReactApp.UITests.PageObjects;
 
 namespace ReactApp.UITests;
 
@@ -15,6 +19,19 @@ public abstract class UITestBase : IAsyncDisposable
 {
     private static TimeSpan AspireDefaultTimeout { get; set; } = TimeSpan.FromMinutes(2);
     private static DistributedApplication _aspireAppHost = null!;
+
+    protected static AxeRunOptions AxeOptions => new()
+    {
+        RunOnly = new RunOnlyOptions
+        {
+            Type = "tag",
+            // Focus on WCAG 2.x AA compliance (the commonly accepted standard)
+            // AAA is excluded as it requires stricter color contrast ratios (7:1)
+            // that are difficult to achieve with standard UI frameworks
+            Values = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
+        },
+        ResultTypes = [ResultType.Incomplete, ResultType.Violations]
+    };
 
     private const string STATE_FILE = ".state.json";
 
@@ -105,6 +122,8 @@ public abstract class UITestBase : IAsyncDisposable
         await DisposeAsync();
     }
 
+
+
     protected static async Task<IBrowser> CreateBrowserAsync(IPlaywright playwright)
     {
         var launchOptions = new BrowserTypeLaunchOptions
@@ -137,6 +156,15 @@ public abstract class UITestBase : IAsyncDisposable
         });
 
         return prefix;
+    }
+
+
+    protected async Task<AxeResult> AssertNoAccessibilityViolations()
+    {
+        AxeResult result = await Page.RunAxe(AxeOptions);
+
+        await Assert.That(result.Violations).IsEmpty();
+        return result;
     }
 
     public async ValueTask DisposeAsync()

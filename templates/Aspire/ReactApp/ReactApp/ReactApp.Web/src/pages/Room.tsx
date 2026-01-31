@@ -151,19 +151,19 @@ export default function Room() {
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" component="h1" gutterBottom>
           {room.friendlyName}
         </Typography>
 
         {currentQuestion && (
           <Box sx={{ mb: 3, p: 2, bgcolor: 'primary.main', color: 'primary.contrastText', borderRadius: 1 }}>
-            <Typography variant="h6">Current Question:</Typography>
+            <Typography variant="h6" component="h2">Current Question:</Typography>
             <Typography variant="body1">{currentQuestion.questionText}</Typography>
             <Typography variant="caption">— {currentQuestion.authorName}</Typography>
           </Box>
         )}
 
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" component="h2" gutterBottom>
           Submit a Question
         </Typography>
         <Box component="form" onSubmit={handleSubmitQuestion}>

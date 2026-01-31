@@ -26,6 +26,24 @@ public class AuthTests : UITestBase
 
         await Assert.That(await loginPage.IsLoggedInAsync()).IsTrue().Because("User should be logged in after successful login");
     }
+
+    [Test]
+    [Category(TestCategories.Accessibility)]
+    public async Task LoginPageIsAccessible()
+    {
+        var loginPage = new LoginPage(Page);
+        await loginPage.NavigateAsync(FrontendBaseUri);
+        await AssertNoAccessibilityViolations();
+    }
+
+    [Test]
+    [Category(TestCategories.Accessibility)]
+    public async Task RegisterPageIsAccessible()
+    {
+        RegisterPage registerPage = new(Page);
+        await registerPage.NavigateAsync(FrontendBaseUri);
+        await AssertNoAccessibilityViolations();
+    }
 }
 
 

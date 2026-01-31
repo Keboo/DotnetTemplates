@@ -29,7 +29,7 @@ export default function JoinRoomForm({
 
   return (
     <Paper elevation={3} sx={{ p: 4 }}>
-      <Typography variant="h5" component="h2" gutterBottom>
+      <Typography variant="h5" component="h1" gutterBottom>
         {title}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>

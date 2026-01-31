@@ -28,7 +28,12 @@ export default function Layout() {
             Q&A Rooms
           </Typography>
 
-          <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit">
+          <IconButton 
+            sx={{ ml: 1 }} 
+            onClick={toggleTheme} 
+            color="inherit"
+            aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
             {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
 

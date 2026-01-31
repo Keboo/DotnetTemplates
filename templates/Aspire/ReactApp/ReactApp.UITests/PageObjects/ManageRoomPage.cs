@@ -3,31 +3,23 @@ namespace ReactApp.UITests.PageObjects;
 /// <summary>
 /// Page Object Model for the Room Management page (room owner dashboard)
 /// </summary>
-public class ManageRoomPage
+public class ManageRoomPage(IPage page) : TestPageBase(page)
 {
-    private readonly IPage _page;
-    
-    // Locators
-    private ILocator PendingSection => _page.Locator("h6:has-text('Pending Questions')").First;
-    private ILocator ApprovedSection => _page.Locator("h6:has-text('Approved Questions')").First;
+    // Locators - MUI Typography with component="h2" renders as <h2> element
+    private ILocator PendingSection => Page.Locator("h2:has-text('Pending Questions')").First;
+    private ILocator ApprovedSection => Page.Locator("h2:has-text('Approved Questions')").First;
     
     // Current question section
-    private ILocator CurrentQuestionSection => _page.Locator("div:has-text('Current Question:')").First;
-    private ILocator ClearCurrentButton => _page.Locator("button:has-text('Clear Current')").First;
+    private ILocator CurrentQuestionSection => Page.Locator("div:has-text('Current Question:')").First;
+    private ILocator ClearCurrentButton => Page.Locator("button:has-text('Clear Current')").First;
     
     // Buttons
-    private ILocator ApproveButton => _page.GetByTestId("approve-question-button");
-    private ILocator ViewPublicRoomButton => _page.Locator("button:has-text('View Public Room')").First;
-    
-    public ManageRoomPage(IPage page)
-    {
-        _page = page;
-    }
+    private ILocator ApproveButton => Page.GetByTestId("approve-question-button");
+    private ILocator ViewPublicRoomButton => Page.Locator("button:has-text('View Public Room')").First;
     
     public async Task NavigateAsync(Uri baseUri, string roomName)
     {
-        await _page.GotoAsync($"{baseUri.AbsoluteUri}room/{roomName}/manage");
-        await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await PerformNavigationAsync(baseUri, $"room/{roomName}/manage");
     }
     
     public async Task<bool> IsQuestionInPendingAsync(string questionText)
@@ -36,14 +28,14 @@ public class ManageRoomPage
         await PendingSection.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await Task.Delay(500);
         
-        var questionLocator = _page.Locator($"text={questionText}");
+        var questionLocator = Page.Locator($"text={questionText}");
         return await questionLocator.IsVisibleAsync();
     }
     
     public async Task ApproveQuestionAsync(string questionText)
     {
         // Wait for the question to appear via SignalR
-        var questionRow = _page.Locator($"tr:has-text('{questionText}')").First;
+        var questionRow = Page.Locator($"tr:has-text('{questionText}')").First;
         await questionRow.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
         
         // Find the approve button within the row using data-testid
@@ -59,7 +51,7 @@ public class ManageRoomPage
         await Task.Delay(500);
         
         // Find the question row and click delete
-        var questionRow = _page.Locator($"tr:has-text('{questionText}')").First;
+        var questionRow = Page.Locator($"tr:has-text('{questionText}')").First;
         var deleteButton = questionRow.Locator("button[aria-label*='delete'], button:has(svg)").Last;
         
         await deleteButton.ClickAsync();
@@ -72,7 +64,7 @@ public class ManageRoomPage
         await ApprovedSection.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
         await Task.Delay(1000);
         
-        var questionLocator = _page.Locator($"text={questionText}");
+        var questionLocator = Page.Locator($"text={questionText}");
         var isVisible = await questionLocator.IsVisibleAsync();
         
         return isVisible;
@@ -83,7 +75,7 @@ public class ManageRoomPage
         await Task.Delay(500);
         
         // Find the question row in approved section and click "Set Current"
-        var questionRow = _page.Locator($"tr:has-text('{questionText}')").First;
+        var questionRow = Page.Locator($"tr:has-text('{questionText}')").First;
         var setCurrentButton = questionRow.Locator("button:has-text('Set Current')").First;
         
         await setCurrentButton.ClickAsync();
@@ -101,7 +93,7 @@ public class ManageRoomPage
         await Task.Delay(500);
         
         // Find the question row in approved section and click "Mark Answered"
-        var questionRow = _page.Locator($"tr:has-text('{questionText}')").First;
+        var questionRow = Page.Locator($"tr:has-text('{questionText}')").First;
         var answeredButton = questionRow.Locator("button:has-text('Mark Answered')").First;
         
         await answeredButton.ClickAsync();
@@ -113,7 +105,7 @@ public class ManageRoomPage
         await Task.Delay(500);
         
         // Find the question row and click delete
-        var questionRow = _page.Locator($"tr:has-text('{questionText}')").First;
+        var questionRow = Page.Locator($"tr:has-text('{questionText}')").First;
         var deleteButton = questionRow.Locator("button[aria-label*='delete'], button:has(svg)").Last;
         
         await deleteButton.ClickAsync();
