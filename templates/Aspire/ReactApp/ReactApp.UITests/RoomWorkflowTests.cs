@@ -21,12 +21,12 @@ public class RoomWorkflowTests : AuthedUserTestBase
     {
         // Create room
         var myRoomsPage = new MyRoomsPage(Page);
-        await myRoomsPage.NavigateAsync();
+        await myRoomsPage.NavigateAsync(FrontendBaseUri);
         await myRoomsPage.CreateRoomAsync(TestRoomName);
 
         // Instead of checking if room exists in list, try to navigate to it
         // If it exists, the navigation will succeed
-        await Page.GotoAsync($"{TestConfiguration.BaseUrl}/room/{TestRoomName.ToLower()}");
+        await Page.GotoAsync($"{FrontendBaseUri.AbsoluteUri}/room/{TestRoomName.ToLower()}");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
         // If we get here without error, the room exists
@@ -41,7 +41,7 @@ public class RoomWorkflowTests : AuthedUserTestBase
     {
         // Setup: Create room
         var myRoomsPage = new MyRoomsPage(Page);
-        await myRoomsPage.NavigateAsync();
+        await myRoomsPage.NavigateAsync(FrontendBaseUri);
         await myRoomsPage.CreateRoomAsync(TestRoomName);
         
         // Wait for room to be fully committed to database and verify it exists
@@ -52,7 +52,7 @@ public class RoomWorkflowTests : AuthedUserTestBase
         var page2 = await context2.NewPageAsync();
         
         var roomViewPage = new RoomViewPage(page2);
-        await roomViewPage.NavigateAsync(TestRoomName);
+        await roomViewPage.NavigateAsync(FrontendBaseUri, TestRoomName);
         await roomViewPage.SetDisplayNameAsync("Test User");
         
         var questionText = "Test Question?";
@@ -60,7 +60,7 @@ public class RoomWorkflowTests : AuthedUserTestBase
         
         // Verify in manage page
         var managePage = new ManageRoomPage(Page);
-        await managePage.NavigateAsync(TestRoomName);
+        await managePage.NavigateAsync(FrontendBaseUri, TestRoomName);
         
         await Task.Delay(2000, CancellationToken); // Wait for question submission
         
@@ -75,7 +75,7 @@ public class RoomWorkflowTests : AuthedUserTestBase
     {
         // Setup: Create room and submit question
         var myRoomsPage = new MyRoomsPage(Page);
-        await myRoomsPage.NavigateAsync();
+        await myRoomsPage.NavigateAsync(FrontendBaseUri);
         await myRoomsPage.CreateRoomAsync(TestRoomName);
         
         // Wait for room to be fully committed to database and verify it exists
@@ -85,7 +85,7 @@ public class RoomWorkflowTests : AuthedUserTestBase
         var page2 = await context2.NewPageAsync();
         
         var roomViewPage = new RoomViewPage(page2);
-        await roomViewPage.NavigateAsync(TestRoomName);
+        await roomViewPage.NavigateAsync(FrontendBaseUri, TestRoomName);
         await roomViewPage.SetDisplayNameAsync("Test User");
         
         var questionText = "Test Question for Approval?";
@@ -93,7 +93,7 @@ public class RoomWorkflowTests : AuthedUserTestBase
         
         // Approve the question
         var managePage = new ManageRoomPage(Page);
-        await managePage.NavigateAsync(TestRoomName);
+        await managePage.NavigateAsync(FrontendBaseUri, TestRoomName);
         await Task.Delay(2000, CancellationToken);
         
         await managePage.ApproveQuestionAsync(questionText);

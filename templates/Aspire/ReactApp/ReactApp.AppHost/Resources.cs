@@ -2,17 +2,22 @@ using System.Diagnostics;
 
 using Aspire.Hosting.Azure;
 
-using ReactApp.AppHost;
-using ReactApp.Core;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+
+using ReactApp.AppHost;
+using ReactApp.Core;
 
 namespace ReactApp.AppHost;
 
 public static class Resources
 {
+    public const string ContainerSuffixKey = "ReactApp:ContainerSuffix";
+    public const string Frontend = "frontend";
+    public const string SqlServer = "ReactApp-sql";
+
+
     extension(IDistributedApplicationBuilder builder)
     {
         public IResourceBuilder<AzureSqlServerResource> AddAzureSqlServer()
@@ -22,10 +27,13 @@ public static class Resources
 
         public IResourceBuilder<SqlServerServerResource> AddSqlServer()
         {
+            string? containerSuffix = builder.Configuration[ContainerSuffixKey];
+            string? containerName = string.IsNullOrWhiteSpace(containerSuffix) ? "ReactApp-sql" : $"ReactApp-{containerSuffix}-sql";
+            
             return builder
-                .AddSqlServer("ReactApp-sql")
+                .AddSqlServer(SqlServer)
                 .WithLifetime(ContainerLifetime.Persistent)
-                .WithContainerName("ReactApp-sql")
+                .WithContainerName(containerName)
                 .WithDataVolume("ReactApp-database")
 
                 // This pairs with the usage of .UseAzureSql() which has a compatibility level of 170.
@@ -238,8 +246,6 @@ public static class Resources
                 ]);
                 if (result.Canceled) return CommandResults.Canceled();
 #pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-
-
                 ProcessStartInfo psi = new()
                 {
                     FileName = "dotnet",
@@ -249,7 +255,7 @@ public static class Resources
                         "--project",
                         "ReactApp.UITests\\ReactApp.UITests.csproj"
                     },
-                    WorkingDirectory = "..",
+                    WorkingDirectory = GetSolutionDirectory()?.FullName,
                     EnvironmentVariables =
                     {
                         { "TEST_BASE_URL", baseUrlInput.Value },
@@ -262,8 +268,8 @@ public static class Resources
             }, new CommandOptions()
             {
                 IconName = "ChevronDoubleRight",
-                UpdateState = ctx => 
-                    ctx.ResourceSnapshot.HealthStatus == HealthStatus.Healthy 
+                UpdateState = ctx =>
+                    ctx.ResourceSnapshot.HealthStatus == HealthStatus.Healthy
                         ? ResourceCommandState.Enabled : ResourceCommandState.Disabled
             });
             return builder;
@@ -300,7 +306,6 @@ public static class Resources
                     return CommandResults.Canceled();
                 }
 #pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-
                 ProcessStartInfo psi = new()
                 {
                     FileName = "dotnet",
@@ -315,7 +320,7 @@ public static class Resources
                         "add",
                         migrationNameResult.Data.Value
                     },
-                    WorkingDirectory = "..",
+                    WorkingDirectory = GetSolutionDirectory()?.FullName,
                     EnvironmentVariables =
                     {
                         { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
@@ -363,7 +368,7 @@ public static class Resources
                         "--no-build",
                         "remove"
                     },
-                    WorkingDirectory = "..",
+                    WorkingDirectory = GetSolutionDirectory()?.FullName,
                     EnvironmentVariables =
                     {
                         { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
@@ -397,7 +402,7 @@ public static class Resources
                     "tool",
                     "restore"
                 },
-            WorkingDirectory = "..",
+            WorkingDirectory = GetSolutionDirectory()?.FullName,
         };
 
         return await resource.ExecuteProcessAsync(services, psi);
@@ -445,7 +450,7 @@ public static class Resources
                     "--project",
                     "./ReactApp.Data",
                 },
-                WorkingDirectory = "..",
+                WorkingDirectory = GetSolutionDirectory()?.FullName,
                 EnvironmentVariables =
                 {
                     { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
@@ -470,6 +475,20 @@ public static class Resources
             new[] { userPath, machinePath }.Where(p => !string.IsNullOrWhiteSpace(p)));
 
         Environment.SetEnvironmentVariable("PATH", newPath, EnvironmentVariableTarget.Process);
+    }
+
+    private static DirectoryInfo? GetSolutionDirectory()
+    {
+        for (DirectoryInfo dir = new(Directory.GetCurrentDirectory());
+            dir.Parent is not null;
+            dir = dir.Parent)
+        {
+            if (dir.EnumerateFiles("*.sln?").Any())
+            { 
+                return dir;
+            }
+        }
+        return null;
     }
 
     private static async Task MonitorChildrenStateAsync(IServiceProvider services, LogicalGroupResource resource)

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddAzureContainerAppEnvironment("cae-ReactApp");
+builder.AddAzureContainerAppEnvironment("ReactApp-cae");
 
 var docsGroup = builder.AddLogicalGroup("docs");
 builder.AddAspireDocs().WithParentRelationship(docsGroup);
@@ -51,12 +51,26 @@ var backend = builder.AddProject<Projects.ReactApp>("backend")
 // Add the React frontend (Vite dev server) in development
 if (!builder.ExecutionContext.IsPublishMode)
 {
-    var frontendApp = builder.AddJavaScriptApp("frontend", "../ReactApp/ReactApp.Web", "dev")
+    var frontendUrl = Environment.GetEnvironmentVariable("REACTAPP_TEST_FRONTEND_URL");
+    var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../ReactApp/ReactApp.Web", "dev")
         .WithNpm(install: true)
-        .WithHttpEndpoint(env: "PORT")
         .WithExternalHttpEndpoints()
         .WithDependency(backend)
         .PublishAsDockerFile();
+
+    if (!string.IsNullOrEmpty(frontendUrl) && Uri.TryCreate(frontendUrl, UriKind.Absolute, out Uri? frontendUri))
+    {
+        frontendApp.WithUrl(frontendUri.AbsoluteUri);
+        frontendApp.WithEnvironment("VITE_HOST_URL", frontendUri.Host);
+        if (!frontendUri.IsDefaultPort)
+        {
+            frontendApp.WithEnvironment("PORT", frontendUri.Port.ToString());
+        }
+    }
+    else
+    {
+        frontendApp.WithHttpEndpoint(env: "PORT");
+    }
 }
 
 if (builder.ExecutionContext.IsPublishMode)

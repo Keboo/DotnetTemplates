@@ -22,9 +22,9 @@ public class RegisterPage
         _page = page;
     }
     
-    public async Task NavigateAsync()
+    public async Task NavigateAsync(Uri baseUri)
     {
-        await _page.GotoAsync($"{TestConfiguration.BaseUrl}/register");
+        await _page.GotoAsync($"{baseUri.AbsoluteUri}register");
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
     
