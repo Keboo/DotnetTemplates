@@ -20,7 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactApp.Core\ReactApp.Core.csproj" IsAspireProjectResource="false" />
     <ProjectReference Include="..\ReactApp.Data\ReactApp.Data.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\ReactApp\ReactApp\ReactApp.csproj" />
+    <ProjectReference Include="..\ReactApp\ReactApp.csproj" />
   </ItemGroup>
 
 </Project>

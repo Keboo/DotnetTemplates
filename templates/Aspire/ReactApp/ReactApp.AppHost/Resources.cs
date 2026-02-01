@@ -14,7 +14,7 @@ namespace ReactApp.AppHost;
 public static class Resources
 {
     public const string ContainerSuffixKey = "ReactApp:ContainerSuffix";
-    public const string Frontend = "frontend";
+    public const string Frontend = "ReactApp-frontend";
     public const string SqlServer = "ReactApp-sql";
 
 
