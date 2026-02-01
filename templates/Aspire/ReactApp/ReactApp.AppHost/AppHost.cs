@@ -42,36 +42,17 @@ else
         ;
 }
 
-var backend = builder.AddProject<Projects.ReactApp>("backend")
+var backend = builder.AddProject<Projects.ReactApp>("ReactApp-backend")
     .WithDependency(db, ConnectionStrings.DatabaseKey)
     .WithUITests()
     .WithExternalHttpEndpoints()
     .PublishAsAzureContainerApp((infra, app) => app.Template.Scale.MaxReplicas = 1);
 
-// Add the React frontend (Vite dev server) in development
-if (!builder.ExecutionContext.IsPublishMode)
-{
-    var frontendUrl = Environment.GetEnvironmentVariable("REACTAPP_TEST_FRONTEND_URL");
-    var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../ReactApp/ReactApp.Web", "dev")
-        .WithNpm(install: true)
-        .WithExternalHttpEndpoints()
-        .WithDependency(backend)
-        .PublishAsDockerFile();
-
-    if (!string.IsNullOrEmpty(frontendUrl) && Uri.TryCreate(frontendUrl, UriKind.Absolute, out Uri? frontendUri))
-    {
-        frontendApp.WithUrl(frontendUri.AbsoluteUri);
-        frontendApp.WithEnvironment("VITE_HOST_URL", frontendUri.Host);
-        if (!frontendUri.IsDefaultPort)
-        {
-            frontendApp.WithEnvironment("PORT", frontendUri.Port.ToString());
-        }
-    }
-    else
-    {
-        frontendApp.WithHttpEndpoint(env: "PORT");
-    }
-}
+var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../ReactApp.Web", "dev")
+    .WithNpm(install: true)
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints()
+    .WithDependency(backend);
 
 if (builder.ExecutionContext.IsPublishMode)
 {

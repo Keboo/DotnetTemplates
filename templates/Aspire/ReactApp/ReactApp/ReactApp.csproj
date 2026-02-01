@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ReactApp.Core\ReactApp.Core.csproj" />
-    <ProjectReference Include="..\..\ReactApp.Data\ReactApp.Data.csproj" />
-    <ProjectReference Include="..\..\ReactApp.ServiceDefaults\ReactApp.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\ReactApp.Core\ReactApp.Core.csproj" />
+    <ProjectReference Include="..\ReactApp.Data\ReactApp.Data.csproj" />
+    <ProjectReference Include="..\ReactApp.ServiceDefaults\ReactApp.ServiceDefaults.csproj" />
     <ProjectReference Include="..\ReactApp.Web\ReactApp.Web.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
