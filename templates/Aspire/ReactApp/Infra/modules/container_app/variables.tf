@@ -19,6 +19,13 @@ variable "env_vars" {
   default     = {}
 }
 
+variable "secret_env_vars" {
+  description = "Secret environment variables for the container (stored as secrets)"
+  type        = map(string)
+  default     = {}
+  sensitive   = true
+}
+
 variable "identity_id" {
   description = "Resource ID of the User Assigned Identity"
   type        = string

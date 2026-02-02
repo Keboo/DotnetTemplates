@@ -3,6 +3,11 @@ variable "acr_login_server" {
   type        = string
 }
 
+variable "environment" {
+  description = "The deployment environment (e.g., Dev, Prod)"
+  type        = string
+}
+
 variable "location" {
   description = "Azure region for the resources"
   type        = string

@@ -1,5 +1,5 @@
 locals {
-  environment = "Prod"
+  environment = var.environment
   tags = merge(var.tags,
     {
       "Environment" = local.environment
@@ -11,6 +11,11 @@ resource "azurerm_resource_group" "resource_group" {
   location = var.location
 
   tags = local.tags
+}
+
+resource "azuread_group" "admins_group" {
+  display_name     = "ReactApp-${local.environment}-admins"
+  security_enabled = true
 }
 
 resource "azurerm_user_assigned_identity" "app_identity" {
@@ -35,9 +40,41 @@ module "backend_container_app" {
   name                         = "reactapp-${lower(local.environment)}-backend"
   container_app_environment_id = module.container_app_environment.container_app_environment_id
   resource_group_name          = azurerm_resource_group.resource_group.name
-  identity_id                  = azurerm_user_assigned_identity.app_identity.principal_id
+  identity_id                  = azurerm_user_assigned_identity.app_identity.id
   registry_server              = var.acr_login_server
-  env_vars                     = {}
+
+  env_vars = {
+    # Run EF Core migrations on startup for Azure deployments
+    RunMigrationsOnStartup = "true"
+  }
+
+  secret_env_vars = {
+    # Aspire uses ConnectionStrings__<key> naming convention
+    ConnectionStrings__Database = module.sql.connection_string
+  }
+
+  depends_on = [module.sql]
+}
+
+module "static_web_app" {
+  source = "../modules/static_web_app"
+
+  name           = "reactapp-${lower(local.environment)}-swa"
+  resource_group = azurerm_resource_group.resource_group
+  sku = {
+    tier = "Free"
+    size = "Free"
+  }
+
+  app_settings = {
+    # Backend API URL for the frontend to connect to
+    # Uses Aspire service discovery naming convention for consistency
+    BACKEND_URL = "https://${module.backend_container_app.fqdn}"
+  }
+
+  tags = local.tags
+
+  depends_on = [module.backend_container_app]
 }
 
 module "sql" {
@@ -47,11 +84,8 @@ module "sql" {
 
   server_name   = "reactapp-${lower(local.environment)}-sqlserver"
   database_name = "reactapp-${lower(local.environment)}-db"
-  sku = {
-    name        = "S0"
-    max_size_gb = "16"
-  }
-  tags                 = local.tags
-  users                = []
-  sql_admin_group_name = "sql-admins"
+  
+  tags            = local.tags
+  users           = []
+  sql_admin_group = azuread_group.admins_group
 }
