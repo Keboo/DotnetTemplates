@@ -40,6 +40,22 @@ resource "azurerm_container_app" "app" {
           value = env.value
         }
       }
+
+      dynamic "env" {
+        for_each = var.secret_env_vars
+        content {
+          name        = env.key
+          secret_name = lower(replace(env.key, "_", "-"))
+        }
+      }
+    }
+  }
+
+  dynamic "secret" {
+    for_each = var.secret_env_vars
+    content {
+      name  = lower(replace(secret.key, "_", "-"))
+      value = secret.value
     }
   }
 

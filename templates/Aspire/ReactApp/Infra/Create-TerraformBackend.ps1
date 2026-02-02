@@ -31,7 +31,7 @@ param(
     [string]$ResourceGroupName = "reactapp-terraform-rg",
 
     [Parameter()]
-    [string]$StorageAccountName = "reactappterraform",
+    [string]$StorageAccountName = "reactappinfra",
 
     [Parameter()]
     [string]$ContainerName = "terraform",

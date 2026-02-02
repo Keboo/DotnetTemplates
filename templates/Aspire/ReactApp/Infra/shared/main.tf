@@ -15,7 +15,7 @@ resource "azurerm_resource_group" "resource_group" {
 module "container_registry" {
   source = "../modules/container_registry"
 
-  name           = "reactappacr"
+  name           = "reactappacr${lower(var.environment)}"
   resource_group = azurerm_resource_group.resource_group
   tags           = local.tags
 

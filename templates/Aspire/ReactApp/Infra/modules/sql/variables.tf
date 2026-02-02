@@ -23,8 +23,8 @@ variable "sku" {
     max_size_gb = string
   })
   default = {
-    name        = "S0"
-    max_size_gb = "16"
+    name        = "Basic"
+    max_size_gb = "2"
   }
 }
 
@@ -40,7 +40,10 @@ variable "users" {
   default     = []
 }
 
-variable "sql_admin_group_name" {
-  description = "The name of the SQL admin group"
-  type        = string
+variable "sql_admin_group" {
+  description = "The admin group for the SQL server"
+  type = object({
+    display_name = string,
+    object_id    = string
+  })
 }

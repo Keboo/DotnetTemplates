@@ -16,7 +16,7 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "reactapp-terraform-rg"
-    storage_account_name = "reactappterraform" # This name must be made globally unique
+    storage_account_name = "reactappinfra" # This name must be made globally unique
     container_name       = "terraform"
     key                  = "state"
     use_oidc             = true
