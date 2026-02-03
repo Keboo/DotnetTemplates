@@ -19,7 +19,7 @@ module "container_registry" {
   resource_group = azurerm_resource_group.resource_group
   tags           = local.tags
 
-  pull_identity_ids = []
+  pull_identity_ids = values(var.app_identities)
   push_identity_ids = []
 }
 

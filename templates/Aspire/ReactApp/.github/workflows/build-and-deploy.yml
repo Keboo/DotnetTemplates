@@ -1,0 +1,211 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  NODE_VERSION: '20.x'
+  BACKEND_PROJECT_PATH: 'ReactApp/ReactApp.csproj'
+  FRONTEND_PROJECT_PATH: 'ReactApp.Web'
+  TERRAFORM_VERSION: '1.9.0'
+  AZURE_LOCATION: 'westus2'
+
+jobs:
+  # Build and test the .NET backend
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: global.json
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+
+      - name: Publish backend
+        run: dotnet publish ${{ env.BACKEND_PROJECT_PATH }} --configuration Release --output ./publish/backend --no-build
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend
+          path: ./publish/backend
+          retention-days: 1
+
+  # Build the React frontend
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.FRONTEND_PROJECT_PATH }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
+        run: npm ci
+
+      - name: Lint
+        working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
+        run: npm run lint
+
+      - name: Build
+        working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
+        run: npm run build
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend
+          path: ${{ env.FRONTEND_PROJECT_PATH }}/dist
+          retention-days: 1
+
+  # Deploy infrastructure using Terraform
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    outputs:
+      acr_login_server: ${{ steps.terraform-outputs.outputs.acr_login_server }}
+      backend_container_app_name: ${{ steps.terraform-outputs.outputs.backend_container_app_name }}
+      resource_group_name: ${{ steps.terraform-outputs.outputs.resource_group_name }}
+      static_web_app_name: ${{ steps.terraform-outputs.outputs.static_web_app_name }}
+      static_web_app_api_key: ${{ steps.terraform-outputs.outputs.static_web_app_api_key }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Init
+        working-directory: Infra
+        run: terraform init
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+      - name: Terraform Plan
+        working-directory: Infra
+        run: terraform plan -out=tfplan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          TF_VAR_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
+      - name: Terraform Apply
+        working-directory: Infra
+        run: terraform apply -auto-approve tfplan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          TF_VAR_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+          TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
+      - name: Get Terraform Outputs
+        id: terraform-outputs
+        working-directory: Infra
+        run: |
+          echo "acr_login_server=$(terraform output -raw acr_login_server)" >> $GITHUB_OUTPUT
+          echo "backend_container_app_name=$(terraform output -raw backend_container_app_name)" >> $GITHUB_OUTPUT
+          echo "resource_group_name=$(terraform output -raw resource_group_name)" >> $GITHUB_OUTPUT
+          echo "static_web_app_name=$(terraform output -raw static_web_app_name)" >> $GITHUB_OUTPUT
+          echo "static_web_app_api_key=$(terraform output -raw static_web_app_api_key)" >> $GITHUB_OUTPUT
+
+  # Build and push Docker image for backend
+  deploy-backend:
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download backend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend
+          path: ./publish/backend
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to Azure Container Registry
+        run: |
+          az acr login --name ${{ needs.deploy-infrastructure.outputs.acr_login_server }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }} -t ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:latest -f ReactApp/Dockerfile .
+          docker push ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }}
+          docker push ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:latest
+
+      - name: Update Container App
+        run: |
+          az containerapp update \
+            --name ${{ needs.deploy-infrastructure.outputs.backend_container_app_name }} \
+            --resource-group ${{ needs.deploy-infrastructure.outputs.resource_group_name }} \
+            --image ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }}
+
+  # Deploy frontend to Azure Static Web Apps
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend
+          path: ./dist
+
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ needs.deploy-infrastructure.outputs.static_web_app_api_key }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: 'upload'
+          app_location: './dist'
+          skip_app_build: true
+          skip_api_build: true

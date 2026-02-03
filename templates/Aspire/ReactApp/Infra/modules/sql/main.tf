@@ -8,10 +8,8 @@ locals {
   ]
 
   # Use a map with static keys to avoid for_each issues with apply-time values
-  database_users = merge(
-    { for user in var.users : user => user },
-    { "sql_admin_group" = var.sql_admin_group.display_name }
-  )
+  # Exclude the admin group since they have server-level access
+  database_users = { for user in var.users : user => user }
 
   server_version             = "12.0"
   server_minimum_tls_version = "1.2"
@@ -51,13 +49,6 @@ resource "azurerm_user_assigned_identity" "sql_admin" {
   name                = "${var.server_name}-sqladmin"
   resource_group_name = var.resource_group.name
   location            = var.resource_group.location
-}
-
-resource "azurerm_mssql_firewall_rule" "allow_current_ip" {
-  name             = "AllowCurrentUserIP"
-  server_id        = azurerm_mssql_server.sql_server.id
-  start_ip_address = data.http.my_ip.response_body
-  end_ip_address   = data.http.my_ip.response_body
 }
 
 resource "azuread_group_member" "mi_admin_assignment" {
@@ -107,7 +98,30 @@ resource "terraform_data" "setup_users" {
 
   provisioner "local-exec" {
     command = <<-EOT
-    $sql = @"
+    $ErrorActionPreference = 'Stop'
+    $currentIp = '${data.http.my_ip.response_body}'
+    $ruleName = 'TerraformTemp-AllowCurrentIP'
+    
+    try {
+      # Create temporary firewall rule
+      Write-Host "Creating temporary firewall rule for IP: $currentIp"
+      az sql server firewall-rule create `
+        --resource-group '${var.resource_group.name}' `
+        --server '${var.server_name}' `
+        --name $ruleName `
+        --start-ip-address $currentIp `
+        --end-ip-address $currentIp `
+        --output none
+      
+      if ($LASTEXITCODE -ne 0) {
+        throw "Failed to create firewall rule"
+      }
+      
+      # Wait a moment for the rule to propagate
+      Start-Sleep -Seconds 5
+      
+      # Execute SQL to create user and assign permissions
+      $sql = @"
     -- Create user if they don't exist
       IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = '${each.value}')
     BEGIN
@@ -123,8 +137,20 @@ resource "terraform_data" "setup_users" {
     -- Grant execute permissions for stored procedures
     GRANT EXECUTE TO [${each.value}];
     "@
-
-    Invoke-Sqlcmd -ConnectionString '${local.connection_string}' -Query $sql
+      
+      Write-Host "Configuring database user: ${each.value}"
+      Invoke-Sqlcmd -ConnectionString '${local.connection_string}' -Query $sql
+    }
+    finally {
+      # Always remove the temporary firewall rule
+      Write-Host "Removing temporary firewall rule"
+      az sql server firewall-rule delete `
+        --resource-group '${var.resource_group.name}' `
+        --server '${var.server_name}' `
+        --name $ruleName `
+        --yes `
+        2>$null
+    }
   EOT
 
     interpreter = ["pwsh", "-Command"]
