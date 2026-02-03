@@ -3,17 +3,25 @@ name: Build and Deploy
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'Infra/**'
+      - '.github/workflows/deploy-infrastructure.yml'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'Infra/**'
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
-  DOTNET_VERSION: '9.0.x'
+  DOTNET_VERSION: '10.0.x'
   NODE_VERSION: '20.x'
   BACKEND_PROJECT_PATH: 'ReactApp/ReactApp.csproj'
   FRONTEND_PROJECT_PATH: 'ReactApp.Web'
   TERRAFORM_VERSION: '1.9.0'
-  AZURE_LOCATION: 'westus2'
 
 jobs:
   # Build and test the .NET backend
@@ -29,10 +37,10 @@ jobs:
           global-json-file: global.json
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ${{ env.BACKEND_PROJECT_PATH }}
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build ${{ env.BACKEND_PROJECT_PATH }} --no-restore --configuration Release
 
       - name: Test
         run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
@@ -79,10 +87,9 @@ jobs:
           path: ${{ env.FRONTEND_PROJECT_PATH }}/dist
           retention-days: 1
 
-  # Deploy infrastructure using Terraform
-  deploy-infrastructure:
+  # Get infrastructure outputs from Terraform state
+  get-infrastructure-outputs:
     runs-on: ubuntu-latest
-    needs: [build-backend, build-frontend]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: production
     outputs:
@@ -103,40 +110,18 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
       - name: Terraform Init
         working-directory: Infra
         run: terraform init
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-
-      - name: Terraform Plan
-        working-directory: Infra
-        run: terraform plan -out=tfplan
-        env:
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          TF_VAR_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          TF_VAR_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-
-      - name: Terraform Apply
-        working-directory: Infra
-        run: terraform apply -auto-approve tfplan
-        env:
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          TF_VAR_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          TF_VAR_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_USE_OIDC: true
 
       - name: Get Terraform Outputs
         id: terraform-outputs
@@ -151,7 +136,7 @@ jobs:
   # Build and push Docker image for backend
   deploy-backend:
     runs-on: ubuntu-latest
-    needs: deploy-infrastructure
+    needs: [build-backend, get-infrastructure-outputs]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: production
     steps:
@@ -166,29 +151,31 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
       - name: Log in to Azure Container Registry
         run: |
-          az acr login --name ${{ needs.deploy-infrastructure.outputs.acr_login_server }}
+          az acr login --name ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }} -t ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:latest -f ReactApp/Dockerfile .
-          docker push ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }}
-          docker push ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:latest
+          docker build -t ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }} -t ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/reactapp-backend:latest -f ReactApp/Dockerfile .
+          docker push ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }}
+          docker push ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/reactapp-backend:latest
 
       - name: Update Container App
         run: |
           az containerapp update \
-            --name ${{ needs.deploy-infrastructure.outputs.backend_container_app_name }} \
-            --resource-group ${{ needs.deploy-infrastructure.outputs.resource_group_name }} \
-            --image ${{ needs.deploy-infrastructure.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }}
+            --name ${{ needs.get-infrastructure-outputs.outputs.backend_container_app_name }} \
+            --resource-group ${{ needs.get-infrastructure-outputs.outputs.resource_group_name }} \
+            --image ${{ needs.get-infrastructure-outputs.outputs.acr_login_server }}/reactapp-backend:${{ github.sha }}
 
   # Deploy frontend to Azure Static Web Apps
   deploy-frontend:
     runs-on: ubuntu-latest
-    needs: deploy-infrastructure
+    needs: [build-frontend, get-infrastructure-outputs]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: production
     steps:
@@ -203,7 +190,7 @@ jobs:
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ needs.deploy-infrastructure.outputs.static_web_app_api_key }}
+          azure_static_web_apps_api_token: ${{ needs.get-infrastructure-outputs.outputs.static_web_app_api_key }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: './dist'
