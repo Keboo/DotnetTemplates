@@ -13,9 +13,16 @@ resource "azurerm_resource_group" "resource_group" {
   tags = local.tags
 }
 
+data "azuread_client_config" "current" {}
+
 resource "azuread_group" "admins_group" {
   display_name     = "ReactApp-${local.environment}-admins"
   security_enabled = true
+}
+
+resource "azuread_group_member" "current_user_admin" {
+  group_object_id  = azuread_group.admins_group.object_id
+  member_object_id = data.azuread_client_config.current.object_id
 }
 
 resource "azurerm_user_assigned_identity" "app_identity" {
