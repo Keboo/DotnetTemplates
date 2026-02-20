@@ -5,11 +5,11 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.Azure" Version="13.1.0" />
-    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.1.0" />
-    <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.1.0" />
-    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.1.0" />
-    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.1.0" />
+    <PackageVersion Include="Aspire.Hosting.Azure" Version="13.1.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.1.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.1.1" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.1.1" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.1.1" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="13.1.0" />
     <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
     <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.11.0" />

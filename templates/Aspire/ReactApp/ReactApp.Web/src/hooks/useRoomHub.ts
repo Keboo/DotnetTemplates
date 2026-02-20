@@ -83,7 +83,7 @@ export function useRoomHub(
       }
       cleanup()
     }
-  }, [roomId])
+  }, [roomId, asOwner])
 
   return { connected, hub: hubRef.current }
 }

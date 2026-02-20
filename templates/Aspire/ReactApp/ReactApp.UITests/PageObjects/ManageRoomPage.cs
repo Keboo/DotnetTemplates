@@ -25,7 +25,7 @@ public class ManageRoomPage(IPage page) : TestPageBase(page)
     public async Task<bool> IsQuestionInPendingAsync(string questionText)
     {
         // Wait for pending section to be visible
-        await PendingSection.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+        await PendingSection.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = PlaywrightConfiguration.DefaultTimeout });
         await Task.Delay(500);
         
         var questionLocator = Page.Locator($"text={questionText}");
@@ -36,12 +36,12 @@ public class ManageRoomPage(IPage page) : TestPageBase(page)
     {
         // Wait for the question to appear via SignalR
         var questionRow = Page.Locator($"tr:has-text('{questionText}')").First;
-        await questionRow.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await questionRow.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = PlaywrightConfiguration.DefaultTimeout });
         
         // Find the approve button within the row using data-testid
         var approveButton = questionRow.GetByTestId("approve-question-button");
         
-        await approveButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+        await approveButton.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = PlaywrightConfiguration.DefaultTimeout });
         await approveButton.ClickAsync();
         await Task.Delay(1000);
     }
@@ -61,7 +61,7 @@ public class ManageRoomPage(IPage page) : TestPageBase(page)
     public async Task<bool> IsQuestionInApprovedAsync(string questionText)
     {
         // Wait for approved section to be visible
-        await ApprovedSection.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+        await ApprovedSection.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = PlaywrightConfiguration.DefaultTimeout });
         await Task.Delay(1000);
         
         var questionLocator = Page.Locator($"text={questionText}");

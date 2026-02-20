@@ -259,7 +259,9 @@ public static class Resources
                     EnvironmentVariables =
                     {
                         { "TEST_BASE_URL", baseUrlInput.Value },
-                        { "HEADED", headlessInput.Value }
+                        // Invert the boolean: if headless is True, don't set HEADLESS (defaults to true)
+                        // if headless is False, set HEADLESS=false to run in headed mode
+                        { "HEADLESS", headlessInput.Value?.Equals(bool.FalseString, StringComparison.OrdinalIgnoreCase) == true ? "false" : "" }
                     }
                 };
 
@@ -437,6 +439,12 @@ public static class Resources
 
         Task<bool> ApplyMigrationsAsync()
         {
+            // Determine the build configuration to use
+            // Check common environment variable or default to Debug for local development
+            string configuration = Environment.GetEnvironmentVariable("DOTNET_BUILD_CONFIGURATION") 
+                ?? Environment.GetEnvironmentVariable("Configuration") 
+                ?? "Debug";
+            
             ProcessStartInfo psi = new()
             {
                 FileName = "dotnet",
@@ -445,6 +453,8 @@ public static class Resources
                     "database",
                     "update",
                     "--no-build",
+                    "--configuration",
+                    configuration,
                     "--startup-project",
                     "./ReactApp.AppHost",
                     "--project",

@@ -4,7 +4,19 @@ import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 
 // Get backend URL from Aspire service discovery or fallback
-const backendUrl = process.env.services__backend__https__0 || process.env.services__backend__http__0 || 'https://localhost:5001'
+// Aspire sets environment variables in the format: services__{service-name}__{protocol}__{index}
+// For a service named "ReactApp-backend", it would be services__ReactApp-backend__https__0 or services__ReactApp-backend__http__0
+// On Linux, Aspire may use REACTAPP_BACKEND_HTTP format instead
+// Prefer HTTP to avoid dev-certificate trust issues (especially in CI environments)
+// BACKEND_URL is set in production builds via CI/CD (from Terraform outputs)
+const backendUrl = process.env.BACKEND_URL
+  || process.env['services__ReactApp-backend__http__0'] 
+  || process.env['services__ReactApp-backend__https__0'] 
+  || process.env.REACTAPP_BACKEND_HTTP
+  || process.env.REACTAPP_BACKEND_HTTPS  
+  || process.env.services__backend__http__0 
+  || process.env.services__backend__https__0 
+  || 'https://localhost:5001'
 
 // https://vite.dev/config/
 export default defineConfig({

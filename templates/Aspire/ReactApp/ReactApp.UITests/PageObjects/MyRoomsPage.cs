@@ -19,7 +19,7 @@ public class MyRoomsPage(IPage page) : TestPageBase(page)
         
         // Wait for dialog to appear
         await Task.Delay(500);
-        await RoomNameInput.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000 });
+        await RoomNameInput.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = PlaywrightConfiguration.DefaultTimeout });
         
         // Fill in room name
         await RoomNameInput.FillAsync(roomName);

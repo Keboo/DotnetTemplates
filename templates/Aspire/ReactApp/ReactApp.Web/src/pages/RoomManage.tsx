@@ -78,7 +78,7 @@ export default function RoomManage() {
     }
 
     loadRoom()
-  }, [friendlyName, navigate])
+  }, [friendlyName, navigate, enqueueSnackbar])
 
   const handleApprove = async (questionId: string) => {
     if (!room) return

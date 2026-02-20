@@ -14,7 +14,7 @@
     <PackageIcon>NuGetIcon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoWarn>$(NoWarn);NU5128;NU5110;NU5111</NoWarn>
 
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>

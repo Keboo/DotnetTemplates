@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -29,7 +29,7 @@ export default function MyRooms() {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
 
-  const loadRooms = async () => {
+  const loadRooms = useCallback(async () => {
     try {
       const data = await apiClient.get<RoomDto[]>('/api/rooms/my')
       setRooms(data)
@@ -38,11 +38,11 @@ export default function MyRooms() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [enqueueSnackbar])
 
   useEffect(() => {
     loadRooms()
-  }, [])
+  }, [loadRooms])
 
   const handleCreateRoom = async () => {
     if (!newRoomName.trim()) {

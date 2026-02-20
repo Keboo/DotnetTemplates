@@ -12,6 +12,11 @@ output "resource_group_name" {
   value       = azurerm_resource_group.resource_group.name
 }
 
+output "database_connection_string" {
+  description = "The connection string for the SQL database"
+  value       = module.sql.connection_string
+}
+
 output "static_web_app_name" {
   description = "The name of the static web app"
   value       = module.static_web_app.name

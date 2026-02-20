@@ -26,7 +26,7 @@ public class RoomViewPage(IPage page) : TestPageBase(page)
         await DisplayNameInput.WaitForAsync(new LocatorWaitForOptions 
         { 
             State = WaitForSelectorState.Visible, 
-            Timeout = 10000 
+            Timeout = PlaywrightConfiguration.DefaultTimeout 
         });
         
         await DisplayNameInput.FillAsync(displayName);
@@ -39,7 +39,7 @@ public class RoomViewPage(IPage page) : TestPageBase(page)
         await SubmitQuestionButton.WaitForAsync(new LocatorWaitForOptions 
         { 
             State = WaitForSelectorState.Visible, 
-            Timeout = 10000 
+            Timeout = PlaywrightConfiguration.DefaultTimeout 
         });
         
         // Fill in the question
@@ -80,7 +80,7 @@ public class RoomViewPage(IPage page) : TestPageBase(page)
     {
         if (timeout == 0)
         {
-            timeout = PlaywrightConfiguration.SignalRTimeout;
+            timeout = PlaywrightConfiguration.DefaultTimeout;
         }
         
         var questionLocator = Page.Locator($"text={questionText}");

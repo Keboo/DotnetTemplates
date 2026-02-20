@@ -37,8 +37,10 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            // In production, restrict to specific origins
-            policy.WithOrigins("https://yourdomain.com")
+            // In production, restrict to specific origins from configuration
+            var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() 
+                ?? ["https://yourdomain.com"];
+            policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();

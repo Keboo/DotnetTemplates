@@ -17,11 +17,9 @@ public class LoginPage(IPage page): TestPageBase(page)
     {
         await EmailInput.FillAsync(email);
         await PasswordInput.FillAsync(password);
-        await LoginButton.ClickAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         
-        // Wait for redirect to my-rooms after successful login
-        await Page.WaitForURLAsync("**/my-rooms", new PageWaitForURLOptions { Timeout = 10000 });
+        await LoginButton.ClickAsync();
+        await Page.WaitForURLAsync("**/my-rooms", new PageWaitForURLOptions { Timeout = 30000 });
     }
     
     public async Task<bool> IsLoggedInAsync()

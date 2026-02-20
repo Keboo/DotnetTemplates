@@ -102,7 +102,7 @@ export default function Room() {
     }
 
     loadRoom()
-  }, [friendlyName])
+  }, [friendlyName, enqueueSnackbar])
 
   const handleSubmitQuestion = async (e: React.FormEvent) => {
     e.preventDefault()

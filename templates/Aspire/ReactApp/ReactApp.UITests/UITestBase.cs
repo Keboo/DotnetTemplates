@@ -1,3 +1,6 @@
+using System.Collections.Concurrent;
+using System.Text;
+
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Testing;
@@ -6,9 +9,9 @@ using Deque.AxeCore.Commons;
 using Deque.AxeCore.Playwright;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 using ReactApp.AppHost;
-using ReactApp.UITests.PageObjects;
 
 namespace ReactApp.UITests;
 
@@ -18,7 +21,8 @@ namespace ReactApp.UITests;
 public abstract class UITestBase : IAsyncDisposable
 {
     private static TimeSpan AspireDefaultTimeout { get; set; } = TimeSpan.FromMinutes(2);
-    private static DistributedApplication _aspireAppHost = null!;
+    private static DistributedApplication? _aspireAppHost = null;
+    private static Uri? _externalFrontendUrl = null;
 
     protected static AxeRunOptions AxeOptions => new()
     {
@@ -38,6 +42,8 @@ public abstract class UITestBase : IAsyncDisposable
     private IPlaywright? _playwright;
     private IBrowser? _browser;
     private IBrowserContext? _context;
+    private CancellationTokenSource? _logCts;
+    private ConcurrentQueue<string> _logLines = new();
 
     protected IPage Page { get; private set; } = null!;
     protected IBrowser Browser => _browser!;
@@ -48,7 +54,19 @@ public abstract class UITestBase : IAsyncDisposable
 
     protected string? StateId { get; set; }
 
-    protected static Uri FrontendBaseUri => _aspireAppHost.GetEndpoint(Resources.Frontend);
+    protected static Uri FrontendBaseUri
+    {
+        get
+        {
+            if (_externalFrontendUrl is not null)
+                return _externalFrontendUrl;
+            
+            if (_aspireAppHost is null)
+                throw new InvalidOperationException("Neither external frontend URL nor Aspire host is available");
+            
+            return _aspireAppHost.GetEndpoint(Resources.Frontend);
+        }
+    }
 
     protected static CancellationToken CancellationToken =>
         TestContext.Current?.Execution.CancellationToken ?? CancellationToken.None;
@@ -56,6 +74,16 @@ public abstract class UITestBase : IAsyncDisposable
     [Before(TestSession)]
     public static async Task StartAspireHost()
     {
+        // Check if an external frontend URL is provided
+        var externalUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
+        if (!string.IsNullOrWhiteSpace(externalUrl))
+        {
+            _externalFrontendUrl = new Uri(externalUrl);
+            Console.WriteLine($"Using external frontend at: {externalUrl}");
+            Console.WriteLine("Skipping Aspire host creation - using externally running instance");
+            return;
+        }
+
         var appHost = await DistributedApplicationTestingBuilder
             .CreateAsync<Projects.ReactApp_AppHost>([], (x, i) =>
             {
@@ -104,6 +132,8 @@ public abstract class UITestBase : IAsyncDisposable
     {
         await BeforeTestSetupAsync();
 
+        StartCollectingLogs();
+
         _playwright = await Playwright.CreateAsync();
         _browser = await CreateBrowserAsync(_playwright);
         _context = await CreateBrowserContextAsync(_browser, StateId is not null ? $"{StateId}_{STATE_FILE}" : null);
@@ -117,12 +147,122 @@ public abstract class UITestBase : IAsyncDisposable
     protected virtual async Task AfterTestSetupAsync() { }
 
     [After(Test)]
-    public async Task TearDownAsync()
+    public async Task TearDownAsync(TestContext testContext)
     {
+        StopCollectingLogs();
+        await CaptureScreenshotOnFailureAsync(testContext);
+        await CaptureLogsOnFailureAsync(testContext);
         await DisposeAsync();
     }
 
+    private async Task CaptureScreenshotOnFailureAsync(TestContext testContext)
+    {
+        try
+        {
+            if (testContext.Execution.Result?.State is not TestState.Failed || Page is null || Page.IsClosed)
+                return;
 
+            var screenshotDir = PlaywrightConfiguration.ScreenshotDirectory;
+            Directory.CreateDirectory(screenshotDir);
+
+            var testName = testContext.Metadata.TestName;
+            var className = testContext.Metadata.TestDetails.Class.ClassType.FullName;
+            var sanitized = string.Join("_", $"{className}.{testName}".Split(Path.GetInvalidFileNameChars()));
+            var screenshotPath = Path.Combine(screenshotDir, $"{sanitized}_{CreateUniqueId()}.png");
+
+            await Page.ScreenshotAsync(new PageScreenshotOptions
+            {
+                Path = screenshotPath,
+                FullPage = true
+            });
+
+            Console.WriteLine($"Screenshot saved to: {screenshotPath}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to capture screenshot: {ex.Message}");
+        }
+    }
+
+    private void StartCollectingLogs()
+    {
+        // Skip log collection if using external AppHost
+        if (_aspireAppHost is null)
+            return;
+
+        _logLines = new ConcurrentQueue<string>();
+        _logCts = new CancellationTokenSource();
+
+        var loggerService = _aspireAppHost.Services.GetRequiredService<ResourceLoggerService>();
+        var appModel = _aspireAppHost.Services.GetRequiredService<DistributedApplicationModel>();
+
+        foreach (var resource in appModel.Resources)
+        {
+            var resourceName = resource.Name;
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await foreach (var batch in loggerService.WatchAsync(resourceName)
+                        .WithCancellation(_logCts.Token))
+                    {
+                        foreach (var line in batch)
+                        {
+                            var prefix = line.IsErrorMessage ? "ERR" : "OUT";
+                            _logLines.Enqueue($"[{resourceName}] [{prefix}] {line.Content}");
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Expected when test ends
+                }
+            });
+        }
+    }
+
+    private void StopCollectingLogs()
+    {
+        try
+        {
+            _logCts?.Cancel();
+            _logCts?.Dispose();
+            _logCts = null;
+        }
+        catch { }
+    }
+
+    private Task CaptureLogsOnFailureAsync(TestContext testContext)
+    {
+        try
+        {
+            if (testContext.Execution.Result?.State is not TestState.Failed || _logLines.IsEmpty)
+                return Task.CompletedTask;
+
+            var logsDir = PlaywrightConfiguration.LogsDirectory;
+            Directory.CreateDirectory(logsDir);
+
+            var testName = testContext.Metadata.TestName;
+            var className = testContext.Metadata.TestDetails.Class.ClassType.FullName;
+            var sanitized = string.Join("_", $"{className}.{testName}".Split(Path.GetInvalidFileNameChars()));
+            var logPath = Path.Combine(logsDir, $"{sanitized}_{CreateUniqueId()}.log");
+
+            var sb = new StringBuilder();
+            while (_logLines.TryDequeue(out var line))
+            {
+                sb.AppendLine(line);
+            }
+
+            File.WriteAllText(logPath, sb.ToString());
+            Console.WriteLine($"Aspire logs saved to: {logPath}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to capture Aspire logs: {ex.Message}");
+        }
+
+        return Task.CompletedTask;
+    }
 
     protected static async Task<IBrowser> CreateBrowserAsync(IPlaywright playwright)
     {

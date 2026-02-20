@@ -6,12 +6,6 @@ variable "resource_group" {
   })
 }
 
-variable "tags" {
-  description = "Tags to apply to all resources"
-  type        = map(string)
-  default     = {}
-}
-
 variable "container_app_environment_name" {
   description = "Environment variables for the container app"
   type        = string
@@ -20,4 +14,10 @@ variable "container_app_environment_name" {
 variable "identity_id" {
   description = "ID of the managed identity"
   type        = string
+}
+
+variable "tags" {
+  description = "Tags to apply to all resources"
+  type        = map(string)
+  default     = {}
 }
