@@ -8,6 +8,11 @@ output "backend_container_app_name" {
   value       = module.prod.backend_container_app_name
 }
 
+output "database_connection_string" {
+  description = "The connection string for the SQL database"
+  value       = module.prod.database_connection_string
+}
+
 output "resource_group_name" {
   description = "The name of the resource group"
   value       = module.prod.resource_group_name

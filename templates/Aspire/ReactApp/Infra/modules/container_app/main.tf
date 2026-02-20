@@ -10,27 +10,41 @@ resource "azurerm_container_app" "app" {
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
   workload_profile_name        = "Consumption"
+  tags                         = var.tags
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.identity_id]
+  }
+
+  registry {
+    server   = var.container_registry_login_server
+    identity = var.identity_id
+  }
 
   template {
-    min_replicas = 0
-    max_replicas = 1
+    min_replicas = var.min_replicas
+    max_replicas = var.max_replicas
 
     container {
-      name = var.name
-      // NOTE: Initial container image will be replaced by azure pipelines deploy
-      image  = "${var.registry_server}/crccheck/hello-world:latest"
-      cpu    = "0.5"
-      memory = "1Gi"
+      name   = var.name
+      image  = "${var.container_registry_login_server}/crccheck/hello-world:latest"
+      cpu    = var.cpu
+      memory = var.memory
 
       env {
-        # Port for crccheck/hello-world to listen on
         name  = "PORT"
         value = "8080"
       }
 
       env {
         name  = "ASPNETCORE_HTTP_PORTS"
-        value = "8080"
+        value = "8080;8081"
+      }
+
+      env {
+        name  = "HEALTH_PORT"
+        value = "8081"
       }
 
       dynamic "env" {
@@ -41,32 +55,35 @@ resource "azurerm_container_app" "app" {
         }
       }
 
-      dynamic "env" {
-        for_each = var.secret_env_vars
-        content {
-          name        = env.key
-          secret_name = lower(replace(env.key, "_", "-"))
-        }
+      liveness_probe {
+        path             = "/alive"
+        port             = 8081
+        transport        = "HTTP"
+        initial_delay    = 10
+        interval_seconds = 30
+      }
+
+      readiness_probe {
+        path             = "/alive"
+        port             = 8081
+        transport        = "HTTP"
+        interval_seconds = 10
+      }
+
+      startup_probe {
+        path                    = "/health"
+        port                    = 8081
+        transport               = "HTTP"
+        interval_seconds        = 5
+        failure_count_threshold = 15 # 5 * 15 = 75 seconds
       }
     }
-  }
-
-  dynamic "secret" {
-    for_each = var.secret_env_vars
-    content {
-      name  = lower(replace(secret.key, "_", "-"))
-      value = secret.value
-    }
-  }
-
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [var.identity_id]
   }
 
   ingress {
     external_enabled = true
     target_port      = 8080
+    transport        = "auto"
 
     traffic_weight {
       percentage      = 100
@@ -74,14 +91,9 @@ resource "azurerm_container_app" "app" {
     }
   }
 
-  registry {
-    server   = var.registry_server
-    identity = var.identity_id
-  }
-
   lifecycle {
     ignore_changes = [
-      template[0].container[0].image
+      template[0].container[0].image,
     ]
   }
 }

@@ -44,23 +44,21 @@ module "container_app_environment" {
 module "backend_container_app" {
   source = "../modules/container_app"
 
-  name                         = "reactapp-${lower(local.environment)}-backend"
-  container_app_environment_id = module.container_app_environment.container_app_environment_id
-  resource_group_name          = azurerm_resource_group.resource_group.name
-  identity_id                  = azurerm_user_assigned_identity.app_identity.id
-  registry_server              = var.acr_login_server
+  name                            = "reactapp-${lower(local.environment)}-backend"
+  container_app_environment_id    = module.container_app_environment.container_app_environment_id
+  resource_group_name             = azurerm_resource_group.resource_group.name
+  identity_id                     = azurerm_user_assigned_identity.app_identity.id
+  container_registry_login_server = var.acr_login_server
 
   env_vars = {
-    # Run EF Core migrations on startup for Azure deployments
-    RunMigrationsOnStartup = "true"
-  }
-
-  secret_env_vars = {
+    AZURE_CLIENT_ID = azurerm_user_assigned_identity.app_identity.client_id
     # Aspire uses ConnectionStrings__<key> naming convention
     ConnectionStrings__Database = module.sql.connection_string
+    # CORS: Allow the Static Web App origin
+    AllowedOrigins__0 = "https://${module.static_web_app.default_host_name}"
   }
 
-  depends_on = [module.sql]
+  depends_on = [module.sql, module.static_web_app]
 }
 
 module "static_web_app" {
@@ -73,15 +71,7 @@ module "static_web_app" {
     size = "Free"
   }
 
-  app_settings = {
-    # Backend API URL for the frontend to connect to
-    # Uses Aspire service discovery naming convention for consistency
-    BACKEND_URL = "https://${module.backend_container_app.fqdn}"
-  }
-
   tags = local.tags
-
-  depends_on = [module.backend_container_app]
 }
 
 module "sql" {
@@ -91,8 +81,8 @@ module "sql" {
 
   server_name   = "reactapp-${lower(local.environment)}-sqlserver"
   database_name = "reactapp-${lower(local.environment)}-db"
-  
+
   tags            = local.tags
-  users           = []
+  users           = [azurerm_user_assigned_identity.app_identity.name]
   sql_admin_group = azuread_group.admins_group
 }

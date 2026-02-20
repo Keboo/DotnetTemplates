@@ -75,7 +75,7 @@ public class AuthController(
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
-        return Ok();
+        return NoContent();
     }
 
     [HttpGet("user")]

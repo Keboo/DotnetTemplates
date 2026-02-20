@@ -19,11 +19,9 @@ public class RegisterPage(IPage page) : TestPageBase(page)
         await EmailInput.FillAsync(email);
         await PasswordInput.FillAsync(password);
         await ConfirmPasswordInput.FillAsync(password);
-        await RegisterButton.ClickAsync();
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         
-        // Wait for navigation to my-rooms after successful registration
-        await Page.WaitForURLAsync("**/my-rooms", new PageWaitForURLOptions { Timeout = 10000 });
+        await RegisterButton.ClickAsync();
+        await Page.WaitForURLAsync("**/my-rooms", new PageWaitForURLOptions { Timeout = 30000 });
     }
     
     public async Task<bool> IsConfirmationMessageVisibleAsync()

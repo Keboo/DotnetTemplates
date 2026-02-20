@@ -85,19 +85,19 @@ By default, tests run in **headless mode** (no visible browser window).
 
 **PowerShell:**
 ```powershell
-$env:HEADED = "1"
+$env:HEADLESS = "false"
 dotnet test
 ```
 
 **Command Prompt:**
 ```cmd
-set HEADED=1
+set HEADLESS=false
 dotnet test
 ```
 
 **Bash/Linux:**
 ```bash
-export HEADED=1
+export HEADLESS=false
 dotnet test
 ```
 
@@ -127,6 +127,33 @@ playwright install
 
 2. Ensure the ReactApp is running at the configured base URL
 
+### Linux/Ubuntu-Specific Instructions
+
+✅ **Good news**: The Vite configuration has been updated to support Linux! Tests should now work using either method below.
+
+**Method 1: Standard (try this first)**
+```bash
+cd ReactApp.UITests
+dotnet test
+```
+
+**Method 2: External AppHost (if Method 1 has issues)**
+
+Terminal 1 - Start the AppHost:
+```bash
+dotnet run --project ReactApp.AppHost
+```
+
+Terminal 2 - Run tests:
+```bash
+# Get the frontend port from the Aspire dashboard
+export FRONTEND_URL=http://localhost:<port>
+cd ReactApp.UITests
+dotnet test
+```
+
+See [RUNNING-ON-LINUX.md](RUNNING-ON-LINUX.md) for detailed troubleshooting.
+
 ### Run All Tests
 
 ```powershell
@@ -150,7 +177,7 @@ dotnet test
 
 ```powershell
 # Run in headed mode with slow motion against custom URL
-$env:HEADED = "1"
+$env:HEADLESS = "false"
 $env:SLOW_MO = "500"
 $env:TEST_BASE_URL = "https://staging.example.com"
 dotnet test
@@ -203,15 +230,15 @@ dotnet test --logger "console;verbosity=detailed"
 ### Run in Headed Mode (See Browser Window)
 
 ```powershell
-$env:HEADED = "1"
+$env:HEADLESS = "false"
 dotnet test
 ```
 
 ### Slow Motion (Watch Actions Execute)
 
 ```powershell
-$env:SLOW_MO = "1000"  # 1 second delay between actions
-$env:HEADED = "1"      # Must use headed mode to see slow motion
+$env:SLOW_MO = "1000"     # 1 second delay between actions
+$env:HEADLESS = "false"  # Must use headed mode to see slow motion
 dotnet test
 ```
 

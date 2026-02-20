@@ -316,7 +316,7 @@ public sealed class QuestionServiceTests : ServiceTestsBase
     {
         var service = Mocker.CreateInstance<QuestionService>();
 
-        var result = await service.CanSubmitQuestionAsync("client-123");
+        var result = await service.CanSubmitQuestionAsync($"client-{Guid.NewGuid()}");
 
         await Assert.That(result).IsTrue();
     }
@@ -324,7 +324,7 @@ public sealed class QuestionServiceTests : ServiceTestsBase
     [Test]
     public async Task CanSubmitQuestionAsync_BlocksRapidSubmissions()
     {
-        var clientId = "client-123";
+        var clientId = $"client-{Guid.NewGuid()}";
         var service = Mocker.CreateInstance<QuestionService>();
 
         var firstResult = await service.CanSubmitQuestionAsync(clientId);
@@ -337,7 +337,7 @@ public sealed class QuestionServiceTests : ServiceTestsBase
     [Test]
     public async Task CanSubmitQuestionAsync_AllowsSubmissionAfterRateLimitWindow()
     {
-        var clientId = "client-123";
+        var clientId = $"client-{Guid.NewGuid()}";
         var service = Mocker.CreateInstance<QuestionService>();
 
         await service.CanSubmitQuestionAsync(clientId);

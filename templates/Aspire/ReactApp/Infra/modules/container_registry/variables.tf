@@ -7,7 +7,7 @@ variable "resource_group" {
 }
 
 variable "name" {
-  description = "Name of the container registry"
+  description = "The name of the container registry. Must be globally unique, alphanumeric only."
   type        = string
 }
 
@@ -22,7 +22,7 @@ variable "push_identity_ids" {
 }
 
 variable "sku" {
-  description = "The SKU of the container registry"
+  description = "The SKU of the container registry (Basic, Standard, Premium)."
   type        = string
   default     = "Basic"
 }

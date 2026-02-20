@@ -1,5 +1,5 @@
 class ApiClient {
-  private baseUrl = ''
+  private baseUrl = __API_BASE_URL__ || ''
 
   async get<T>(url: string): Promise<T> {
     const response = await fetch(this.baseUrl + url, {
@@ -10,7 +10,8 @@ class ApiClient {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     
-    return response.json()
+    const text = await response.text()
+    return text ? JSON.parse(text) : undefined as T
   }
 
   async post<T = void>(url: string, data?: unknown): Promise<T> {
@@ -32,7 +33,8 @@ class ApiClient {
       return undefined as T
     }
     
-    return response.json()
+    const text = await response.text()
+    return text ? JSON.parse(text) : undefined as T
   }
 
   async delete<T = void>(url: string): Promise<T> {

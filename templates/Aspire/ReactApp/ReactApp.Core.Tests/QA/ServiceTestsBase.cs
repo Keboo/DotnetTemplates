@@ -1,8 +1,6 @@
 using ReactApp.Core.Hubs;
 using ReactApp.Data;
 
-using Microsoft.AspNetCore.SignalR;
-
 using Velopack.Testing;
 
 namespace ReactApp.Core.Tests.QA;

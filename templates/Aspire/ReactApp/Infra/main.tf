@@ -3,8 +3,9 @@ locals {
     "app" = "ReactApp"
   }
 
-  # TODO: Review and adjust locations as needed
-  location = "westus2"
+  # TODO: Review and adjust variables as needed for your project
+  location    = "westus2"
+  environment = random_pet.environment.id
 }
 
 
@@ -16,7 +17,7 @@ resource "random_pet" "environment" {
 module "shared" {
   source = "./shared"
 
-  environment = random_pet.environment.id
+  environment = local.environment
 
   location = local.location
   tags     = local.default_tags
@@ -29,7 +30,7 @@ module "shared" {
 module "prod" {
   source = "./prod"
 
-  environment = random_pet.environment.id
+  environment = local.environment
 
   acr_login_server = module.shared.acr_login_server
   location         = local.location
