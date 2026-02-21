@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -66,7 +66,7 @@ jobs:
           TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
 
       - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: tfplan
           path: Infra/tfplan
@@ -83,7 +83,7 @@ jobs:
       static_web_app_name: ${{ steps.terraform-outputs.outputs.static_web_app_name }}
       static_web_app_api_key: ${{ steps.terraform-outputs.outputs.static_web_app_api_key }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -108,7 +108,7 @@ jobs:
           ARM_USE_OIDC: true
 
       - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: tfplan
           path: Infra

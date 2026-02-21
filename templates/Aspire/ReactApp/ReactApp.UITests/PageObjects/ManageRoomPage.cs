@@ -13,10 +13,6 @@ public class ManageRoomPage(IPage page) : TestPageBase(page)
     private ILocator CurrentQuestionSection => Page.Locator("div:has-text('Current Question:')").First;
     private ILocator ClearCurrentButton => Page.Locator("button:has-text('Clear Current')").First;
     
-    // Buttons
-    private ILocator ApproveButton => Page.GetByTestId("approve-question-button");
-    private ILocator ViewPublicRoomButton => Page.Locator("button:has-text('View Public Room')").First;
-    
     public async Task NavigateAsync(Uri baseUri, string roomName)
     {
         await PerformNavigationAsync(baseUri, $"room/{roomName}/manage");
