@@ -101,10 +101,12 @@ else {
 
 # Create Storage Account
 Write-Host "Checking storage account '$StorageAccountName'..." -ForegroundColor Yellow
+$ErrorActionPreference = "SilentlyContinue"
 $storageAccountCheck = az storage account show `
     --name $StorageAccountName `
     --resource-group $ResourceGroupName `
     2>$null
+$ErrorActionPreference = "Stop"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Storage account already exists." -ForegroundColor Green
@@ -135,11 +137,13 @@ else {
 # Create Blob Container
 Write-Host "Checking blob container '$ContainerName'..." -ForegroundColor Yellow
 
+$ErrorActionPreference = "SilentlyContinue"
 az storage container show `
     --name $ContainerName `
     --account-name $StorageAccountName `
     --auth-mode login `
     --output none 2>$null
+$ErrorActionPreference = "Stop"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Blob container already exists." -ForegroundColor Green
@@ -279,6 +283,16 @@ if ($currentUserId) {
 else {
     Write-Host "Could not determine current user ID. You may need to manually assign the 'Storage Blob Data Contributor' role." -ForegroundColor Yellow
 }
+
+# Generate azure.auto.tfvars with subscription ID
+$subscriptionId = $account.id
+$tfvarsPath = Join-Path $PSScriptRoot "azure.auto.tfvars"
+$tfvarsContent = @"
+SUBSCRIPTION_ID = "$subscriptionId"
+"@
+
+Set-Content -Path $tfvarsPath -Value $tfvarsContent -Encoding UTF8
+Write-Host "Generated '$tfvarsPath' with subscription ID." -ForegroundColor Green
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green

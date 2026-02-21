@@ -10,10 +10,6 @@ locals {
     "db_ddladmin"
   ]
 
-  # Use a map with static keys to avoid for_each issues with apply-time values
-  # Exclude the admin group since they have server-level access
-  database_users = { for user in var.users : user => user }
-
   server_version             = "12.0"
   server_minimum_tls_version = "1.2"
 }
@@ -91,7 +87,7 @@ resource "azurerm_mssql_database" "database" {
 
 resource "terraform_data" "setup_users" {
   depends_on = [azuread_directory_role_assignment.sql_admin_to_directory_readers]
-  for_each   = local.database_users
+  for_each   = var.users
 
   triggers_replace = [
     azurerm_mssql_database.database.id,
