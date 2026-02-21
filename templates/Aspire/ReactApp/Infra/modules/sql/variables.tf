@@ -35,9 +35,9 @@ variable "tags" {
 }
 
 variable "users" {
-  description = "A list of users to enable external provider access to on the database. These users will be given read/write access"
-  type        = list(string)
-  default     = []
+  description = "A map of users to enable external provider access to on the database. Keys are static identifiers, values are the user/identity names. These users will be given read/write access."
+  type        = map(string)
+  default     = {}
 }
 
 variable "sql_admin_group" {
