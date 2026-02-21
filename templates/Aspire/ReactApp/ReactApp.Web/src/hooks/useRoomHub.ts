@@ -25,14 +25,14 @@ export function useRoomHub(
     const baseUrl = __API_BASE_URL__
     
     console.info('[useRoomHub] Initializing RoomHubConnection with baseUrl:', baseUrl)
-    const hub = new RoomHubConnection(baseUrl)
-    hubRef.current = hub
+    const hubInstance = new RoomHubConnection(baseUrl)
+    hubRef.current = hubInstance
 
     // Register events
     if (eventsRef.current) {
       Object.entries(eventsRef.current).forEach(([event, handler]) => {
         if (handler) {
-          hub.on(event as keyof RoomHubEvents, handler)
+          hubInstance.on(event as keyof RoomHubEvents, handler)
         }
       })
     }
@@ -40,18 +40,18 @@ export function useRoomHub(
     // Start connection and join room
     const initHub = async () => {
       try {
-        await hub.start()
+        await hubInstance.start()
         if (cancelled) {
-          await hub.stop()
+          await hubInstance.stop()
           return
         }
         setConnected(true)
         
         if (asOwner) {
           // Join as owner - authentication is handled via cookies
-          await hub.joinAsOwner(roomId)
+          await hubInstance.joinAsOwner(roomId)
         } else {
-          await hub.joinAsParticipant(roomId)
+          await hubInstance.joinAsParticipant(roomId)
         }
       } catch (error) {
         if (!cancelled) {
@@ -66,16 +66,17 @@ export function useRoomHub(
     return () => {
       cancelled = true
       setConnected(false)
+      hubRef.current = null
       
       const cleanup = async () => {
-        if (hub) {
+        if (hubInstance) {
           try {
             // Only try to leave if connection is still active
-            const state = hub.getState()
+            const state = hubInstance.getState()
             if (state === HubConnectionState.Connected && roomId) {
-              await hub.leaveAsOwner(roomId)
+              await hubInstance.leaveAsOwner(roomId)
             }
-            await hub.stop()
+            await hubInstance.stop()
           } catch (error) {
             console.error('Error cleaning up hub:', error)
           }
@@ -85,5 +86,5 @@ export function useRoomHub(
     }
   }, [roomId, asOwner])
 
-  return { connected, hub: hubRef.current }
+  return { connected, hubRef }
 }

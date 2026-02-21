@@ -31,16 +31,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
           global-json-file: global.json
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -86,7 +86,7 @@ jobs:
 
       - name: Upload test failure screenshots
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-failure-screenshots
           path: '**/TestResults/screenshots/*.png'
@@ -95,7 +95,7 @@ jobs:
 
       - name: Upload test failure logs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-failure-logs
           path: '**/TestResults/logs/*.log'
@@ -118,14 +118,14 @@ jobs:
 
       - name: Upload DB Migration
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: DatabaseMigration
           path: 'efbundle'
           retention-days: 1
 
       - name: Upload frontend artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: frontend
           path: ${{ env.FRONTEND_PROJECT_PATH }}/dist
@@ -157,7 +157,7 @@ jobs:
       static_web_app_api_key: ${{ steps.terraform-outputs.outputs.static_web_app_api_key }}
       database_connection_string: ${{ steps.terraform-outputs.outputs.database_connection_string }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -207,7 +207,7 @@ jobs:
 
     steps:
       - name: Download DB Migration Bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: DatabaseMigration
 
@@ -233,7 +233,7 @@ jobs:
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Azure Login
         uses: azure/login@v2
@@ -263,10 +263,10 @@ jobs:
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'

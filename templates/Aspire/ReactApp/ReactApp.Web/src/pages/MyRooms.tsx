@@ -7,7 +7,7 @@ import {
   CardContent,
   CardActions,
   Typography,
-  Grid2,
+  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -78,7 +78,7 @@ export default function MyRooms() {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress />
+        <CircularProgress aria-label="Loading" />
       </Box>
     )
   }
@@ -104,9 +104,9 @@ export default function MyRooms() {
           You haven't created any rooms yet.
         </Typography>
       ) : (
-        <Grid2 container spacing={3}>
+        <Grid container spacing={3}>
           {rooms.map((room) => (
-            <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={room.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={room.id}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" component="h2" gutterBottom>
@@ -134,9 +134,9 @@ export default function MyRooms() {
                   </Button>
                 </CardActions>
               </Card>
-            </Grid2>
+            </Grid>
           ))}
-        </Grid2>
+        </Grid>
       )}
 
       <Box sx={{ mt: 6, maxWidth: 600, mx: 'auto' }}>
