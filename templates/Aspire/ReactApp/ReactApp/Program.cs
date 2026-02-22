@@ -129,6 +129,9 @@ var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
+// Enable CORS
+app.UseCors("AllowFrontend");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -143,9 +146,6 @@ else
     app.UseHsts();
     app.UseHttpsRedirection();
 }
-
-// Enable CORS
-app.UseCors("AllowFrontend");
 
 // Add exception handling middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();

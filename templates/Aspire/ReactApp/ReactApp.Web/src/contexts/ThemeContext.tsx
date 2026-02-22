@@ -40,6 +40,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         palette: {
           mode,
         },
+        components: {
+          MuiLink: {
+            styleOverrides: {
+              root: {
+                ...(mode === 'dark' && {
+                  color: '#90caf9',
+                }),
+              },
+            },
+          },
+          MuiCssBaseline: {
+            styleOverrides: {
+              ...(mode === 'dark' && {
+                a: {
+                  color: '#90caf9',
+                },
+              }),
+            },
+          },
+        },
       }),
     [mode]
   )
