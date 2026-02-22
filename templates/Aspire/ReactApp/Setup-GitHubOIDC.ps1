@@ -19,7 +19,7 @@
 .PARAMETER AppName
     The name of the Azure AD App Registration to create.
 
-.PARAMETER GitHubOrg
+.PARAMETER GitHubOwner
     The GitHub organization or username.
 
 .PARAMETER GitHubRepo
@@ -40,13 +40,13 @@
     for managing AAD roles. Secrets will be created with _INFRA suffix.
 
 .EXAMPLE
-    .\Setup-GitHubOIDC.ps1 -AppName "ReactApp-GitHubActions" -GitHubOrg "myorg" -GitHubRepo "myrepo"
+    .\Setup-GitHubOIDC.ps1 -AppName "ReactApp-GitHubActions" -GitHubOwner "myorg" -GitHubRepo "myrepo"
 
 .EXAMPLE
-    .\Setup-GitHubOIDC.ps1 -AppName "ReactApp-GitHubActions" -GitHubOrg "myorg" -GitHubRepo "myrepo" -CreateInfraApp
+    .\Setup-GitHubOIDC.ps1 -AppName "ReactApp-GitHubActions" -GitHubOwner "myorg" -GitHubRepo "myrepo" -CreateInfraApp
 
 .EXAMPLE
-    .\Setup-GitHubOIDC.ps1 -AppName "ReactApp-GitHubActions" -GitHubOrg "myorg" -GitHubRepo "myrepo" -SubscriptionId "12345678-1234-1234-1234-123456789012"
+    .\Setup-GitHubOIDC.ps1 -AppName "ReactApp-GitHubActions" -GitHubOwner "myorg" -GitHubRepo "myrepo" -SubscriptionId "12345678-1234-1234-1234-123456789012"
 #>
 
 [CmdletBinding()]
@@ -55,7 +55,7 @@ param(
     [string]$AppName,
 
     [Parameter(Mandatory = $true)]
-    [string]$GitHubOrg,
+    [string]$GitHubOwner,
 
     [Parameter(Mandatory = $true)]
     [string]$GitHubRepo,
@@ -124,7 +124,7 @@ function Create-AppRegistrationWithRoles {
     param(
         [string]$Name,
         [string]$SubscriptionId,
-        [string]$GitHubOrg,
+        [string]$GitHubOwner,
         [string]$GitHubRepo,
         [string]$Environment,
         [string]$Branch,
@@ -223,7 +223,7 @@ function Create-AppRegistrationWithRoles {
 
     # Federated credential for environment
     $envCredentialName = "github-actions-$Environment"
-    $envSubject = "repo:${GitHubOrg}/${GitHubRepo}:environment:${Environment}"
+    $envSubject = "repo:${GitHubOwner}/${GitHubRepo}:environment:${Environment}"
 
     $existingEnvCred = az ad app federated-credential list --id $AppObjectId --query "[?name=='$envCredentialName']" 2>$null | ConvertFrom-Json
 
@@ -246,7 +246,7 @@ function Create-AppRegistrationWithRoles {
 
     # Federated credential for branch
     $branchCredentialName = "github-actions-branch-$Branch"
-    $branchSubject = "repo:${GitHubOrg}/${GitHubRepo}:ref:refs/heads/${Branch}"
+    $branchSubject = "repo:${GitHubOwner}/${GitHubRepo}:ref:refs/heads/${Branch}"
 
     $existingBranchCred = az ad app federated-credential list --id $AppObjectId --query "[?name=='$branchCredentialName']" 2>$null | ConvertFrom-Json
 
@@ -269,7 +269,7 @@ function Create-AppRegistrationWithRoles {
 
     # Federated credential for pull requests
     $prCredentialName = "github-actions-pull-request"
-    $prSubject = "repo:${GitHubOrg}/${GitHubRepo}:pull_request"
+    $prSubject = "repo:${GitHubOwner}/${GitHubRepo}:pull_request"
 
     $existingPrCred = az ad app federated-credential list --id $AppObjectId --query "[?name=='$prCredentialName']" 2>$null | ConvertFrom-Json
 
@@ -305,7 +305,7 @@ Write-Host "======================================" -ForegroundColor Cyan
 $mainApp = Create-AppRegistrationWithRoles `
     -Name $AppName `
     -SubscriptionId $SubscriptionId `
-    -GitHubOrg $GitHubOrg `
+    -GitHubOwner $GitHubOwner `
     -GitHubRepo $GitHubRepo `
     -Environment $Environment `
     -Branch $Branch `
@@ -324,7 +324,7 @@ if ($CreateInfraApp) {
     $infraApp = Create-AppRegistrationWithRoles `
         -Name $infraAppName `
         -SubscriptionId $SubscriptionId `
-        -GitHubOrg $GitHubOrg `
+        -GitHubOwner $GitHubOwner `
         -GitHubRepo $GitHubRepo `
         -Environment $Environment `
         -Branch $Branch `
@@ -337,28 +337,28 @@ Write-Host "\n======================================" -ForegroundColor Cyan
 Write-Host "Adding Secrets to GitHub Repository" -ForegroundColor Cyan
 Write-Host "======================================" -ForegroundColor Cyan
 
-Write-Host "\nAdding main app secrets to GitHub repository '$GitHubOrg/$GitHubRepo'..." -ForegroundColor Yellow
+Write-Host "\nAdding main app secrets to GitHub repository '$GitHubOwner/$GitHubRepo'..." -ForegroundColor Yellow
 
 Write-Host "Setting ARM_CLIENT_ID..." -ForegroundColor Yellow
-gh secret set ARM_CLIENT_ID --repo "$GitHubOrg/$GitHubRepo" --body $mainApp.ClientId
+gh secret set ARM_CLIENT_ID --repo "$GitHubOwner/$GitHubRepo" --body $mainApp.ClientId
 
 Write-Host "Setting ARM_TENANT_ID..." -ForegroundColor Yellow
-gh secret set ARM_TENANT_ID --repo "$GitHubOrg/$GitHubRepo" --body $TenantId
+gh secret set ARM_TENANT_ID --repo "$GitHubOwner/$GitHubRepo" --body $TenantId
 
 Write-Host "Setting ARM_SUBSCRIPTION_ID..." -ForegroundColor Yellow
-gh secret set ARM_SUBSCRIPTION_ID --repo "$GitHubOrg/$GitHubRepo" --body $SubscriptionId
+gh secret set ARM_SUBSCRIPTION_ID --repo "$GitHubOwner/$GitHubRepo" --body $SubscriptionId
 
 if ($infraApp) {
-    Write-Host "\nAdding infrastructure app secrets to GitHub repository '$GitHubOrg/$GitHubRepo'..." -ForegroundColor Yellow
+    Write-Host "\nAdding infrastructure app secrets to GitHub repository '$GitHubOwner/$GitHubRepo'..." -ForegroundColor Yellow
 
     Write-Host "Setting ARM_CLIENT_ID_INFRA..." -ForegroundColor Yellow
-    gh secret set ARM_CLIENT_ID_INFRA --repo "$GitHubOrg/$GitHubRepo" --body $infraApp.ClientId
+    gh secret set ARM_CLIENT_ID_INFRA --repo "$GitHubOwner/$GitHubRepo" --body $infraApp.ClientId
 
     Write-Host "Setting ARM_TENANT_ID_INFRA..." -ForegroundColor Yellow
-    gh secret set ARM_TENANT_ID_INFRA --repo "$GitHubOrg/$GitHubRepo" --body $TenantId
+    gh secret set ARM_TENANT_ID_INFRA --repo "$GitHubOwner/$GitHubRepo" --body $TenantId
 
     Write-Host "Setting ARM_SUBSCRIPTION_ID_INFRA..." -ForegroundColor Yellow
-    gh secret set ARM_SUBSCRIPTION_ID_INFRA --repo "$GitHubOrg/$GitHubRepo" --body $SubscriptionId
+    gh secret set ARM_SUBSCRIPTION_ID_INFRA --repo "$GitHubOwner/$GitHubRepo" --body $SubscriptionId
 }
 
 Write-Host "`n======================================" -ForegroundColor Cyan
@@ -399,4 +399,4 @@ if ($infraApp) {
 }
 
 Write-Host "`nNote: Make sure the GitHub environment '$Environment' exists in your repository settings." -ForegroundColor Magenta
-Write-Host "You can create it at: https://github.com/$GitHubOrg/$GitHubRepo/settings/environments" -ForegroundColor Magenta
+Write-Host "You can create it at: https://github.com/$GitHubOwner/$GitHubRepo/settings/environments" -ForegroundColor Magenta
