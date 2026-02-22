@@ -223,7 +223,9 @@ jobs:
           chmod +x efbundle
           $env:ConnectionStrings__Database = '${{ needs.get-infrastructure-outputs.outputs.database_connection_string }}'
           ./efbundle
+          $exitCode = $LASTEXITCODE
           rm efbundle
+          exit $exitCode
 
 
   # Build and push Docker image for backend

@@ -12,17 +12,33 @@ resource "azurerm_resource_group" "resource_group" {
 
   tags = local.tags
 }
+resource "azuread_group" "admins_group" {
+  display_name     = "ReactApp-${local.environment}-admins"
+  security_enabled = true
+}
 
-data "azuread_client_config" "current" {}
+# These names may need to be changed depending on what you used for the Setup-GitHubOIDC.ps1
+data "azuread_service_principal" "app_sp" {
+  display_name = "ReactApp"
+}
+
+data "azuread_service_principal" "infra_sp" {
+  display_name = "ReactAppInfra"
+}
 
 resource "azuread_group" "admins_group" {
   display_name     = "ReactApp-${local.environment}-admins"
   security_enabled = true
 }
 
-resource "azuread_group_member" "current_user_admin" {
+resource "azuread_group_member" "app_sp" {
   group_object_id  = azuread_group.admins_group.object_id
-  member_object_id = data.azuread_client_config.current.object_id
+  member_object_id = data.azuread_service_principal.app_sp.object_id
+}
+
+resource "azuread_group_member" "infra_sp" {
+  group_object_id  = azuread_group.admins_group.object_id
+  member_object_id = data.azuread_service_principal.infra_sp.object_id
 }
 
 resource "azurerm_user_assigned_identity" "app_identity" {
