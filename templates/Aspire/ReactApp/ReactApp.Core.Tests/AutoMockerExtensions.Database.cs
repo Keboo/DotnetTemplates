@@ -7,7 +7,7 @@ using Microsoft.Data.Sqlite;
 
 using Moq.AutoMock.Resolvers;
 
-namespace Velopack.Testing;
+namespace ReactApp.Core.Tests;
 
 public static partial class AutoMockerExtensions
 {

@@ -102,6 +102,32 @@ You will first need to login using `azd auth login` to authenticate with the Azu
 
 On your first time, you will need to run `azd init` and scan the current directory. It will prompt you to provide a unique name for the app. This information will be stored in a `.azure` directory. It will also generate an `azure.yaml` file as well as a `next-steps.md` file outlining how to continue with publishing.
 
+## Initial Project Setup
+
+To configure Azure AD App Registrations, GitHub Actions OIDC, and Terraform backend infrastructure, run the interactive setup script:
+
+```powershell
+.\Setup.ps1
+```
+
+The script will:
+1. Prompt for your project name (defaults to the repository name)
+2. Detect your GitHub remote and Azure subscription
+3. Create Azure AD App Registrations with federated credentials for CI/CD
+4. Create the Terraform backend storage account
+5. Generate `Infra/prod/service_principals.tf` with the correct service principal references
+6. Configure GitHub repository secrets
+
+**Prerequisites:** [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli), [GitHub CLI](https://cli.github.com/), and [Terraform](https://www.terraform.io/downloads).
+
+After running the setup script, initialize Terraform:
+
+```bash
+cd Infra
+terraform init
+terraform plan
+```
+
 
 
 
