@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace Velopack.Testing;
+namespace ReactApp.Core.Tests;
 
 public static partial class AutoMockerExtensions
 {

@@ -1,8 +1,6 @@
 using ReactApp.Core.Hubs;
 using ReactApp.Data;
 
-using Velopack.Testing;
-
 namespace ReactApp.Core.Tests.QA;
 
 public abstract class ServiceTestsBase
