@@ -142,6 +142,13 @@ public static class Resources
             }
         }
 
+        public IResourceBuilder<ExternalServiceResource> AddMUIDocs()
+        {
+            return builder.AddExternalService("MUI-docs", "https://mui.com/material-ui/getting-started/")
+                .ExcludeFromManifest()
+                .ExcludeFromMcp();
+        }
+
         public IResourceBuilder<LogicalGroupResource> AddLogicalGroup(string name)
         {
             var resource = new LogicalGroupResource(name);

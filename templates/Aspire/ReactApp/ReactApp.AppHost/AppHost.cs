@@ -9,6 +9,7 @@ builder.AddAzureContainerAppEnvironment("ReactApp-cae");
 
 var docsGroup = builder.AddLogicalGroup("docs");
 builder.AddAspireDocs().WithParentRelationship(docsGroup);
+builder.AddMUIDocs().WithParentRelationship(docsGroup);
 
 IResourceBuilder<IResourceWithConnectionString> db;
 
