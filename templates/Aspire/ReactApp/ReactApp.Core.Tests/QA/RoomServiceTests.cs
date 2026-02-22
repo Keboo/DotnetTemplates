@@ -1,9 +1,6 @@
 using ReactApp.Core.QA;
-using ReactApp.Data;
 
 using Microsoft.EntityFrameworkCore;
-
-using Velopack.Testing;
 
 namespace ReactApp.Core.Tests.QA;
 

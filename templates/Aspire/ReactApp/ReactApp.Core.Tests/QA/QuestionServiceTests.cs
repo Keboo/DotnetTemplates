@@ -2,8 +2,6 @@ using ReactApp.Core.QA;
 
 using Microsoft.EntityFrameworkCore;
 
-using Velopack.Testing;
-
 namespace ReactApp.Core.Tests.QA;
 
 public sealed class QuestionServiceTests : ServiceTestsBase
