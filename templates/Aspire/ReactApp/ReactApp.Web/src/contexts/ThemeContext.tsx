@@ -55,6 +55,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
               ...(mode === 'dark' && {
                 a: {
                   color: '#90caf9',
+                  '&:visited': {
+                    color: '#ce93d8',
+                  },
                 },
               }),
             },
