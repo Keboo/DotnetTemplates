@@ -10,7 +10,7 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      github-actions:
+      nuget:
         patterns:
           - "*"
 
@@ -28,6 +28,6 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      github-actions:
+      npm:
         patterns:
           - "*"
