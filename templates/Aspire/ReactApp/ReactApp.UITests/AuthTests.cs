@@ -5,7 +5,7 @@ namespace ReactApp.UITests;
 public class AuthTests : UITestBase
 {
     [Test]
-    public async Task CanRegiserAndLoginWithNewAccount()
+    public async Task CanRegisterAndLoginWithNewAccount()
     {
         // Register a new user - this automatically logs them in
         var registerPage = new RegisterPage(Page);
