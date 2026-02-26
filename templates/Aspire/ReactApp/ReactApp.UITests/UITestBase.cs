@@ -22,7 +22,6 @@ public abstract class UITestBase : IAsyncDisposable
 {
     private static TimeSpan AspireDefaultTimeout { get; set; } = TimeSpan.FromMinutes(2);
     private static DistributedApplication? _aspireAppHost = null;
-    private static Uri? _externalFrontendUrl = null;
 
     protected static AxeRunOptions AxeOptions => new()
     {
@@ -58,14 +57,16 @@ public abstract class UITestBase : IAsyncDisposable
     {
         get
         {
-            if (_externalFrontendUrl is not null)
-                return _externalFrontendUrl;
+            if (field is not null)
+                return field;
             
             if (_aspireAppHost is null)
                 throw new InvalidOperationException("Neither external frontend URL nor Aspire host is available");
             
             return _aspireAppHost.GetEndpoint(Resources.Frontend);
         }
+
+        private set;
     }
 
     protected static CancellationToken CancellationToken =>
@@ -78,7 +79,7 @@ public abstract class UITestBase : IAsyncDisposable
         var externalUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
         if (!string.IsNullOrWhiteSpace(externalUrl))
         {
-            _externalFrontendUrl = new Uri(externalUrl);
+            FrontendBaseUri = new Uri(externalUrl);
             Console.WriteLine($"Using external frontend at: {externalUrl}");
             Console.WriteLine("Skipping Aspire host creation - using externally running instance");
             return;
