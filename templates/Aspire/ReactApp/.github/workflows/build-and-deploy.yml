@@ -81,8 +81,6 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --configuration Release --verbosity normal
-        env:
-          DOTNET_BUILD_CONFIGURATION: Release
 
       - name: Upload test failure screenshots
         if: failure()
