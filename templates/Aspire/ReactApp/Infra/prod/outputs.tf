@@ -37,3 +37,9 @@ output "backend_url" {
   description = "The URL of the backend API"
   value       = "https://${module.backend_container_app.fqdn}"
 }
+
+output "applicationinsights_connection_string" {
+  description = "The connection string for Application Insights"
+  value       = module.application_insights.application_insights.connection_string
+  sensitive   = true
+}

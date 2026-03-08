@@ -38,3 +38,9 @@ output "backend_url" {
   description = "The URL of the backend API"
   value       = module.prod.backend_url
 }
+
+output "applicationinsights_connection_string" {
+  description = "The connection string for Application Insights"
+  value       = module.prod.applicationinsights_connection_string
+  sensitive   = true
+}

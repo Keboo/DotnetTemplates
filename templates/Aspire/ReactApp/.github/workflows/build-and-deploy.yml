@@ -155,6 +155,7 @@ jobs:
       static_web_app_name: ${{ steps.terraform-outputs.outputs.static_web_app_name }}
       static_web_app_api_key: ${{ steps.terraform-outputs.outputs.static_web_app_api_key }}
       database_connection_string: ${{ steps.terraform-outputs.outputs.database_connection_string }}
+      applicationinsights_connection_string: ${{ steps.terraform-outputs.outputs.applicationinsights_connection_string }}
     steps:
       - uses: actions/checkout@v6
 
@@ -192,6 +193,7 @@ jobs:
           echo "static_web_app_api_key=$(terraform output -raw static_web_app_api_key)" >> $GITHUB_OUTPUT
           echo "backend_url=$(terraform output -raw backend_url)" >> $GITHUB_OUTPUT
           echo "database_connection_string=$(terraform output -raw database_connection_string)" >> $GITHUB_OUTPUT
+          echo "applicationinsights_connection_string=$(terraform output -raw applicationinsights_connection_string)" >> $GITHUB_OUTPUT
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
@@ -282,6 +284,7 @@ jobs:
         run: npm run build
         env:
           BACKEND_URL: ${{ needs.get-infrastructure-outputs.outputs.backend_url }}
+          APPLICATIONINSIGHTS_CONNECTION_STRING: ${{ needs.get-infrastructure-outputs.outputs.applicationinsights_connection_string }}
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1

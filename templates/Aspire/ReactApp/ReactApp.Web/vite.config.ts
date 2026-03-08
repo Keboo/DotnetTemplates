@@ -99,6 +99,7 @@ export default defineConfig({
   },
   define: {
     '__API_BASE_URL__': JSON.stringify(backendUrl),
+    '__APPLICATIONINSIGHTS_CONNECTION_STRING__': JSON.stringify(process.env.APPLICATIONINSIGHTS_CONNECTION_STRING || ''),
   },
   server: {
     host: process.env.VITE_HOST_URL || 'localhost',
