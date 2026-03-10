@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  TERRAFORM_VERSION: '1.9.0'
+  TERRAFORM_VERSION: '1.14.6'
   AZURE_LOCATION: 'westus2'
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
@@ -58,7 +58,7 @@ jobs:
           TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
 
       - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: tfplan
           path: Infra/tfplan
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
           terraform_wrapper: false
@@ -100,7 +100,7 @@ jobs:
           ARM_USE_OIDC: true
 
       - name: Download Terraform Plan
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: tfplan
           path: Infra
