@@ -284,6 +284,7 @@ jobs:
         run: npm run build
         env:
           BACKEND_URL: ${{ needs.get-infrastructure-outputs.outputs.backend_url }}
+          # BACKEND_URL: 'TODO' # This should be set to the backend_url, if you use the generated ACA endpoint you may run into issues with cross origin issues.
           APPLICATIONINSIGHTS_CONNECTION_STRING: ${{ needs.get-infrastructure-outputs.outputs.applicationinsights_connection_string }}
 
       - name: Deploy to Azure Static Web Apps

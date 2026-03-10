@@ -69,11 +69,22 @@ var authBuilder = builder.Services.AddAuthentication(options =>
 
 authBuilder.AddIdentityCookies(options =>
 {
-    // Configure cookie for cross-origin requests in development
     options.ApplicationCookie?.Configure(cookieOptions =>
     {
-        cookieOptions.Cookie.SameSite = SameSiteMode.None;
         cookieOptions.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+        if (builder.Environment.IsDevelopment())
+        {
+            // In development, Vite dev server is cross-origin so we need SameSite=None
+            cookieOptions.Cookie.SameSite = SameSiteMode.None;
+        }
+        else
+        {
+            // In production, frontend and backend are same-site (same eTLD+1),
+            // so Lax cookies are sent on cross-origin fetch requests.
+            // SameSite=None would be blocked by iOS Safari's ITP.
+            cookieOptions.Cookie.SameSite = SameSiteMode.Lax;
+        }
     });
 });
 
