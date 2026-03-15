@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Keboo",
+  "classifications": [
+    "Common",
+    "Aspire",
+    "React"
+  ],
+  "identity": "Keboo.Aspire.React.Solution",
+  "name": "Keboo React Application",
+  "shortName": "keboo.react",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "preferNameDirectory":true,
+  "sourceName": "ReactApp",
+  "symbols":{
+  },
+  "sources": [
+    {
+      "modifiers": [
+      ]
+    }
+  ]
+}

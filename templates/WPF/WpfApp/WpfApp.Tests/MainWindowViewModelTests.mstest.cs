@@ -23,7 +23,7 @@ public partial class MainWindowViewModelTests
         Assert.AreEqual(initialCount + 1, viewModel.Count);
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(0, true)]
     [DataRow(1, true)]
     [DataRow(2, true)]

@@ -2,8 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
-<!--#if (tests == "tunit")-->
+<!--#if (tests == "tunit" || tests == "mstest")-->
     <OutputType>exe</OutputType>
+<!--#endif-->
+<!--#if (tests == "mstest")-->
+    <EnableMSTestRunner>true</EnableMSTestRunner>
 <!--#endif-->
 
     <IsPublishable>false</IsPublishable>

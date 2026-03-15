@@ -1,0 +1,118 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Infra/**'
+      - '.github/workflows/deploy-infrastructure.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TERRAFORM_VERSION: '1.14.6'
+  AZURE_LOCATION: 'westus2'
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID_INFRA }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID_INFRA }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+
+      - name: Terraform Init
+        working-directory: Infra
+        run: terraform init
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID_INFRA }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID_INFRA }}
+          ARM_USE_OIDC: true
+
+      - name: Terraform Plan
+        working-directory: Infra
+        run: terraform plan -out=tfplan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID_INFRA }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID_INFRA }}
+          ARM_USE_OIDC: true
+          TF_VAR_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID_INFRA }}
+          TF_VAR_TENANT_ID: ${{ secrets.ARM_TENANT_ID_INFRA }}
+          TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v7
+        with:
+          name: tfplan
+          path: Infra/tfplan
+          retention-days: 1
+
+  apply:
+    runs-on: ubuntu-latest
+    environment: production
+    needs: plan
+    outputs:
+      acr_login_server: ${{ steps.terraform-outputs.outputs.acr_login_server }}
+      backend_container_app_name: ${{ steps.terraform-outputs.outputs.backend_container_app_name }}
+      resource_group_name: ${{ steps.terraform-outputs.outputs.resource_group_name }}
+      static_web_app_name: ${{ steps.terraform-outputs.outputs.static_web_app_name }}
+      static_web_app_api_key: ${{ steps.terraform-outputs.outputs.static_web_app_api_key }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID_INFRA }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID_INFRA }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+
+      - name: Terraform Init
+        working-directory: Infra
+        run: terraform init
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID_INFRA }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID_INFRA }}
+          ARM_USE_OIDC: true
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v8
+        with:
+          name: tfplan
+          path: Infra
+
+      - name: Terraform Apply
+        working-directory: Infra
+        run: terraform apply -auto-approve tfplan
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID_INFRA }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID_INFRA }}
+          ARM_USE_OIDC: true
+          TF_VAR_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID_INFRA }}
+          TF_VAR_TENANT_ID: ${{ secrets.ARM_TENANT_ID_INFRA }}
+          TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}

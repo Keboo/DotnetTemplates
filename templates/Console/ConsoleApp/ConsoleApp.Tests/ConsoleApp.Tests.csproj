@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+<!--#if (tests == "tunit" || tests == "mstest")-->
+    <OutputType>Exe</OutputType>
+<!--#endif-->
+<!--#if (tests == "mstest")-->
+    <EnableMSTestRunner>true</EnableMSTestRunner>
+<!--#endif-->
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
