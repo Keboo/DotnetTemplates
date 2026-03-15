@@ -11,4 +11,11 @@ resource "azurerm_static_web_app" "app" {
   app_settings = var.app_settings
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [ 
+      repository_branch,
+      repository_url
+     ]
+  }
 }
