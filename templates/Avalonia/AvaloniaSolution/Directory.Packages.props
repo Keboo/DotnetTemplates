@@ -13,7 +13,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472#transitive-pinning -->
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <AvaloniaVersion>11.3.12</AvaloniaVersion>
+    <AvaloniaVersion>11.3.13</AvaloniaVersion>
   </PropertyGroup>
   <!--
   This defines the set of centrally managed packages.
@@ -28,7 +28,7 @@
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
-    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.1" />
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.2.0.2" />
   </ItemGroup>
