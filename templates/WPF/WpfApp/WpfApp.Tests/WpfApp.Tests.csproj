@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
 <!--#if (tests != "tunit")-->
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
 <!--#endif-->
