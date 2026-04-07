@@ -19,8 +19,7 @@
     <PackageReference Include="Moq" />
     <PackageReference Include="Moq.AutoMock" />
 <!--#if (tests == "xunit")-->
-    <PackageReference Include="xunit.v3" />
-    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="xunit.v3.mtp-v2" />
 <!--#endif-->
 <!--#if (tests == "mstest")-->
     <PackageReference Include="MSTest.TestAdapter" />
