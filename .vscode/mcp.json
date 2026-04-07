@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "github-agentic-workflows": {
+      "command": "gh",
+      "args": [
+        "aw",
+        "mcp-server"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    "nuget": {
+      "type": "stdio",
+      "command": "dnx",
+      "args": [ "NuGet.Mcp.Server", "--source", "https://api.nuget.org/v3/index.json", "--yes" ]
+    }
+  }
+}
