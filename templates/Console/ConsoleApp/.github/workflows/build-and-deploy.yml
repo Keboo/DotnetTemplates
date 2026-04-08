@@ -29,8 +29,10 @@ jobs:
       - name: dotnet build
         run: dotnet build --configuration Release --no-restore
 
+      # Microsoft Testing Platform can stop the run once 10 tests fail in CI:
+      # https://learn.microsoft.com/dotnet/core/testing/microsoft-testing-platform-cli-options
       - name: dotnet test
-        run: dotnet test --configuration Release --no-build -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
+        run: dotnet test --configuration Release --no-build --maximum-failed-tests 10 -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
 
       - name: ReportGenerator
         uses: danielpalme/ReportGenerator-GitHub-Action@5.5.4

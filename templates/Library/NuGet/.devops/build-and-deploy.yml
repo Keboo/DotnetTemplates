@@ -49,12 +49,14 @@ stages:
               projects: '**/*.csproj'
               arguments: '--configuration $(buildConfiguration) --no-restore'
 #if (!no-tests)
+          # Microsoft Testing Platform can stop the run once 10 tests fail in CI:
+          # https://learn.microsoft.com/dotnet/core/testing/microsoft-testing-platform-cli-options
           - task: DotNetCoreCLI@2
             displayName: 'dotnet test'
             inputs:
               command: 'test'
               projects: '**/*Tests.csproj'
-              arguments: '--configuration $(buildConfiguration) --no-build -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml'
+              arguments: '--configuration $(buildConfiguration) --no-build --maximum-failed-tests 10 -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml'
               publishTestResults: true
 
           - task: reportgenerator@5
