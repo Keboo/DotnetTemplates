@@ -1,12 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!--#if (tests == "mstest")-->
+<!-- MSTest.Sdk docs:
+     https://learn.microsoft.com/dotnet/core/testing/unit-testing-mstest-getting-started
+     https://learn.microsoft.com/dotnet/core/testing/unit-testing-mstest-sdk#extend-microsofttestingplatform
+-->
+<Project Sdk="MSTest.Sdk/4.1.0">
+<!--#else-->
+<Project Sdk="Microsoft.NET.Sdk">
+<!--#endif-->
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
-<!--#if (tests == "tunit" || tests == "mstest")-->
+<!--#if (tests == "tunit")-->
     <OutputType>exe</OutputType>
 <!--#endif-->
 <!--#if (tests == "mstest")-->
-    <EnableMSTestRunner>true</EnableMSTestRunner>
+    <TestingExtensionsProfile>AllMicrosoft</TestingExtensionsProfile>
 <!--#endif-->
 
     <IsPublishable>false</IsPublishable>
@@ -17,18 +25,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+<!--#if (tests != "mstest")-->
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
 <!--#if (tests != "tunit")-->
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+<!--#endif-->
 <!--#endif-->
     <PackageReference Include="Moq" />
     <PackageReference Include="Moq.AutoMock" />
 <!--#if (tests == "xunit")-->
     <PackageReference Include="xunit.v3.mtp-v2" />
-<!--#endif-->
-<!--#if (tests == "mstest")-->
-    <PackageReference Include="MSTest.TestAdapter" />
-    <PackageReference Include="MSTest.TestFramework" />
 <!--#endif-->
 <!--#if (tests == "tunit")-->
     <PackageReference Include="TUnit" />
