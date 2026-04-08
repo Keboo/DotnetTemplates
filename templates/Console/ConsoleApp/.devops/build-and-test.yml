@@ -49,6 +49,9 @@ stages:
 
           # Microsoft Testing Platform can stop the run once 10 tests fail in CI:
           # https://learn.microsoft.com/dotnet/core/testing/microsoft-testing-platform-cli-options
+          # To enable retries, add Microsoft.Testing.Extensions.Retry to the test project, then pass
+          # --retry-failed-tests plus --retry-failed-tests-max-percentage <value> to skip reruns when too many tests fail:
+          # https://learn.microsoft.com/dotnet/core/testing/microsoft-testing-platform-retry#retry-1
           - task: DotNetCoreCLI@2
             displayName: 'dotnet test'
             inputs:
