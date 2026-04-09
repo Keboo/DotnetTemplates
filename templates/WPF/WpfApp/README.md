@@ -15,7 +15,7 @@ Create a new app in your current directory by running.
 |-----------|-------------|---------|
 | `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops`, `none` | `github` |
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
-| `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `xunit` |
+| `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `tunit` |
 
 **Example with Azure DevOps:**
 ```cli

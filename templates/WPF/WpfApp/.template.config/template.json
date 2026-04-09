@@ -67,7 +67,7 @@
           "description": "Do not include tests"
         }
       ],
-      "defaultValue": "xunit",
+      "defaultValue": "tunit",
       "description": "The testing framework to use"
     },
     "useXunit": {
