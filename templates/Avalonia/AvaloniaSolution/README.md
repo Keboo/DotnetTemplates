@@ -15,7 +15,7 @@ Create a new app in your current directory by running.
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
-| `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `xunit` |
+| `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `tunit` |
 
 **Example with legacy .sln format:**
 ```cli
