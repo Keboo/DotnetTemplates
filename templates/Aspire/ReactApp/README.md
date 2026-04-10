@@ -6,7 +6,7 @@ This template creates a [React Web App](https://react.dev/) solution with .NET A
 Create a new app in your current directory by running.
 
 ```cli
-> dotnet new keboo.blazor
+> dotnet new keboo.react
 ```
 
 ### Parameters
@@ -21,17 +21,17 @@ This template includes TUnit-based test projects by default.
 
 **Example with Azure DevOps:**
 ```cli
-> dotnet new keboo.blazor --pipeline azuredevops
+> dotnet new keboo.react --pipeline azuredevops
 ```
 
 **Example with no CI/CD pipeline:**
 ```cli
-> dotnet new keboo.blazor --pipeline none
+> dotnet new keboo.react --pipeline none
 ```
 
 **Example with legacy .sln format:**
 ```cli
-> dotnet new keboo.blazor --sln true
+> dotnet new keboo.react --sln true
 ```
 
 
