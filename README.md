@@ -41,7 +41,7 @@ You can now test the template by running:
 ```cli
 dotnet new keboo.wpf
 dotnet build
-dotent test --no-build
+dotnet test --no-build
 dotnet publish --no-build
 ```
 
