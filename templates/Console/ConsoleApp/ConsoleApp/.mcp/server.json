@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "description": "MCP server for ConsoleApp.",
+  "name": "io.github.<your-github-username>/ConsoleApp",
+  "version": "0.0.1",
+  "packages": [
+    {
+      "registryType": "nuget",
+      "registryBaseUrl": "https://api.nuget.org",
+      "identifier": "ConsoleApp",
+      "version": "0.0.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [],
+      "environmentVariables": []
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/<your-github-username>/ConsoleApp",
+    "source": "github"
+  }
+}

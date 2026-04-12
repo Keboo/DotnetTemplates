@@ -54,6 +54,12 @@
       "defaultValue": "false",
       "description": "Do not include a solution file."
     },
+    "mcp": {
+      "type": "parameter",
+      "dataType": "bool",
+      "defaultValue": "false",
+      "description": "Configure the app as a NuGet-hosted MCP server instead of a System.CommandLine CLI"
+    },
     "tests": {
       "type": "parameter",
       "dataType": "choice",
@@ -160,6 +166,12 @@
           "exclude": [
             "ConsoleApp.Tests/**",
             ".github/workflows/pr-code-coverage-comment.yml"
+          ]
+        },
+        {
+          "condition": "(!mcp)",
+          "exclude": [
+            "ConsoleApp/.mcp/**"
           ]
         },
         {

@@ -1,5 +1,33 @@
-using System.CommandLine;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+//#if (mcp)
+namespace ConsoleApp.Tests;
+
+[TestClass]
+public class ProgramTests
+{
+    [TestMethod]
+    public void Add_WithTwoNumbers_DisplaysResult()
+    {
+        MathTools tool = new();
+
+        string result = tool.Add(4, 2);
+
+        Assert.AreEqual("The result is 6", result);
+    }
+
+    [TestMethod]
+    public void Add_WithNegativeNumber_DisplaysResult()
+    {
+        MathTools tool = new();
+
+        string result = tool.Add(4, -2);
+
+        Assert.AreEqual("The result is 2", result);
+    }
+}
+//#else
+using System.CommandLine;
 
 namespace ConsoleApp.Tests;
 
@@ -11,7 +39,7 @@ public class ProgramTests
     {
         using StringWriter stdOut = new();
         int exitCode = await Invoke("--help", stdOut);
-        
+
         Assert.AreEqual(0, exitCode);
         Assert.IsTrue(stdOut.ToString().Contains("--help"));
     }
@@ -34,3 +62,4 @@ public class ProgramTests
         return parseResult.InvokeAsync();
     }
 }
+//#endif
