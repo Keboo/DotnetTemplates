@@ -1,3 +1,29 @@
+//#if (mcp)
+namespace ConsoleApp.Tests;
+
+public class ProgramTests
+{
+    [Fact]
+    public void Add_WithTwoNumbers_DisplaysResult()
+    {
+        MathTools tool = new();
+
+        string result = tool.Add(4, 2);
+
+        Assert.Equal("The result is 6", result);
+    }
+
+    [Fact]
+    public void Add_WithNegativeNumber_DisplaysResult()
+    {
+        MathTools tool = new();
+
+        string result = tool.Add(4, -2);
+
+        Assert.Equal("The result is 2", result);
+    }
+}
+//#else
 using System.CommandLine;
 
 namespace ConsoleApp.Tests;
@@ -9,7 +35,7 @@ public class ProgramTests
     {
         using StringWriter stdOut = new();
         int exitCode = await Invoke("--help", stdOut);
-        
+
         Assert.Equal(0, exitCode);
         Assert.Contains("--help", stdOut.ToString());
     }
@@ -32,3 +58,4 @@ public class ProgramTests
         return parseResult.InvokeAsync();
     }
 }
+//#endif

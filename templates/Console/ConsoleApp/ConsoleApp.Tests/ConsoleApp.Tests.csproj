@@ -7,7 +7,6 @@
 <!--#else-->
 <Project Sdk="Microsoft.NET.Sdk">
 <!--#endif-->
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
 <!--#if (tests == "tunit")-->
@@ -16,7 +15,6 @@
 <!--#if (tests == "mstest")-->
     <TestingExtensionsProfile>AllMicrosoft</TestingExtensionsProfile>
 <!--#endif-->
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -27,7 +25,9 @@
 <!--#endif-->
     <PackageReference Include="Moq" />
     <PackageReference Include="Moq.AutoMock" />
+<!--#if (!mcp)-->
     <PackageReference Include="System.CommandLine" />
+<!--#endif-->
 <!--#if (tests == "xunit")-->
     <PackageReference Include="xunit.v3.mtp-v2" />
 <!--#endif-->

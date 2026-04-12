@@ -4,22 +4,83 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <Version>0.0.1</Version>
+<!--#if (mcp)-->
+    <!-- NuGet MCP packaging guidance:
+         https://learn.microsoft.com/nuget/concepts/nuget-mcp
+         https://learn.microsoft.com/dotnet/ai/quickstarts/build-mcp-server -->
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackAsTool>true</PackAsTool>
+    <PackageType>McpServer</PackageType>
+    <PublishSelfContained>true</PublishSelfContained>
+    <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
+    <ToolCommandName>$([System.String]::Copy('$(AssemblyName)').Replace('.', '-').Replace(' ', '-'))</ToolCommandName>
+    <McpServerManifestSource>$(MSBuildProjectDirectory)\.mcp\server.json</McpServerManifestSource>
+    <GeneratedMcpServerManifest>$(MSBuildProjectDirectory)\obj\mcp\$(TargetFramework)\$(RuntimeIdentifier)\server.json</GeneratedMcpServerManifest>
+    <McpServerManifestVersion Condition="'$(PackageVersion)' != ''">$(PackageVersion)</McpServerManifestVersion>
+    <McpServerManifestVersion Condition="'$(McpServerManifestVersion)' == ''">$(Version)</McpServerManifestVersion>
+<!--#endif-->
   </PropertyGroup>
 
-  <!-- 
-    For packaging as a dotnet global tool 
-    https://learn.microsoft.com/dotnet/core/tools/global-tools-how-to-create
-  -->
-  <!--
-  <PropertyGroup>
-    <PackageId>ConsoleApp</PackageId>
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>ConsoleApp</ToolCommandName>
-  </PropertyGroup>
-  -->
+<!--#if (mcp)-->
+  <UsingTask
+    TaskName="SyncMcpServerManifestVersion"
+    TaskFactory="RoslynCodeTaskFactory"
+    AssemblyFile="$([MSBuild]::NormalizePath('$(MSBuildToolsPath)', 'Microsoft.Build.Tasks.Core.dll'))">
+    <ParameterGroup>
+      <SourceFile ParameterType="System.String" Required="true" />
+      <OutputFile ParameterType="System.String" Required="true" />
+      <Version ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        string content = File.ReadAllText(SourceFile);
+
+        Regex versionPattern = new Regex("(^\\s*\"version\"\\s*:\\s*\")[^\"]*(\"\\s*,?\\s*$)", RegexOptions.Multiline);
+        MatchCollection versionMatches = versionPattern.Matches(content);
+        if (versionMatches.Count < 2)
+        {
+            throw new InvalidDataException(string.Format("The MCP server manifest '{0}' does not contain the expected version entries.", SourceFile));
+        }
+
+        content = versionPattern.Replace(
+            content,
+            match => match.Groups[1].Value + Version + match.Groups[2].Value);
+
+        string outputDirectory = Path.GetDirectoryName(OutputFile);
+        if (string.IsNullOrEmpty(outputDirectory))
+        {
+            throw new InvalidDataException(string.Format("Could not determine the output directory for '{0}'.", OutputFile));
+        }
+
+        Directory.CreateDirectory(outputDirectory);
+        File.WriteAllText(OutputFile, content);
+      ]]></Code>
+    </Task>
+  </UsingTask>
+<!--#endif-->
 
   <ItemGroup>
+<!--#if (mcp)-->
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="ModelContextProtocol" />
+<!--#else-->
     <PackageReference Include="System.CommandLine" />
+<!--#endif-->
   </ItemGroup>
+
+<!--#if (mcp)-->
+  <ItemGroup>
+    <None Include="$(GeneratedMcpServerManifest)" Pack="true" PackagePath="/.mcp/" Visible="false" />
+  </ItemGroup>
+
+  <Target Name="GenerateMcpServerManifest" BeforeTargets="GenerateNuspec">
+    <SyncMcpServerManifestVersion
+      SourceFile="$(McpServerManifestSource)"
+      OutputFile="$(GeneratedMcpServerManifest)"
+      Version="$(McpServerManifestVersion)" />
+  </Target>
+<!--#endif-->
 
 </Project>
