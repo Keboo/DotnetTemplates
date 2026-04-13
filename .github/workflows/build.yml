@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v6.0.2
        
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
@@ -34,7 +34,7 @@ jobs:
       run: dotnet pack --configuration Release -o . 
     
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v7.0.1
       with:
         name: NuGet
         path: ${{ github.workspace }}\*.nupkg
