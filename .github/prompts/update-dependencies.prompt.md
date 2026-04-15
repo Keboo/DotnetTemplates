@@ -8,6 +8,7 @@ Update all dependencies across this repository to their latest stable versions. 
 - Do not change major versions of packages without confirming compatibility (e.g., don't jump from v8 to v10 if v9 exists).
 - After making changes, verify the solution builds by running `dotnet build` in each template directory.
 - Commit dependency updates in logical groups (NuGet, npm, GitHub Actions, etc.) for easier review.
+- Use the built-in `bash`, `web-fetch`, and GitHub tools available in the workflow. Do not rely on custom MCP servers for package lookup in this workflow.
 
 ## 1. NuGet Packages (Central Package Management)
 
