@@ -6,6 +6,7 @@ Update all dependencies across this repository to their latest stable versions. 
 
 - Always prefer latest **stable** versions unless the project already uses a prerelease version, in which case update to the latest prerelease.
 - Do not change major versions of packages without confirming compatibility (e.g., don't jump from v8 to v10 if v9 exists).
+- Only modify files covered by the workflow safe-output allowlist. In particular, do not change top-level repo workflow files under `.github/workflows/` during this automation run.
 - After making changes, verify the solution builds by running `dotnet build` in each template directory.
 - Commit dependency updates in logical groups (NuGet, npm, GitHub Actions, etc.) for easier review.
 
@@ -85,7 +86,6 @@ Update all GitHub Action references in workflow files to their latest versions. 
 
 **Workflow files to update:**
 
-- `.github/workflows/build.yml`
 - `templates/Aspire/ReactApp/.github/workflows/build-and-deploy.yml`
 - `templates/Aspire/ReactApp/.github/workflows/deploy-infrastructure.yml`
 - `templates/Console/ConsoleApp/.github/workflows/build-and-deploy.yml`

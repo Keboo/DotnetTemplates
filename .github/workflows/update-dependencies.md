@@ -48,6 +48,17 @@ safe-outputs:
     draft: false
     preserve-branch-name: true
     if-no-changes: "ignore"
+    protected-files: allowed
+    allowed-files:
+      - global.json
+      - templates/**/global.json
+      - templates/**/Directory.Packages.props
+      - templates/**/.config/dotnet-tools.json
+      - templates/Aspire/ReactApp/ReactApp.Web/package.json
+      - templates/Aspire/ReactApp/ReactApp.Web/package-lock.json
+      - templates/**/.github/workflows/*.yml
+      - templates/**/.github/workflows/*.yaml
+      - templates/Aspire/ReactApp/Infra/providers.tf
 ---
 
 # Update All Dependencies
@@ -108,7 +119,6 @@ npm install
 Update all GitHub Action references in workflow files to their latest versions. Check the latest release tags for each action.
 
 **Workflow files to update:**
-- `.github/workflows/build.yml`
 - `templates/Aspire/ReactApp/.github/workflows/build-and-deploy.yml`
 - `templates/Aspire/ReactApp/.github/workflows/deploy-infrastructure.yml`
 - `templates/Console/ConsoleApp/.github/workflows/build-and-deploy.yml`
@@ -119,6 +129,8 @@ Update all GitHub Action references in workflow files to their latest versions. 
 - `templates/WPF/WpfApp/.github/workflows/code_coverage_comment.yml`
 
 Use the major version tag format (e.g., `@v6`) when the action follows semver. Use exact version tags when the action does not publish major version tags. Ensure the same action uses the same version across all workflow files.
+
+Do not update top-level repo workflow files under `.github/workflows/` in this automation run. Safe output permissions are intentionally scoped to dependency files and template content so the workflow can open PRs without elevated workflow-write credentials.
 
 ### 5. Terraform Providers (Aspire Template Only)
 
