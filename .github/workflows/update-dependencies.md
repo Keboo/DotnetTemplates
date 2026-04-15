@@ -30,6 +30,10 @@ tools:
   web-fetch:
   github:
     toolsets: [default, actions]
+mcp-servers:
+  nuget:
+    container: "mcr.microsoft.com/dotnet/sdk:10.0"
+    entrypointArgs: ["dnx", "NuGet.Mcp.Server", "--source", "https://api.nuget.org/v3/index.json", "--yes"]
 network:
   allowed:
     - defaults
@@ -56,7 +60,7 @@ Follow the update-dependencies prompt file at `.github/prompts/update-dependenci
 
 ### 1. NuGet Packages (Central Package Management)
 
-Use NuGet.org package metadata, the NuGet API, or repository-local tooling such as `dotnet-outdated` to check for the latest stable versions of all packages. Update the `Version` attribute on every `<PackageVersion>` element in these `Directory.Packages.props` files:
+Use the NuGet MCP server tools to check for the latest stable versions of all packages. Update the `Version` attribute on every `<PackageVersion>` element in these `Directory.Packages.props` files:
 
 - `templates/Aspire/ReactApp/Directory.Packages.props`
 - `templates/Avalonia/AvaloniaSolution/Directory.Packages.props`
@@ -77,7 +81,7 @@ Search the entire repository for `.config/dotnet-tools.json` files and update ev
 
 - `templates/Aspire/ReactApp/.config/dotnet-tools.json`
 
-For each tool, use NuGet.org metadata or `dotnet tool search <tool-name>` to find the latest version, then update the `version` field.
+For each tool, use the NuGet MCP server or `dotnet tool search <tool-name>` to find the latest version, then update the `version` field.
 
 **Important alignment rules:**
 - `dotnet-ef` version should match `Microsoft.EntityFrameworkCore.*` NuGet package versions.
