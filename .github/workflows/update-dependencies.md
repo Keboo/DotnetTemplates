@@ -32,8 +32,8 @@ tools:
     toolsets: [default, actions]
 mcp-servers:
   nuget:
-    command: "dnx"
-    args: ["NuGet.Mcp.Server", "--source", "https://api.nuget.org/v3/index.json", "--yes"]
+    container: "mcr.microsoft.com/dotnet/sdk:10.0"
+    entrypointArgs: ["dnx", "NuGet.Mcp.Server", "--source", "https://api.nuget.org/v3/index.json", "--yes"]
 network:
   allowed:
     - defaults
