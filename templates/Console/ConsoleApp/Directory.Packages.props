@@ -19,20 +19,20 @@
   This would typically list all NuGet packages used within this solution.
   -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.3.2" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.6.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
     <PackageVersion Include="Moq" Version="4.20.72" />
-    <PackageVersion Include="Moq.AutoMock" Version="4.0.1" />
+    <PackageVersion Include="Moq.AutoMock" Version="4.0.2" />
 <!--#if (mcp)-->
     <!-- MCP C# SDK docs: https://github.com/modelcontextprotocol/csharp-sdk -->
     <PackageVersion Include="ModelContextProtocol" Version="1.2.0" />
 <!--#endif-->
-    <PackageVersion Include="System.CommandLine" Version="2.0.5" />
-    <PackageVersion Include="TUnit" Version="1.22.6" />
-    <PackageVersion Include="TUnit.Assertions" Version="1.22.6" />
-    <PackageVersion Include="TUnit.Engine" Version="1.22.6" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.6" />
+    <PackageVersion Include="TUnit" Version="1.34.5" />
+    <PackageVersion Include="TUnit.Assertions" Version="1.34.5" />
+    <PackageVersion Include="TUnit.Engine" Version="1.34.5" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
   </ItemGroup>
 </Project>

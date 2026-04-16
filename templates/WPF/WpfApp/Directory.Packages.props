@@ -22,17 +22,17 @@
   -->
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.3.2" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.6.2" />
     <PackageVersion Include="MaterialDesignThemes" Version="5.3.1" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.6" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
     <PackageVersion Include="Moq" Version="4.20.72" />
-    <PackageVersion Include="Moq.AutoMock" Version="4.0.1" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.5" />
-    <PackageVersion Include="TUnit" Version="1.22.6" />
-    <PackageVersion Include="TUnit.Assertions" Version="1.22.6" />
-    <PackageVersion Include="TUnit.Engine" Version="1.22.6" />
+    <PackageVersion Include="Moq.AutoMock" Version="4.0.2" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.6" />
+    <PackageVersion Include="TUnit" Version="1.34.5" />
+    <PackageVersion Include="TUnit.Assertions" Version="1.34.5" />
+    <PackageVersion Include="TUnit.Engine" Version="1.34.5" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
   </ItemGroup>
 </Project>
