@@ -19,14 +19,14 @@
   This would typically list all NuGet packages used within this solution.
   -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.3.2" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.201" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.6.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.202" />
     <PackageVersion Include="Moq" Version="4.20.72" />
-    <PackageVersion Include="Moq.AutoMock" Version="4.0.1" />
-    <PackageVersion Include="TUnit" Version="1.22.6" />
-    <PackageVersion Include="TUnit.Assertions" Version="1.22.6" />
-    <PackageVersion Include="TUnit.Engine" Version="1.22.6" />
+    <PackageVersion Include="Moq.AutoMock" Version="4.0.2" />
+    <PackageVersion Include="TUnit" Version="1.34.5" />
+    <PackageVersion Include="TUnit.Assertions" Version="1.34.5" />
+    <PackageVersion Include="TUnit.Engine" Version="1.34.5" />
     <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
   </ItemGroup>
 </Project>
