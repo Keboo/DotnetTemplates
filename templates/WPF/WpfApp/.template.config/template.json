@@ -8,6 +8,7 @@
   "identity": "Keboo.WpfTemplates.FullApp",
   "name": "Keboo Full WPF Application",
   "shortName": "keboo.wpf",
+  "icon": "favicon.ico",
   "tags": {
     "language": "C#",
     "type": "solution"

@@ -9,6 +9,7 @@
   "identity": "Keboo.Aspire.React.Solution",
   "name": "Keboo React Application",
   "shortName": "keboo.react",
+  "icon": "favicon.ico",
   "tags": {
     "language": "C#",
     "type": "solution"

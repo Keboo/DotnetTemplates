@@ -8,6 +8,7 @@
   "identity": "Keboo.Avalonia.Solution",
   "name": "Keboo Avalonia Application",
   "shortName": "keboo.avalonia",
+  "icon": "favicon.ico",
   "tags": {
     "language": "C#",
     "type": "solution"
