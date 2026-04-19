@@ -8,6 +8,7 @@
   "identity": "Keboo.Library.NuGet",
   "name": "Keboo Class Library for NuGet",
   "shortName": "keboo.nuget",
+  "icon": "favicon.ico",
   "tags": {
     "language": "C#",
     "type": "solution"

@@ -8,6 +8,7 @@
   "identity": "Keboo.Console.ConsoleApp",
   "name": "Keboo CLI Application",
   "shortName": "keboo.console",
+  "icon": "favicon.ico",
   "tags": {
     "language": "C#",
     "type": "solution"
