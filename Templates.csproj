@@ -7,12 +7,16 @@
     <Title>Keboo's .NET Templates</Title>
     <Authors>Keboo</Authors>
     <Description>.NET Templates built by Keboo</Description>
-    <PackageTags>Template;WPF;NuGet;Console</PackageTags>
+    <PackageTags>dotnet-new;dotnet-template;template;template-pack;scaffolding;console;wpf;avalonia;nuget;aspire;react;mcp</PackageTags>
     <TargetFramework>net10.0</TargetFramework>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Keboo/DotnetTemplates</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Keboo/DotnetTemplates</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>Adds template authoring validation support and improves NuGet package metadata for discoverability.</PackageReleaseNotes>
     <PackageIcon>NuGetIcon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <LocalizeTemplates>false</LocalizeTemplates>
 
     <NoWarn>$(NoWarn);NU5128;NU5110;NU5111</NoWarn>
 
@@ -23,6 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.TemplateEngine.Tasks" Version="7.0.120" PrivateAssets="all" IsImplicitlyDefined="true" />
     <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
     <Compile Remove="**\*" />
 
