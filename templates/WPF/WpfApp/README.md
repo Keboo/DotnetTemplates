@@ -1,5 +1,5 @@
 # WPF app template
-This template creates a full WPF application, along with unit tests.
+This template creates a full Windows-only WPF application, with optional unit tests.
 
 ## Template
 Create a new app in your current directory by running.
@@ -7,6 +7,8 @@ Create a new app in your current directory by running.
 ```cli
 > dotnet new keboo.wpf
 ```
+
+The template is only available on Windows hosts because WPF targets Windows.
 
 ### Parameters
 [Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
