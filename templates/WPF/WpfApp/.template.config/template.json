@@ -7,6 +7,7 @@
   ],
   "identity": "Keboo.WpfTemplates.FullApp",
   "name": "Keboo Full WPF Application",
+  "description": "Creates a Windows-only WPF MVVM solution with optional tests and CI pipeline selection.",
   "shortName": "keboo.wpf",
   "icon": "favicon.ico",
   "tags": {
@@ -15,6 +16,12 @@
   },
   "preferNameDirectory":true,
   "sourceName": "WpfApp",
+  "constraints": {
+    "windows-only": {
+      "type": "os",
+      "args": "Windows"
+    }
+  },
   "SpecialCustomOperations": {
     "**.slnx": {
       "operations": [
@@ -126,6 +133,15 @@
       "value": "(pipeline == \"none\")"
     }
   },
+  "primaryOutputs": [
+    {
+      "path": "WpfApp/WpfApp.csproj"
+    },
+    {
+      "condition": "(noTests == \"False\")",
+      "path": "WpfApp.Tests/WpfApp.Tests.csproj"
+    }
+  ],
   "sources": [
     {
       "modifiers": [
@@ -137,13 +153,13 @@
           ]
         },
         {
-          "condition": "(sln && !no-sln)",
+          "condition": "(sln == \"True\" && no-sln == \"False\")",
           "exclude": [
             "WpfApp.slnx"
           ]
         },
         {
-          "condition": "(!sln && !no-sln)",
+          "condition": "(sln == \"False\" && no-sln == \"False\")",
           "exclude": [
             "WpfApp.sln"
           ]
@@ -208,6 +224,73 @@
           ]
         }
       ]
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(sln == \"True\" && no-sln == \"False\")",
+      "description": "Restore NuGet packages required by this solution.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "args": {
+        "files": [
+          "WpfApp.sln"
+        ]
+      }
+    },
+    {
+      "condition": "(sln == \"False\" && no-sln == \"False\")",
+      "description": "Restore NuGet packages required by this solution.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "args": {
+        "files": [
+          "WpfApp.slnx"
+        ]
+      }
+    },
+    {
+      "condition": "(no-sln == \"True\" && noTests == \"False\")",
+      "description": "Restore NuGet packages required by these projects.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "args": {
+        "files": [
+          "WpfApp/WpfApp.csproj",
+          "WpfApp.Tests/WpfApp.Tests.csproj"
+        ]
+      }
+    },
+    {
+      "condition": "(no-sln == \"True\" && noTests == \"True\")",
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "args": {
+        "files": [
+          "WpfApp/WpfApp.csproj"
+        ]
+      }
     }
   ]
 }
