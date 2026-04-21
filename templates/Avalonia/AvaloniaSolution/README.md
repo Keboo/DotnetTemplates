@@ -14,23 +14,28 @@ Create a new app in your current directory by running.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
+| `--no-sln` | Do not include solution files in the generated output | `false` |
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
-| `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `tunit` |
 
 **Example with legacy .sln format:**
 ```cli
 > dotnet new keboo.avalonia --sln true
 ```
 
-**Example with MSTest:**
+**Example without solution files:**
 ```cli
-> dotnet new keboo.avalonia --tests mstest
+> dotnet new keboo.avalonia --no-sln true
 ```
 
-**Example with no tests:**
+## After creation
+
+Restore the desktop head to pull in the shared app dependencies:
+
 ```cli
-> dotnet new keboo.avalonia --tests none
+> dotnet restore SampleAvaloniaApplication.Desktop/SampleAvaloniaApplication.Desktop.csproj
 ```
+
+The generated solution also includes optional Browser, Android, and iOS heads. Install the .NET workloads you need before restoring or building those projects.
 
 ## Updating .NET Version
 

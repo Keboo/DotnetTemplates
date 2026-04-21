@@ -7,6 +7,7 @@
   ],
   "identity": "Keboo.Avalonia.Solution",
   "name": "Keboo Avalonia Application",
+  "description": "Creates a cross-platform Avalonia solution with Desktop, Browser, Android, and iOS heads.",
   "shortName": "keboo.avalonia",
   "icon": "favicon.ico",
   "tags": {
@@ -15,6 +16,31 @@
   },
   "preferNameDirectory":true,
   "sourceName": "SampleAvaloniaApplication",
+  "primaryOutputs": [
+    {
+      "condition": "(sln && !no-sln)",
+      "path": "SampleAvaloniaApplication.sln"
+    },
+    {
+      "condition": "(!sln && !no-sln)",
+      "path": "SampleAvaloniaApplication.slnx"
+    },
+    {
+      "path": "SampleAvaloniaApplication.Desktop/SampleAvaloniaApplication.Desktop.csproj"
+    }
+  ],
+  "postActions": [
+    {
+      "description": "Review the generated README for the recommended restore command and workload guidance.",
+      "manualInstructions": [
+        {
+          "text": "Open README.md for the recommended Desktop restore command and for workload guidance for the optional Browser, Android, and iOS projects."
+        }
+      ],
+      "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+      "continueOnError": true
+    }
+  ],
   "SpecialCustomOperations": {
     "**.slnx": {
       "operations": [
@@ -44,47 +70,8 @@
     "no-sln": {
       "type": "parameter",
       "dataType":"bool",
-      "defaultValue": "false"
-    },
-    "tests": {
-      "type": "parameter",
-      "dataType": "choice",
-      "choices": [
-        {
-          "choice": "xunit",
-          "description": "Use xUnit v3 testing framework"
-        },
-        {
-          "choice": "mstest",
-          "description": "Use MSTest testing framework"
-        },
-        {
-          "choice": "tunit",
-          "description": "Use TUnit testing framework"
-        },
-        {
-          "choice": "none",
-          "description": "Do not include tests"
-        }
-      ],
-      "defaultValue": "tunit",
-      "description": "The testing framework to use"
-    },
-    "useXunit": {
-      "type": "computed",
-      "value": "(tests == \"xunit\")"
-    },
-    "useMstest": {
-      "type": "computed",
-      "value": "(tests == \"mstest\")"
-    },
-    "useTunit": {
-      "type": "computed",
-      "value": "(tests == \"tunit\")"
-    },
-    "noTests": {
-      "type": "computed",
-      "value": "(tests == \"none\")"
+      "defaultValue": "false",
+      "description": "Do not include solution files in the generated output"
     },
     "sln": {
       "type": "parameter",
@@ -113,12 +100,6 @@
           "condition": "(!sln && !no-sln)",
           "exclude": [
             "SampleAvaloniaApplication.sln"
-          ]
-        },
-        {
-          "condition": "(noTests)",
-          "exclude": [
-            "SampleAvaloniaApplication.Tests/**"
           ]
         }
       ]
