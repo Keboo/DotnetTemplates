@@ -8,20 +8,61 @@
   ],
   "identity": "Keboo.Aspire.React.Solution",
   "name": "Keboo React Application",
+  "description": "Creates a .NET Aspire solution with a React frontend, backend services, tests, and Azure deployment assets.",
   "shortName": "keboo.react",
   "icon": "favicon.ico",
   "tags": {
     "language": "C#",
     "type": "solution"
   },
-  "preferNameDirectory":true,
-  "sourceName": "ReactApp",
-  "symbols":{
+  "constraints": {
+    "dotnet-10-sdk": {
+      "type": "sdk-version",
+      "args": [
+        "10.0.*",
+        "10.0.*-*"
+      ]
+    }
   },
+  "preferNameDirectory": true,
+  "sourceName": "ReactApp",
+  "primaryOutputs": [
+    {
+      "path": "ReactApp.slnx"
+    },
+    {
+      "path": "ReactApp.AppHost/ReactApp.AppHost.csproj"
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(skipRestore != \"true\")",
+      "description": "Restore NuGet packages required by this solution.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore' in the created project directory."
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "args": {
+        "files": [
+          "ReactApp/ReactApp.csproj",
+          "ReactApp.AppHost/ReactApp.AppHost.csproj",
+          "ReactApp.Core/ReactApp.Core.csproj",
+          "ReactApp.Core.Tests/ReactApp.Core.Tests.csproj",
+          "ReactApp.Data/ReactApp.Data.csproj",
+          "ReactApp.ServiceDefaults/ReactApp.ServiceDefaults.csproj",
+          "ReactApp.UITests/ReactApp.UITests.csproj",
+          "ReactApp.Web/ReactApp.Web.csproj"
+        ]
+      }
+    }
+  ],
+  "symbols": {},
   "sources": [
     {
-      "modifiers": [
-      ]
+      "modifiers": []
     }
   ]
 }
