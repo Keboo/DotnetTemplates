@@ -7,6 +7,7 @@
   ],
   "identity": "Keboo.Console.ConsoleApp",
   "name": "Keboo CLI Application",
+  "description": "Creates a solution-scoped CLI app or NuGet-hosted MCP server with optional tests and CI/CD files.",
   "shortName": "keboo.console",
   "icon": "favicon.ico",
   "tags": {
@@ -228,6 +229,39 @@
           ]
         }
       ]
+    }
+  ],
+  "primaryOutputs": [
+    {
+      "path": "ConsoleApp/ConsoleApp.csproj"
+    },
+    {
+      "condition": "(!noTests)",
+      "path": "ConsoleApp.Tests/ConsoleApp.Tests.csproj"
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by the generated projects.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    },
+    {
+      "condition": "(mcp)",
+      "description": "Review the generated MCP manifest before publishing.",
+      "manualInstructions": [
+        {
+          "text": "Update the generated `.mcp/server.json` file with your package identifier, repository URL, and GitHub username placeholder values before publishing."
+        }
+      ],
+      "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+      "continueOnError": true
     }
   ]
 }
