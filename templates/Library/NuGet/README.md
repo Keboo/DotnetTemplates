@@ -9,11 +9,15 @@ Create a new app in your current directory by running.
 > dotnet new keboo.nuget
 ```
 
+The generated projects are restored automatically after creation. Use `--skipRestore true` to skip that step.
+
 ### Parameters
 [Default template options](https://learn.microsoft.com/dotnet/core/tools/dotnet-new#options)
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
+| `--skipRestore` | Skip the automatic restore after template creation | `false` |
+| `--no-sln` | Do not include a solution file | `false` |
 | `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops`, `none` | `github` |
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
 | `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `tunit` |

@@ -7,14 +7,59 @@
   ],
   "identity": "Keboo.Library.NuGet",
   "name": "Keboo Class Library for NuGet",
+  "description": "Creates a solution-scoped NuGet-ready class library with optional tests and CI/CD pipeline files.",
   "shortName": "keboo.nuget",
   "icon": "favicon.ico",
   "tags": {
     "language": "C#",
     "type": "solution"
   },
-  "preferNameDirectory":true,
+  "preferNameDirectory": true,
   "sourceName": "NuGetLib",
+  "primaryOutputs": [
+    {
+      "path": "NuGetLib/NuGetLib.csproj"
+    },
+    {
+      "condition": "(!noTests)",
+      "path": "NuGetLib.Tests/NuGetLib.Tests.csproj"
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(!skipRestore && noTests)",
+      "description": "Restore NuGet packages required by the generated projects.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore' for the generated solution or project files."
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "args": {
+        "files": [
+          "NuGetLib/NuGetLib.csproj"
+        ]
+      }
+    },
+    {
+      "condition": "(!skipRestore && !noTests)",
+      "description": "Restore NuGet packages required by the generated projects.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore' for the generated solution or project files."
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "args": {
+        "files": [
+          "NuGetLib/NuGetLib.csproj",
+          "NuGetLib.Tests/NuGetLib.Tests.csproj"
+        ]
+      }
+    }
+  ],
   "SpecialCustomOperations": {
     "**.slnx": {
       "operations": [
@@ -48,6 +93,12 @@
       "parameters": {
         "defaultFormat":"d"
       }
+    },
+    "skipRestore": {
+      "type": "parameter",
+      "dataType": "bool",
+      "defaultValue": "false",
+      "description": "If specified, skips the automatic restore of the generated projects on create."
     },
     "no-sln": {
       "type": "parameter",
