@@ -10,6 +10,13 @@ defaults:
   run:
     shell: pwsh
 
+# This is required by marocchino/sticky-pull-request-comment
+# You must enable read/write permissions to allow workflows to create comments on the PR.
+# On your repo navigate to: Settings > Actions > General > Workflow permissions, and make sure to enable read and write permissions.
+# https://github.com/marocchino/sticky-pull-request-comment#error-resource-not-accessible-by-integration
+permissions:
+  pull-requests: write
+
 jobs:
   post-code-coverage:
     runs-on: ubuntu-latest
