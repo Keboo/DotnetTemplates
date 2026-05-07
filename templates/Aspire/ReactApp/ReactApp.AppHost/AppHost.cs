@@ -44,10 +44,20 @@ else
 }
 
 var backend = builder.AddProject<Projects.ReactApp>("ReactApp-backend")
-    .WithDependency(db, ConnectionStrings.DatabaseKey)
+    .WithReference(db, ConnectionStrings.DatabaseKey)
     .WithUITests()
     .WithExternalHttpEndpoints()
     .PublishAsAzureContainerApp((infra, app) => app.Template.Scale.MaxReplicas = 1);
+
+var dbMigrations = backend.AddEFMigrations("ReactApp-migrations", "ReactApp.Data.ApplicationDbContext")
+    .WithMigrationsProject<Projects.ReactApp_Data>()
+    .WaitFor(db)
+    .RunDatabaseUpdateOnStart();
+
+dbMigrations.PublishAsMigrationBundle(publishContainer: true)
+    .PublishAsAzureContainerAppJob();
+
+backend.WaitForCompletion(dbMigrations);
 
 var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../ReactApp.Web", "dev")
     .WithNpm(install: true)
@@ -56,13 +66,5 @@ var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../ReactApp.Web"
     .WithDependency(backend)
     .WithEnvironment("REACTAPP_BACKEND_HTTP", backend.GetEndpoint("http"))
     .WithEnvironment("REACTAPP_BACKEND_HTTPS", backend.GetEndpoint("https"));
-
-if (builder.ExecutionContext.IsPublishMode)
-{
-    // Enable migrations on startup for Azure deployments
-    // Applying migrations on startup is not recommended for production scenarios.
-    // See: https://learn.microsoft.com/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli&WT.mc_id=DT-MVP-5003472
-    backend.WithEnvironment("RunMigrationsOnStartup", "true");
-}
 
 builder.Build().Run();
