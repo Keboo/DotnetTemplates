@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <SpaRoot>..\ReactApp.Web\</SpaRoot>
     <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
-    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <SpaProxyLaunchCommand>pnpm dev</SpaProxyLaunchCommand>
     <EnableDefaultRazorComponentItems>false</EnableDefaultRazorComponentItems>
   </PropertyGroup>
 

@@ -43,20 +43,25 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: ${{ env.FRONTEND_PROJECT_PATH }}/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: ${{ env.FRONTEND_PROJECT_PATH }}/pnpm-lock.yaml
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
 
       - name: Install frontend dependencies
         working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Lint frontend
         working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Build frontend
         working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
-        run: npm run build
+        run: pnpm run build
         env:
           BACKEND_URL: ''
 
@@ -281,16 +286,21 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: ${{ env.FRONTEND_PROJECT_PATH }}/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: ${{ env.FRONTEND_PROJECT_PATH }}/pnpm-lock.yaml
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
 
       - name: Install frontend dependencies
         working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build frontend for production
         working-directory: ${{ env.FRONTEND_PROJECT_PATH }}
-        run: npm run build
+        run: pnpm run build
         env:
           BACKEND_URL: ${{ needs.get-infrastructure-outputs.outputs.backend_url }}
           # BACKEND_URL: 'TODO' # This should be set to the backend_url, if you use the generated ACA endpoint you may run into issues with cross origin issues.

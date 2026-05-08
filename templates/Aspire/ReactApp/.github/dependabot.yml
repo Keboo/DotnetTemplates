@@ -23,11 +23,11 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "npm"
+  - package-ecosystem: "npm" # Dependabot uses npm ecosystem for pnpm projects
     directory: "/ReactApp.Web"
     schedule:
       interval: "weekly"
     groups:
-      npm:
+      pnpm:
         patterns:
           - "*"
