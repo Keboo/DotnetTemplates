@@ -1,6 +1,6 @@
 ---
 name: Update Dependencies
-description: Weekly automated dependency updates for NuGet packages, GitHub Actions, and npm packages
+description: Weekly automated dependency updates for NuGet packages, GitHub Actions, and pnpm packages
 on:
   schedule: weekly
   workflow_dispatch:
@@ -55,7 +55,7 @@ safe-outputs:
       - templates/**/Directory.Packages.props
       - templates/**/.config/dotnet-tools.json
       - templates/Aspire/ReactApp/ReactApp.Web/package.json
-      - templates/Aspire/ReactApp/ReactApp.Web/package-lock.json
+      - templates/Aspire/ReactApp/ReactApp.Web/pnpm-lock.yaml
       - templates/**/.github/workflows/*.yml
       - templates/**/.github/workflows/*.yaml
       - templates/Aspire/ReactApp/Infra/providers.tf
@@ -99,14 +99,14 @@ For each tool, use the NuGet MCP server or `dotnet tool search <tool-name>` to f
 - `aspire.cli` version should match `Aspire.Hosting.*` NuGet package versions.
 - If a new `.config/dotnet-tools.json` file has been added elsewhere in the repo, update it too.
 
-### 3. npm Packages
+### 3. pnpm Packages
 
-Update npm dependencies in `templates/Aspire/ReactApp/ReactApp.Web/package.json`:
+Update pnpm dependencies in `templates/Aspire/ReactApp/ReactApp.Web/package.json`:
 
 ```bash
 cd templates/Aspire/ReactApp/ReactApp.Web
-npx npm-check-updates -u
-npm install
+pnpm dlx npm-check-updates -u
+pnpm install
 ```
 
 **Version grouping rules:**
@@ -147,8 +147,8 @@ for dir in templates/Console/ConsoleApp templates/Library/NuGet templates/Avalon
   cd "$dir" && dotnet build && cd -
 done
 
-# Verify npm packages
-cd templates/Aspire/ReactApp/ReactApp.Web && npm ci && cd -
+# Verify pnpm packages
+cd templates/Aspire/ReactApp/ReactApp.Web && pnpm install --frozen-lockfile && cd -
 ```
 
 ### 7. Create Pull Request
@@ -156,6 +156,6 @@ cd templates/Aspire/ReactApp/ReactApp.Web && npm ci && cd -
 After making all changes, create a pull request with:
 - **Branch name**: `bot/automated-updates`
 - **Title**: `Update dependencies`
-- **Body**: A summary of all dependency updates organized by category (NuGet, npm, GitHub Actions, Terraform). Include a table or list showing old version → new version for each updated dependency.
+- **Body**: A summary of all dependency updates organized by category (NuGet, pnpm, GitHub Actions, Terraform). Include a table or list showing old version → new version for each updated dependency.
 
 If no dependencies need updating, do nothing.
