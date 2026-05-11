@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Aspire.Hosting.Azure" Version="13.2.2" />
+    <PackageVersion Include="Aspire.Hosting.EntityFrameworkCore" Version="13.3.0-preview.1.26256.5" />
     <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.2.2" />
     <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.2.2" />
     <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.2.2" />
