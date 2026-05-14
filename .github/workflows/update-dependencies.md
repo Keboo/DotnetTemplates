@@ -49,6 +49,7 @@ safe-outputs:
     preserve-branch-name: true
     if-no-changes: "ignore"
     protected-files: allowed
+    auto-merge: true
     allowed-files:
       - global.json
       - templates/**/global.json
