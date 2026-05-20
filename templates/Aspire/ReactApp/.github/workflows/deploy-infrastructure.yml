@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  TERRAFORM_VERSION: '1.14.6'
+  TERRAFORM_VERSION: '1.15.4'
   AZURE_LOCATION: 'westus2'
 
 jobs:

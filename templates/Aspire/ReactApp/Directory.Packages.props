@@ -5,12 +5,12 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.Azure" Version="13.3.1" />
-    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.3.1" />
-    <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.3.1" />
-    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.3.1" />
-    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.3.1" />
-    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Azure" Version="13.3.4" />
+    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.3.4" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.3.4" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.3.4" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.3.4" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.3.4" />
     <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.5.0" />
     <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.11.3" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
@@ -32,7 +32,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
     <PackageVersion Include="Moq.AutoMock" Version="4.0.2" />
-    <PackageVersion Include="TUnit" Version="1.44.0" />
+    <PackageVersion Include="TUnit" Version="1.45.22" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
