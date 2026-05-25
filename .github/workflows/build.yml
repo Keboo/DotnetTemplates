@@ -27,7 +27,7 @@ jobs:
       avalonia: ${{ github.event_name != 'pull_request' || steps.filter.outputs.avalonia == 'true' || steps.filter.outputs.shared == 'true' }}
     steps:
       - name: Detect changed templates
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: filter
         continue-on-error: true
         with:
