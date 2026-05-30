@@ -161,7 +161,7 @@ jobs:
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestConsoleApp
           Push-Location TestConsoleApp
-          dotnet new keboo.console ${{ matrix.template-args }}
+          dotnet new keboo.console -n my-console-app ${{ matrix.template-args }}
           
       - name: Verify slnx file exists
         if: matrix.check-slnx == true
@@ -239,16 +239,16 @@ jobs:
       - name: Build Project Only
         if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestConsoleApp/TestConsoleApp
+          Push-Location TestConsoleApp/my-console-app
           dotnet build
       
       - name: Build and Test Project Only
         if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestConsoleApp/TestConsoleApp
+          Push-Location TestConsoleApp/my-console-app
           dotnet build
           Pop-Location
-          Push-Location TestConsoleApp/TestConsoleApp.Tests
+          Push-Location TestConsoleApp/my-console-app.Tests
           dotnet test
 
   test-wpf:
@@ -346,7 +346,7 @@ jobs:
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestWpfApp
           Push-Location TestWpfApp
-          dotnet new keboo.wpf ${{ matrix.template-args }}
+          dotnet new keboo.wpf -n my-wpf-app ${{ matrix.template-args }}
           
       - name: Verify slnx file exists
         if: matrix.check-slnx == true
@@ -424,16 +424,16 @@ jobs:
       - name: Build Project Only
         if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestWpfApp/TestWpfApp
+          Push-Location TestWpfApp/my-wpf-app
           dotnet build
       
       - name: Build and Test Project Only
         if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestWpfApp/TestWpfApp
+          Push-Location TestWpfApp/my-wpf-app
           dotnet build
           Pop-Location
-          Push-Location TestWpfApp/TestWpfApp.Tests
+          Push-Location TestWpfApp/my-wpf-app.Tests
           dotnet test
 
   test-library:
@@ -531,7 +531,7 @@ jobs:
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestLibrary
           Push-Location TestLibrary
-          dotnet new keboo.nuget ${{ matrix.template-args }}
+          dotnet new keboo.nuget -n my-lib ${{ matrix.template-args }}
           
       - name: Verify slnx file exists
         if: matrix.check-slnx == true
@@ -611,18 +611,18 @@ jobs:
       - name: Build Project Only
         if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestLibrary/TestLibrary
+          Push-Location TestLibrary/my-lib
           dotnet build
           dotnet pack --configuration Release -o ./NuGet
       
       - name: Build and Test Project Only
         if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestLibrary/TestLibrary
+          Push-Location TestLibrary/my-lib
           dotnet build
           dotnet pack --configuration Release -o ./NuGet
           Pop-Location
-          Push-Location TestLibrary/TestLibrary.Tests
+          Push-Location TestLibrary/my-lib.Tests
           dotnet test
 
   test-avalonia:
@@ -662,7 +662,7 @@ jobs:
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestAvalonia
           Push-Location TestAvalonia
-          dotnet new keboo.avalonia ${{ matrix.template-args }}
+          dotnet new keboo.avalonia -n my-avalonia-app ${{ matrix.template-args }}
           
       - name: Verify slnx file exists
         if: matrix.check-slnx == true
