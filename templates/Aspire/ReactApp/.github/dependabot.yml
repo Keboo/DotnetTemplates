@@ -24,7 +24,7 @@ updates:
           - "*"
 
   - package-ecosystem: "npm" # Dependabot uses npm ecosystem for pnpm projects
-    directory: "/ReactApp.Web"
+    directory: "/__PROJECT_NAME__.Web"
     schedule:
       interval: "weekly"
     groups:

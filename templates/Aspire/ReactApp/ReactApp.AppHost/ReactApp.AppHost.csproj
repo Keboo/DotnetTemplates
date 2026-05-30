@@ -18,9 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactApp.Core\ReactApp.Core.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\ReactApp.Data\ReactApp.Data.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\ReactApp\ReactApp.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__.Core\__PROJECT_NAME__.Core.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\__PROJECT_NAME__.Data\__PROJECT_NAME__.Data.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\__PROJECT_NAME__\__PROJECT_NAME__.csproj" />
   </ItemGroup>
 
 </Project>

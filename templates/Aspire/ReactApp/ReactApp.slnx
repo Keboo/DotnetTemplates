@@ -20,12 +20,12 @@
     <File Path=".github/workflows/build-and-deploy.yml" />
     <File Path=".github/workflows/deploy-infrastructure.yml" />
   </Folder>
-  <Project Path="ReactApp.AppHost/ReactApp.AppHost.csproj" />
-  <Project Path="ReactApp.Core.Tests/ReactApp.Core.Tests.csproj" />
-  <Project Path="ReactApp.Core/ReactApp.Core.csproj" />
-  <Project Path="ReactApp.Data/ReactApp.Data.csproj" />
-  <Project Path="ReactApp.ServiceDefaults/ReactApp.ServiceDefaults.csproj" />
-  <Project Path="ReactApp.UITests/ReactApp.UITests.csproj" Id="a75465c6-4ed1-4ab4-b492-9697c5727ffc" />
-  <Project Path="ReactApp.Web/ReactApp.Web.csproj" />
-  <Project Path="ReactApp/ReactApp.csproj" />
+  <Project Path="__PROJECT_NAME__.AppHost/__PROJECT_NAME__.AppHost.csproj" />
+  <Project Path="__PROJECT_NAME__.Core.Tests/__PROJECT_NAME__.Core.Tests.csproj" />
+  <Project Path="__PROJECT_NAME__.Core/__PROJECT_NAME__.Core.csproj" />
+  <Project Path="__PROJECT_NAME__.Data/__PROJECT_NAME__.Data.csproj" />
+  <Project Path="__PROJECT_NAME__.ServiceDefaults/__PROJECT_NAME__.ServiceDefaults.csproj" />
+  <Project Path="__PROJECT_NAME__.UITests/__PROJECT_NAME__.UITests.csproj" Id="a75465c6-4ed1-4ab4-b492-9697c5727ffc" />
+  <Project Path="__PROJECT_NAME__.Web/__PROJECT_NAME__.Web.csproj" />
+  <Project Path="__PROJECT_NAME__/__PROJECT_NAME__.csproj" />
 </Solution>

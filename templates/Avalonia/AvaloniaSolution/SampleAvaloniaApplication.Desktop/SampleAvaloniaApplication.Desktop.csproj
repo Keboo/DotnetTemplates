@@ -15,6 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SampleAvaloniaApplication\SampleAvaloniaApplication.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__\__PROJECT_NAME__.csproj" />
   </ItemGroup>
 </Project>

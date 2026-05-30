@@ -49,7 +49,7 @@ var backend = builder.AddProject<Projects.ReactApp>("ReactApp-backend")
     .WithExternalHttpEndpoints()
     .PublishAsAzureContainerApp((infra, app) => app.Template.Scale.MaxReplicas = 1);
 
-var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../ReactApp.Web", "dev")
+var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../__PROJECT_NAME__.Web", "dev")
     .WithNpm(install: true)
     .WithHttpEndpoint(env: "PORT")
     .WithExternalHttpEndpoints()

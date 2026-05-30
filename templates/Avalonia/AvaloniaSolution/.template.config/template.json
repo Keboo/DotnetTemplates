@@ -59,6 +59,12 @@
     }
   },
   "symbols":{
+    "projectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "__PROJECT_NAME__"
+    },
     "user_secrets_id":{
       "type": "generated",
       "generator": "guid",

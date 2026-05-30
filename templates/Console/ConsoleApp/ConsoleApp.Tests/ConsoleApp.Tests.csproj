@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConsoleApp\ConsoleApp.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__\__PROJECT_NAME__.csproj" />
   </ItemGroup>
 
 <!--#if (tests == "xunit")-->

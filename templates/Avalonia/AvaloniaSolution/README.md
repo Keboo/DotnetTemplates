@@ -32,7 +32,7 @@ Create a new app in your current directory by running.
 Restore the desktop head to pull in the shared app dependencies:
 
 ```cli
-> dotnet restore SampleAvaloniaApplication.Desktop/SampleAvaloniaApplication.Desktop.csproj
+> dotnet restore __PROJECT_NAME__.Desktop/__PROJECT_NAME__.Desktop.csproj
 ```
 
 The generated solution also includes optional Browser, Android, and iOS heads. Install the .NET workloads you need before restoring or building those projects.

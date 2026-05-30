@@ -23,7 +23,7 @@ defaults:
 env:
   DOTNET_VERSION: '10.0.x'
   NODE_VERSION: '20.x'
-  FRONTEND_PROJECT_PATH: 'ReactApp.Web'
+  FRONTEND_PROJECT_PATH: '__PROJECT_NAME__.Web'
   TERRAFORM_VERSION: '1.15.4'
 
 jobs:
@@ -78,11 +78,11 @@ jobs:
         run: |
           dotnet ef migrations has-pending-model-changes `
             --configuration Release `
-            --project ReactApp.Data/ReactApp.Data.csproj `
-           --startup-project ReactApp.AppHost/ReactApp.AppHost.csproj
+            --project __PROJECT_NAME__.Data/__PROJECT_NAME__.Data.csproj `
+           --startup-project __PROJECT_NAME__.AppHost/__PROJECT_NAME__.AppHost.csproj
 
       - name: Install Playwright browsers
-        run: pwsh ReactApp.UITests/bin/Release/net10.0/playwright.ps1 install --with-deps
+        run: pwsh __PROJECT_NAME__.UITests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
       # Microsoft Testing Platform can stop the run once 10 tests fail in CI:
       # https://learn.microsoft.com/dotnet/core/testing/microsoft-testing-platform-cli-options
@@ -120,8 +120,8 @@ jobs:
             --self-contained `
             --no-build `
             --configuration Release `
-            --project ReactApp.Data/ReactApp.Data.csproj `
-            --startup-project .\ReactApp.AppHost\ReactApp.AppHost.csproj `
+            --project __PROJECT_NAME__.Data/__PROJECT_NAME__.Data.csproj `
+            --startup-project .\__PROJECT_NAME__.AppHost\__PROJECT_NAME__.AppHost.csproj `
             --output efbundle
 
       - name: Upload DB Migration

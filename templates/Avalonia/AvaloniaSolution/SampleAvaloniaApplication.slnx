@@ -9,11 +9,11 @@
     <File Path="NuGet.config" />
     <File Path="Settings.XamlStyler" />
   </Folder>
-  <Project Path="SampleAvaloniaApplication.Android/SampleAvaloniaApplication.Android.csproj">
+  <Project Path="__PROJECT_NAME__.Android/__PROJECT_NAME__.Android.csproj">
     <Deploy />
   </Project>
-  <Project Path="SampleAvaloniaApplication.Browser/SampleAvaloniaApplication.Browser.csproj" />
-  <Project Path="SampleAvaloniaApplication.Desktop/SampleAvaloniaApplication.Desktop.csproj" />
-  <Project Path="SampleAvaloniaApplication.iOS/SampleAvaloniaApplication.iOS.csproj" />
-  <Project Path="SampleAvaloniaApplication/SampleAvaloniaApplication.csproj" />
+  <Project Path="__PROJECT_NAME__.Browser/__PROJECT_NAME__.Browser.csproj" />
+  <Project Path="__PROJECT_NAME__.Desktop/__PROJECT_NAME__.Desktop.csproj" />
+  <Project Path="__PROJECT_NAME__.iOS/__PROJECT_NAME__.iOS.csproj" />
+  <Project Path="__PROJECT_NAME__/__PROJECT_NAME__.csproj" />
 </Solution>
