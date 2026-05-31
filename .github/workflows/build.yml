@@ -166,89 +166,89 @@ jobs:
       - name: Verify slnx file exists
         if: matrix.check-slnx == true
         run: |
-          if (-not (Test-Path "TestConsoleApp/*.slnx")) {
+          if (-not (Test-Path "TestConsoleApp/my-console-app/*.slnx")) {
             throw "Expected .slnx file not found"
           }
           Write-Host "Contents of .slnx file:"
-          Get-Content TestConsoleApp/*.slnx
+          Get-Content TestConsoleApp/my-console-app/*.slnx
           
       - name: Verify sln file exists
         if: matrix.check-sln == true
         run: |
-          if (-not (Test-Path "TestConsoleApp/*.sln")) {
+          if (-not (Test-Path "TestConsoleApp/my-console-app/*.sln")) {
             throw "Expected .sln file not found"
           }
           Write-Host "Contents of .sln file:"
-          Get-Content TestConsoleApp/*.sln
+          Get-Content TestConsoleApp/my-console-app/*.sln
           
       - name: Verify tests folder exists
         if: matrix.check-tests == true
         run: |
-          if (-not (Test-Path "TestConsoleApp/*.Tests")) {
+          if (-not (Test-Path "TestConsoleApp/my-console-app/my-console-app.Tests")) {
             throw "Expected Tests folder not found"
           }
           
       - name: Verify tests folder does not exist
         if: matrix.check-tests == false
         run: |
-          if (Test-Path "TestConsoleApp/*.Tests") {
+          if (Test-Path "TestConsoleApp/my-console-app/my-console-app.Tests") {
             throw "Tests folder should not exist"
           }
           
       - name: Verify .github folder exists
         if: matrix.check-github == true
         run: |
-          if (-not (Test-Path "TestConsoleApp/.github")) {
+          if (-not (Test-Path "TestConsoleApp/my-console-app/.github")) {
             throw "Expected .github folder not found"
           }
           
       - name: Verify .github folder does not exist
         if: matrix.check-github == false
         run: |
-          if (Test-Path "TestConsoleApp/.github") {
+          if (Test-Path "TestConsoleApp/my-console-app/.github") {
             throw ".github folder should not exist"
           }
           
       - name: Verify .devops folder exists
         if: matrix.check-devops == true
         run: |
-          if (-not (Test-Path "TestConsoleApp/.devops")) {
+          if (-not (Test-Path "TestConsoleApp/my-console-app/.devops")) {
             throw "Expected .devops folder not found"
           }
           
       - name: Verify .devops folder does not exist
         if: matrix.check-devops == false
         run: |
-          if (Test-Path "TestConsoleApp/.devops") {
+          if (Test-Path "TestConsoleApp/my-console-app/.devops") {
             throw ".devops folder should not exist"
           }
           
       - name: Build and Test Solution
         if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
-          Push-Location TestConsoleApp
+          Push-Location TestConsoleApp/my-console-app
           dotnet build
           dotnet test --no-build
           
       - name: Build Solution
         if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
-          Push-Location TestConsoleApp
+          Push-Location TestConsoleApp/my-console-app
           dotnet build
       
       - name: Build Project Only
         if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestConsoleApp/my-console-app
+          Push-Location TestConsoleApp/my-console-app/my-console-app
           dotnet build
       
       - name: Build and Test Project Only
         if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestConsoleApp/my-console-app
+          Push-Location TestConsoleApp/my-console-app/my-console-app
           dotnet build
           Pop-Location
-          Push-Location TestConsoleApp/my-console-app.Tests
+          Push-Location TestConsoleApp/my-console-app/my-console-app.Tests
           dotnet test
 
   test-wpf:
@@ -351,89 +351,89 @@ jobs:
       - name: Verify slnx file exists
         if: matrix.check-slnx == true
         run: |
-          if (-not (Test-Path "TestWpfApp/*.slnx")) {
+          if (-not (Test-Path "TestWpfApp/my-wpf-app/*.slnx")) {
             throw "Expected .slnx file not found"
           }
           Write-Host "Contents of .slnx file:"
-          Get-Content TestWpfApp/*.slnx
+          Get-Content TestWpfApp/my-wpf-app/*.slnx
           
       - name: Verify sln file exists
         if: matrix.check-sln == true
         run: |
-          if (-not (Test-Path "TestWpfApp/*.sln")) {
+          if (-not (Test-Path "TestWpfApp/my-wpf-app/*.sln")) {
             throw "Expected .sln file not found"
           }
           Write-Host "Contents of .sln file:"
-          Get-Content TestWpfApp/*.sln
+          Get-Content TestWpfApp/my-wpf-app/*.sln
           
       - name: Verify tests folder exists
         if: matrix.check-tests == true
         run: |
-          if (-not (Test-Path "TestWpfApp/*.Tests")) {
+          if (-not (Test-Path "TestWpfApp/my-wpf-app/my-wpf-app.Tests")) {
             throw "Expected Tests folder not found"
           }
           
       - name: Verify tests folder does not exist
         if: matrix.check-tests == false
         run: |
-          if (Test-Path "TestWpfApp/*.Tests") {
+          if (Test-Path "TestWpfApp/my-wpf-app/my-wpf-app.Tests") {
             throw "Tests folder should not exist"
           }
           
       - name: Verify .github folder exists
         if: matrix.check-github == true
         run: |
-          if (-not (Test-Path "TestWpfApp/.github")) {
+          if (-not (Test-Path "TestWpfApp/my-wpf-app/.github")) {
             throw "Expected .github folder not found"
           }
           
       - name: Verify .github folder does not exist
         if: matrix.check-github == false
         run: |
-          if (Test-Path "TestWpfApp/.github") {
+          if (Test-Path "TestWpfApp/my-wpf-app/.github") {
             throw ".github folder should not exist"
           }
           
       - name: Verify .devops folder exists
         if: matrix.check-devops == true
         run: |
-          if (-not (Test-Path "TestWpfApp/.devops")) {
+          if (-not (Test-Path "TestWpfApp/my-wpf-app/.devops")) {
             throw "Expected .devops folder not found"
           }
           
       - name: Verify .devops folder does not exist
         if: matrix.check-devops == false
         run: |
-          if (Test-Path "TestWpfApp/.devops") {
+          if (Test-Path "TestWpfApp/my-wpf-app/.devops") {
             throw ".devops folder should not exist"
           }
           
       - name: Build and Test Solution
         if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
-          Push-Location TestWpfApp
+          Push-Location TestWpfApp/my-wpf-app
           dotnet build
           dotnet test --no-build
           
       - name: Build Solution
         if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
-          Push-Location TestWpfApp
+          Push-Location TestWpfApp/my-wpf-app
           dotnet build
       
       - name: Build Project Only
         if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestWpfApp/my-wpf-app
+          Push-Location TestWpfApp/my-wpf-app/my-wpf-app
           dotnet build
       
       - name: Build and Test Project Only
         if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestWpfApp/my-wpf-app
+          Push-Location TestWpfApp/my-wpf-app/my-wpf-app
           dotnet build
           Pop-Location
-          Push-Location TestWpfApp/my-wpf-app.Tests
+          Push-Location TestWpfApp/my-wpf-app/my-wpf-app.Tests
           dotnet test
 
   test-library:
@@ -536,67 +536,67 @@ jobs:
       - name: Verify slnx file exists
         if: matrix.check-slnx == true
         run: |
-          if (-not (Test-Path "TestLibrary/*.slnx")) {
+          if (-not (Test-Path "TestLibrary/my-lib/*.slnx")) {
             throw "Expected .slnx file not found"
           }
           Write-Host "Contents of .slnx file:"
-          Get-Content TestLibrary/*.slnx
+          Get-Content TestLibrary/my-lib/*.slnx
           
       - name: Verify sln file exists
         if: matrix.check-sln == true
         run: |
-          if (-not (Test-Path "TestLibrary/*.sln")) {
+          if (-not (Test-Path "TestLibrary/my-lib/*.sln")) {
             throw "Expected .sln file not found"
           }
           Write-Host "Contents of .sln file:"
-          Get-Content TestLibrary/*.sln
+          Get-Content TestLibrary/my-lib/*.sln
           
       - name: Verify tests folder exists
         if: matrix.check-tests == true
         run: |
-          if (-not (Test-Path "TestLibrary/*.Tests")) {
+          if (-not (Test-Path "TestLibrary/my-lib/my-lib.Tests")) {
             throw "Expected Tests folder not found"
           }
           
       - name: Verify tests folder does not exist
         if: matrix.check-tests == false
         run: |
-          if (Test-Path "TestLibrary/*.Tests") {
+          if (Test-Path "TestLibrary/my-lib/my-lib.Tests") {
             throw "Tests folder should not exist"
           }
           
       - name: Verify .github folder exists
         if: matrix.check-github == true
         run: |
-          if (-not (Test-Path "TestLibrary/.github")) {
+          if (-not (Test-Path "TestLibrary/my-lib/.github")) {
             throw "Expected .github folder not found"
           }
           
       - name: Verify .github folder does not exist
         if: matrix.check-github == false
         run: |
-          if (Test-Path "TestLibrary/.github") {
+          if (Test-Path "TestLibrary/my-lib/.github") {
             throw ".github folder should not exist"
           }
           
       - name: Verify .devops folder exists
         if: matrix.check-devops == true
         run: |
-          if (-not (Test-Path "TestLibrary/.devops")) {
+          if (-not (Test-Path "TestLibrary/my-lib/.devops")) {
             throw "Expected .devops folder not found"
           }
           
       - name: Verify .devops folder does not exist
         if: matrix.check-devops == false
         run: |
-          if (Test-Path "TestLibrary/.devops") {
+          if (Test-Path "TestLibrary/my-lib/.devops") {
             throw ".devops folder should not exist"
           }
           
       - name: Build and Test Solution
         if: matrix.check-tests == true && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
-          Push-Location TestLibrary
+          Push-Location TestLibrary/my-lib/my-lib
           dotnet build
           dotnet test --no-build
           dotnet pack --configuration Release -o ./NuGet
@@ -604,25 +604,25 @@ jobs:
       - name: Build Solution
         if: matrix.check-tests == false && (matrix.check-sln == true || matrix.check-slnx == true)
         run: |
-          Push-Location TestLibrary
+          Push-Location TestLibrary/my-lib
           dotnet build
           dotnet pack --configuration Release -o ./NuGet
 
       - name: Build Project Only
         if: matrix.check-tests == false && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestLibrary/my-lib
+          Push-Location TestLibrary/my-lib/my-lib
           dotnet build
           dotnet pack --configuration Release -o ./NuGet
       
       - name: Build and Test Project Only
         if: matrix.check-tests == true && matrix.check-sln == false && matrix.check-slnx == false
         run: |
-          Push-Location TestLibrary/my-lib
+          Push-Location TestLibrary/my-lib/my-lib
           dotnet build
           dotnet pack --configuration Release -o ./NuGet
           Pop-Location
-          Push-Location TestLibrary/my-lib.Tests
+          Push-Location TestLibrary/my-lib/my-lib.Tests
           dotnet test
 
   test-avalonia:
@@ -667,25 +667,25 @@ jobs:
       - name: Verify slnx file exists
         if: matrix.check-slnx == true
         run: |
-          if (-not (Test-Path "TestAvalonia/*.slnx")) {
+          if (-not (Test-Path "TestAvalonia/my-avalonia-app/*.slnx")) {
             throw "Expected .slnx file not found"
           }
           Write-Host "Contents of .slnx file:"
-          Get-Content TestAvalonia/*.slnx
+          Get-Content TestAvalonia/my-avalonia-app/*.slnx
           
       - name: Verify sln file exists
         if: matrix.check-sln == true
         run: |
-          if (-not (Test-Path "TestAvalonia/*.sln")) {
+          if (-not (Test-Path "TestAvalonia/my-avalonia-app/*.sln")) {
             throw "Expected .sln file not found"
           }
           Write-Host "Contents of .sln file:"
-          Get-Content TestAvalonia/*.sln
+          Get-Content TestAvalonia/my-avalonia-app/*.sln
           
       - name: Build
         if: matrix.check-sln == true || matrix.check-slnx == true
         run: |
-          Push-Location TestAvalonia
+          Push-Location TestAvalonia/my-avalonia-app
           dotnet workload restore
           dotnet build
 
