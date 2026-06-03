@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactApp.Data\ReactApp.Data.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__.Data\__PROJECT_NAME__.Data.csproj" />
   </ItemGroup>
 
 </Project>

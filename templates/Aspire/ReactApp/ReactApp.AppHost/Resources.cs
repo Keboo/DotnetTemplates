@@ -260,7 +260,7 @@ public static class Resources
                         "run",
                         "--no-build",
                         "--project",
-                        "ReactApp.UITests\\ReactApp.UITests.csproj"
+                        "__PROJECT_NAME__.UITests\\__PROJECT_NAME__.UITests.csproj"
                     },
                     WorkingDirectory = GetSolutionDirectory()?.FullName,
                     EnvironmentVariables =
@@ -322,9 +322,9 @@ public static class Resources
                         "ef",
                         "migrations",
                         "--startup-project",
-                        "./ReactApp.AppHost",
+                        "./__PROJECT_NAME__.AppHost",
                         "--project",
-                        "./ReactApp.Data",
+                        "./__PROJECT_NAME__.Data",
                         "--no-build",
                         "add",
                         migrationNameResult.Data.Value
@@ -371,9 +371,9 @@ public static class Resources
                         "ef",
                         "migrations",
                         "--startup-project",
-                        "./ReactApp.AppHost",
+                        "./__PROJECT_NAME__.AppHost",
                         "--project",
-                        "./ReactApp.Data",
+                        "./__PROJECT_NAME__.Data",
                         "--no-build",
                         "remove"
                     },
@@ -463,9 +463,9 @@ public static class Resources
                     "--configuration",
                     configuration,
                     "--startup-project",
-                    "./ReactApp.AppHost",
+                    "./__PROJECT_NAME__.AppHost",
                     "--project",
-                    "./ReactApp.Data",
+                    "./__PROJECT_NAME__.Data",
                 },
                 WorkingDirectory = GetSolutionDirectory()?.FullName,
                 EnvironmentVariables =

@@ -25,8 +25,8 @@
     <File Path=".devops/build-app.yml" />
   </Folder>
 <!--#endif-->
-  <Project Path="WpfApp/WpfApp.csproj" />
+  <Project Path="__PROJECT_NAME__/__PROJECT_NAME__.csproj" />
 <!--#if (!noTests)-->
-  <Project Path="WpfApp.Tests/WpfApp.Tests.csproj" />
+  <Project Path="__PROJECT_NAME__.Tests/__PROJECT_NAME__.Tests.csproj" />
 <!--#endif-->
 </Solution>

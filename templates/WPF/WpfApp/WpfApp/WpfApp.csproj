@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>WpfApp</RootNamespace>
 
     <UseWPF>true</UseWPF>
     <StartupObject>WpfApp.App</StartupObject>

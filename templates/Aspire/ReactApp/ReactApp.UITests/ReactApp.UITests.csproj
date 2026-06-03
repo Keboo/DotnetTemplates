@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactApp.AppHost\ReactApp.AppHost.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__.AppHost\__PROJECT_NAME__.AppHost.csproj" />
   </ItemGroup>
 
   <ItemGroup>

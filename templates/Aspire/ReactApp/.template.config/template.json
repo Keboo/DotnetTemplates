@@ -59,7 +59,14 @@
       }
     }
   ],
-  "symbols": {},
+  "symbols": {
+    "projectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "__PROJECT_NAME__"
+    }
+  },
   "sources": [
     {
       "modifiers": []

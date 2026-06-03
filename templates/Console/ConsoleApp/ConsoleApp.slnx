@@ -24,8 +24,8 @@
     <File Path=".devops/build-and-test.yml" />
   </Folder>
 <!--#endif-->
-  <Project Path="ConsoleApp/ConsoleApp.csproj" />
+  <Project Path="__PROJECT_NAME__/__PROJECT_NAME__.csproj" />
 <!--#if (!noTests)-->
-  <Project Path="ConsoleApp.Tests/ConsoleApp.Tests.csproj" />
+  <Project Path="__PROJECT_NAME__.Tests/__PROJECT_NAME__.Tests.csproj" />
 <!--#endif-->
 </Solution>

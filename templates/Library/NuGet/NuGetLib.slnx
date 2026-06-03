@@ -24,8 +24,8 @@
     <File Path=".devops/build-and-deploy.yml" />
   </Folder>
 <!--#endif-->
-  <Project Path="NuGetLib/NuGetLib.csproj" />
+  <Project Path="__PROJECT_NAME__/__PROJECT_NAME__.csproj" />
 <!--#if (!noTests)-->
-  <Project Path="NuGetLib.Tests/NuGetLib.Tests.csproj" />
+  <Project Path="__PROJECT_NAME__.Tests/__PROJECT_NAME__.Tests.csproj" />
 <!--#endif-->
 </Solution>

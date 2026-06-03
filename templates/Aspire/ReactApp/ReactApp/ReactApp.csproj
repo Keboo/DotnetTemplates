@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <SpaRoot>..\ReactApp.Web\</SpaRoot>
+    <SpaRoot>..\__PROJECT_NAME__.Web\</SpaRoot>
     <SpaProxyServerUrl>http://localhost:5173</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>pnpm dev</SpaProxyLaunchCommand>
     <EnableDefaultRazorComponentItems>false</EnableDefaultRazorComponentItems>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactApp.Core\ReactApp.Core.csproj" />
-    <ProjectReference Include="..\ReactApp.Data\ReactApp.Data.csproj" />
-    <ProjectReference Include="..\ReactApp.ServiceDefaults\ReactApp.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\ReactApp.Web\ReactApp.Web.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__.Core\__PROJECT_NAME__.Core.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__.Data\__PROJECT_NAME__.Data.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__.ServiceDefaults\__PROJECT_NAME__.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\__PROJECT_NAME__.Web\__PROJECT_NAME__.Web.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" />

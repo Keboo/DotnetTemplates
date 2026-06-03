@@ -133,7 +133,7 @@ playwright install
 
 **Method 1: Standard (try this first)**
 ```bash
-cd ReactApp.UITests
+cd __PROJECT_NAME__.UITests
 dotnet test
 ```
 
@@ -141,14 +141,14 @@ dotnet test
 
 Terminal 1 - Start the AppHost:
 ```bash
-dotnet run --project ReactApp.AppHost
+dotnet run --project __PROJECT_NAME__.AppHost
 ```
 
 Terminal 2 - Run tests:
 ```bash
 # Get the frontend port from the Aspire dashboard
 export FRONTEND_URL=http://localhost:<port>
-cd ReactApp.UITests
+cd __PROJECT_NAME__.UITests
 dotnet test
 ```
 
@@ -252,12 +252,12 @@ Playwright automatically captures screenshots on test failures. Check the test r
 
 ```yaml
 - name: Install Playwright Browsers
-  run: pwsh ReactApp.UITests/bin/Debug/net10.0/playwright.ps1 install --with-deps
+  run: pwsh __PROJECT_NAME__.UITests/bin/Debug/net10.0/playwright.ps1 install --with-deps
 
 - name: Run UI Tests
   env:
     TEST_BASE_URL: https://staging.example.com
-  run: dotnet test ReactApp.UITests/ReactApp.UITests.csproj
+  run: dotnet test __PROJECT_NAME__.UITests/__PROJECT_NAME__.UITests.csproj
 ```
 
 ### Azure DevOps Example
@@ -268,13 +268,13 @@ Playwright automatically captures screenshots on test failures. Check the test r
   inputs:
     targetType: 'inline'
     script: |
-      pwsh ReactApp.UITests/bin/Debug/net10.0/playwright.ps1 install --with-deps
+      pwsh __PROJECT_NAME__.UITests/bin/Debug/net10.0/playwright.ps1 install --with-deps
 
 - task: DotNetCoreCLI@2
   displayName: 'Run UI Tests'
   inputs:
     command: 'test'
-    projects: 'ReactApp.UITests/ReactApp.UITests.csproj'
+    projects: '__PROJECT_NAME__.UITests/__PROJECT_NAME__.UITests.csproj'
   env:
     TEST_BASE_URL: $(TestBaseUrl)
 ```
