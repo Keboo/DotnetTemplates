@@ -32,7 +32,7 @@ export default function JoinRoomForm({
       <Typography variant="h5" component="h1" gutterBottom>
         {title}
       </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
+      <Typography variant="body1" color="text.secondary" component="p" sx={{ mb: 2 }}>
         {description}
       </Typography>
       <Box component="form" onSubmit={handleJoinRoom} sx={{ mt: 3 }}>
