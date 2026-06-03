@@ -63,7 +63,7 @@ export default function QuestionDisplay() {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
         <CircularProgress size={60} aria-label="Loading" />
       </Box>
     )

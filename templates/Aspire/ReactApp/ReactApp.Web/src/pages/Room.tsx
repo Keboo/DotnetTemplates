@@ -132,7 +132,7 @@ export default function Room() {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" mt={4}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress aria-label="Loading" />
       </Box>
     )

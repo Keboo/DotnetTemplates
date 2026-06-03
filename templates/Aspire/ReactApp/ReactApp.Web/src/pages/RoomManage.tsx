@@ -140,7 +140,7 @@ export default function RoomManage() {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" mt={4}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress aria-label="Loading" />
       </Box>
     )
@@ -155,7 +155,7 @@ export default function RoomManage() {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">Manage: {room.friendlyName}</Typography>
         <Box>
           <Button
