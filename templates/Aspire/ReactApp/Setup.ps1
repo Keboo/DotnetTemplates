@@ -326,6 +326,7 @@ function Create-TerraformBackendStorage {
             --min-tls-version TLS1_2 `
             --allow-blob-public-access false `
             --https-only true `
+            --only-show-errors `
             --output none
 
         if ($LASTEXITCODE -ne 0) {
@@ -665,7 +666,7 @@ Write-Host "------------------------------------------------------" -ForegroundC
 $infraDir = Join-Path $PSScriptRoot "Infra"
 
 # Generate service_principals.tf in prod/
-$spTfPath = Join-Path $infraDir "prod" "service_principals.tf"
+$spTfPath = Join-Path (Join-Path $infraDir "prod") "service_principals.tf"
 $infraDisplayName = if ($infraApp) { $infraApp.DisplayName } else { "${AppName}Infra" }
 
 Generate-ServicePrincipalsTerraform `
