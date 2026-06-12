@@ -44,6 +44,9 @@ This template uses a `global.json` file to specify the required .NET SDK version
 
 ## Key Features
 
+### Aspire Browser Logs
+The AppHost enables [Aspire browser logs](https://aspire.dev/integrations/devtools/browser-logs/) for the React frontend resource. From the Aspire dashboard you can open a tracked browser, stream browser console/network events into the resource logs, and capture screenshots.
+
 ### Progressive Web App (PWA) Support
 Both the ReactApp.Web includes full PWA support with:
 - Service worker for offline functionality
@@ -119,7 +122,5 @@ cd Infra
 terraform init
 terraform plan
 ```
-
-
 
 
