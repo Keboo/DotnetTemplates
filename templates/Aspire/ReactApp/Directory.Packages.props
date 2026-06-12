@@ -9,8 +9,9 @@
     <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.3.5" />
     <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.3.5" />
     <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.3.5" />
-    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.3.5" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.4.0" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="13.3.5" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SqlServer.Extensions" Version="13.4.0" />
     <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.5.0" />
     <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.11.3" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />

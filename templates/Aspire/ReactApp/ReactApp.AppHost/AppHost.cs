@@ -19,28 +19,9 @@ if (builder.ExecutionContext.IsPublishMode)
 }
 else
 {
-    var sql = builder.AddSqlServer();
+    var sql = builder.AddSqlServer()
+        .WithDbGate(dbGate => dbGate.WithExplicitStart());
     db = sql.AddSqlDatabase();
-
-    //DBGate is a database viewer
-    var dbGate = builder.AddContainer("dbgate", "dbgate/dbgate")
-        .ExcludeFromManifest()
-        .ExcludeFromMcp()
-        .WithExplicitStart()
-        .WithLifetime(ContainerLifetime.Persistent)
-        .WithContainerName("ReactApp-db-gate")
-        .WithHttpEndpoint(targetPort: 3000)
-        .WaitFor(sql)
-        .WithEnvironment("CONNECTIONS", "mssql")
-        .WithEnvironment("LABEL_mssql", "MS SQL")
-        .WithEnvironment("SERVER_mssql", "host.docker.internal")
-        .WithEnvironment("PORT_mssql", () => $"{sql.Resource.PrimaryEndpoint.Port}")
-        .WithEnvironment("USER_mssql", "sa")
-        .WithEnvironment("PASSWORD_mssql", sql.Resource.PasswordParameter)
-        .WithEnvironment("ENGINE_mssql", "mssql@dbgate-plugin-mssql")
-        .WithParentRelationship(sql)
-        .WithHttpHealthCheck("/")
-        ;
 }
 
 var backend = builder.AddProject<Projects.ReactApp>("ReactApp-backend")
