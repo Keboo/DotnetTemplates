@@ -24,7 +24,7 @@ jobs:
           global-json-file: global.json
 
       - name: dotnet restore
-        run: dotnet restre --configuration Release 
+        run: dotnet restore
 
       - name: dotnet build
         run: dotnet build --configuration Release --no-restore 
