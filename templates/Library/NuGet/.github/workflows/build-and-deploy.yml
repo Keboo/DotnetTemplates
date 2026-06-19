@@ -59,13 +59,13 @@ jobs:
 #endif
 
       - name: dotnet pack
-        run: dotnet pack --configuration Release --no-build -o .${{env.DOTNET_ROOT}}/NuGet
+        run: dotnet pack --configuration Release --no-build -o ./NuGet
 
       - name: Upload NuGet artifact
         uses: actions/upload-artifact@v7
         with:
           name: NuGet
-          path: ${{env.DOTNET_ROOT}}/NuGet
+          path: ./NuGet
 
   automerge:
     if: ${{ github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
