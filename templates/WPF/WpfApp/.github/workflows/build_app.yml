@@ -21,7 +21,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v5
@@ -83,7 +83,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: fastify/github-action-merge-dependabot@v3.14.0
+      - uses: fastify/github-action-merge-dependabot@v3.15.0
         with:
           # For GitHub Auto Merge to work it must be enabled on the repo.
           # This can be done with the script here:
