@@ -30,13 +30,16 @@ var backend = builder.AddProject<Projects.ReactApp>("ReactApp-backend")
     .WithExternalHttpEndpoints()
     .PublishAsAzureContainerApp((infra, app) => app.Template.Scale.MaxReplicas = 1);
 
+#pragma warning disable ASPIREBROWSERLOGS001
 var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../__PROJECT_NAME__.Web", "dev")
     .WithNpm(install: true)
     .WithHttpEndpoint(env: "PORT")
+    .WithBrowserLogs()
     .WithExternalHttpEndpoints()
     .WithDependency(backend)
     .WithEnvironment("REACTAPP_BACKEND_HTTP", backend.GetEndpoint("http"))
     .WithEnvironment("REACTAPP_BACKEND_HTTPS", backend.GetEndpoint("https"));
+#pragma warning restore ASPIREBROWSERLOGS001
 
 if (builder.ExecutionContext.IsPublishMode)
 {
