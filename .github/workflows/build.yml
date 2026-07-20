@@ -702,9 +702,11 @@ jobs:
           - name: "React frontend"
             template-args: "--frontend react"
             frontend-entry: "App.tsx"
+            app-name: "my-aspire.app-react"
           - name: "Vue frontend"
             template-args: "--frontend vue"
             frontend-entry: "App.vue"
+            app-name: "my-aspire.app-vue"
 
     steps:
       - name: Download NuGet Artifacts
@@ -732,11 +734,12 @@ jobs:
           dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
           mkdir TestAspire
           Push-Location TestAspire
-          dotnet new keboo.react -n my-aspire-app ${{ matrix.template-args }}
+          dotnet new keboo.react -n "${{ matrix.app-name }}" ${{ matrix.template-args }}
 
       - name: Verify frontend scaffold
         run: |
-          $frontendPath = "TestAspire/my-aspire-app/my-aspire-app.Web/src"
+          $appName = "${{ matrix.app-name }}"
+          $frontendPath = "TestAspire/$appName/$appName.Web/src"
           $expectedFile = Join-Path $frontendPath "${{ matrix.frontend-entry }}"
 
           if (-not (Test-Path $expectedFile)) {
@@ -753,13 +756,14 @@ jobs:
 
       - name: Build frontend
         run: |
-          Push-Location TestAspire/my-aspire-app/my-aspire-app.Web
+          $appName = "${{ matrix.app-name }}"
+          Push-Location "TestAspire/$appName/$appName.Web"
           pnpm install --frozen-lockfile
           pnpm run build
 
       - name: Build generated solution
         run: |
-          Push-Location TestAspire/my-aspire-app
+          Push-Location "TestAspire/${{ matrix.app-name }}"
           dotnet build
 
   all-tests:

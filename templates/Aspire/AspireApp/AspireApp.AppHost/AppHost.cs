@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddAzureContainerAppEnvironment("AspireApp-cae");
+builder.AddAzureContainerAppEnvironment(Resources.ContainerAppEnvironment);
 
 var docsGroup = builder.AddLogicalGroup("docs");
 builder.AddAspireDocs().WithParentRelationship(docsGroup);
@@ -15,7 +15,7 @@ IResourceBuilder<IResourceWithConnectionString> db;
 
 if (builder.ExecutionContext.IsPublishMode)
 {
-    db = builder.AddAzureSqlServer().AddDatabase("AspireApp-db");
+    db = builder.AddAzureSqlServer().AddDatabase(Resources.Database);
 }
 else
 {
@@ -24,7 +24,7 @@ else
     db = sql.AddSqlDatabase();
 }
 
-var backend = builder.AddProject<Projects.AspireApp>("AspireApp-backend")
+var backend = builder.AddProject<Projects.AspireApp>(Resources.Backend)
     .WithDependency(db, ConnectionStrings.DatabaseKey)
     .WithUITests()
     .WithExternalHttpEndpoints()
@@ -37,8 +37,8 @@ var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../__PROJECT_NAM
     .WithBrowserLogs()
     .WithExternalHttpEndpoints()
     .WithDependency(backend)
-    .WithEnvironment("REACTAPP_BACKEND_HTTP", backend.GetEndpoint("http"))
-    .WithEnvironment("REACTAPP_BACKEND_HTTPS", backend.GetEndpoint("https"));
+    .WithEnvironment("APP_BACKEND_HTTP", backend.GetEndpoint("http"))
+    .WithEnvironment("APP_BACKEND_HTTPS", backend.GetEndpoint("https"));
 #pragma warning restore ASPIREBROWSERLOGS001
 
 if (builder.ExecutionContext.IsPublishMode)
@@ -50,4 +50,3 @@ if (builder.ExecutionContext.IsPublishMode)
 }
 
 builder.Build().Run();
-

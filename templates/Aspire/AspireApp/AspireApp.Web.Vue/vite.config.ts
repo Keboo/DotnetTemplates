@@ -5,6 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 // Get backend URL from Aspire service discovery or fallback.
 // Aspire sets environment variables in the format: services__{service-name}__{protocol}__{index}.
 const backendUrl = process.env.BACKEND_URL
+  || process.env.APP_BACKEND_HTTP
+  || process.env.APP_BACKEND_HTTPS
   || process.env['services__AspireApp-backend__http__0']
   || process.env['services__AspireApp-backend__https__0']
   || process.env.REACTAPP_BACKEND_HTTP
@@ -80,4 +82,3 @@ export default defineConfig({
     sourcemap: true
   }
 });
-

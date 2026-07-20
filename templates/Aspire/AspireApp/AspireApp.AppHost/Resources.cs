@@ -13,28 +13,35 @@ namespace AspireApp.AppHost;
 
 public static class Resources
 {
-    public const string ContainerSuffixKey = "AspireApp:ContainerSuffix";
-    public const string Frontend = "AspireApp-frontend";
-    public const string SqlServer = "AspireApp-sql";
+    private static readonly string ResourcePrefix = CreateResourcePrefix("__PROJECT_NAME__");
+
+    public static string ContainerSuffixKey => $"{ResourcePrefix}:ContainerSuffix";
+    public static string ContainerAppEnvironment => $"{ResourcePrefix}-cae";
+    public static string Backend => $"{ResourcePrefix}-backend";
+    public static string Frontend => $"{ResourcePrefix}-frontend";
+    public static string SqlServer => $"{ResourcePrefix}-sql";
+    public static string Database => $"{ResourcePrefix}-db";
 
 
     extension(IDistributedApplicationBuilder builder)
     {
         public IResourceBuilder<AzureSqlServerResource> AddAzureSqlServer()
         {
-            return builder.AddAzureSqlServer("AspireApp-sql");
+            return builder.AddAzureSqlServer(SqlServer);
         }
 
         public IResourceBuilder<SqlServerServerResource> AddSqlServer()
         {
             string? containerSuffix = builder.Configuration[ContainerSuffixKey];
-            string? containerName = string.IsNullOrWhiteSpace(containerSuffix) ? "AspireApp-sql" : $"AspireApp-{containerSuffix}-sql";
+            string? containerName = string.IsNullOrWhiteSpace(containerSuffix)
+                ? SqlServer
+                : $"{ResourcePrefix}-{CreateResourcePrefix(containerSuffix)}-sql";
             
             return builder
                 .AddSqlServer(SqlServer)
                 .WithLifetime(ContainerLifetime.Persistent)
                 .WithContainerName(containerName)
-                .WithDataVolume("AspireApp-database")
+                .WithDataVolume($"{ResourcePrefix}-database")
 
                 // This pairs with the usage of .UseAzureSql() which has a compatibility level of 170.
                 .WithImageTag("2025-latest")
@@ -289,7 +296,7 @@ public static class Resources
     {
         public IResourceBuilder<SqlServerDatabaseResource> AddSqlDatabase()
         {
-            var database = sql.AddDatabase("AspireApp-db");
+            var database = sql.AddDatabase(Database);
 
             database.OnResourceReady(async (resource, e, cancellationToken) =>
             {
@@ -506,6 +513,37 @@ public static class Resources
             }
         }
         return null;
+    }
+
+    private static string CreateResourcePrefix(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "app";
+        }
+
+        var normalized = value.Trim().ToLowerInvariant();
+        Span<char> buffer = stackalloc char[normalized.Length];
+        int index = 0;
+        bool previousWasDash = false;
+
+        foreach (var ch in normalized)
+        {
+            bool isValid = char.IsAsciiLetterOrDigit(ch);
+            if (isValid)
+            {
+                buffer[index++] = ch;
+                previousWasDash = false;
+            }
+            else if (!previousWasDash)
+            {
+                buffer[index++] = '-';
+                previousWasDash = true;
+            }
+        }
+
+        var result = new string(buffer[..index]).Trim('-');
+        return string.IsNullOrWhiteSpace(result) ? "app" : result;
     }
 
     private static async Task MonitorChildrenStateAsync(IServiceProvider services, LogicalGroupResource resource)
