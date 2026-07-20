@@ -7,13 +7,13 @@
     <Title>Keboo's .NET Templates</Title>
     <Authors>Keboo</Authors>
     <Description>.NET Templates built by Keboo</Description>
-    <PackageTags>dotnet-new;dotnet-template;template;template-pack;scaffolding;console;wpf;avalonia;nuget;aspire;react;mcp</PackageTags>
+    <PackageTags>dotnet-new;dotnet-template;template;template-pack;scaffolding;console;wpf;avalonia;nuget;aspire;react;vue;mcp</PackageTags>
     <TargetFramework>net10.0</TargetFramework>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Keboo/DotnetTemplates</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Keboo/DotnetTemplates</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Adds template authoring validation support and improves NuGet package metadata for discoverability.</PackageReleaseNotes>
+    <PackageReleaseNotes>Adds Vue frontend support to the Aspire template and improves package discoverability metadata.</PackageReleaseNotes>
     <PackageIcon>NuGetIcon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <LocalizeTemplates>false</LocalizeTemplates>

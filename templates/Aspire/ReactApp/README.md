@@ -1,5 +1,5 @@
-# Aspire React App template
-This template creates a [React Web App](https://react.dev/) solution with .NET Aspire orchestration, Identity authentication, and unit tests.
+# Aspire Web App template
+This template creates a [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/get-started/aspire-overview) solution with either a [React](https://react.dev/) or [Vue](https://vuejs.org/) frontend, Identity authentication, and unit tests.
 
 
 ## Template
@@ -14,10 +14,16 @@ Create a new app in your current directory by running.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
+| `--frontend` | Frontend framework to scaffold. Options: `react`, `vue` | `react` |
 | `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops`, `none` | `github` |
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
 
 This template includes TUnit-based test projects by default.
+
+**Example with Vue frontend:**
+```cli
+> dotnet new keboo.react --frontend vue
+```
 
 **Example with Azure DevOps:**
 ```cli
@@ -45,17 +51,17 @@ This template uses a `global.json` file to specify the required .NET SDK version
 ## Key Features
 
 ### Aspire Browser Logs
-The AppHost enables [Aspire browser logs](https://aspire.dev/integrations/devtools/browser-logs/) for the React frontend resource. From the Aspire dashboard you can open a tracked browser, stream browser console/network events into the resource logs, and capture screenshots.
+The AppHost enables [Aspire browser logs](https://aspire.dev/integrations/devtools/browser-logs/) for the frontend resource. From the Aspire dashboard you can open a tracked browser, stream browser console/network events into the resource logs, and capture screenshots.
 
 ### Progressive Web App (PWA) Support
-Both the ReactApp.Web includes full PWA support with:
+The generated frontend includes full PWA support with:
 - Service worker for offline functionality
 - Web app manifest for install-to-homescreen capability
 - Caching strategies for improved performance
 - App icons (192x192 and 512x512)
 
-**React/Vite PWA:**
-The React frontend uses `vite-plugin-pwa` with Workbox for advanced caching strategies. 
+**React/Vite and Vue/Vite PWA:**
+Both frontend options use `vite-plugin-pwa` with Workbox for advanced caching strategies.
 
 Features include:
 - Automatic service worker registration and updates
@@ -122,5 +128,4 @@ cd Infra
 terraform init
 terraform plan
 ```
-
 

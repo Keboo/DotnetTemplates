@@ -26,7 +26,7 @@ dotnet new uninstall Keboo.Dotnet.Templates
 
 ## Included templates
 
-- [Aspire React Solution](./templates/Aspire/ReactApp/README.md)
+- [Aspire Web Solution (React/Vue)](./templates/Aspire/ReactApp/README.md)
 - [Avalonia Solution](./templates/Avalonia/AvaloniaSolution/README.md)
 - [WPF Solution](./templates/WPF/WpfApp/README.md)
 - [NuGet Package Solution](./templates/Library/NuGet/README.md)

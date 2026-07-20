@@ -4,11 +4,12 @@
   "classifications": [
     "Common",
     "Aspire",
-    "React"
+    "React",
+    "Vue"
   ],
   "identity": "Keboo.Aspire.React.Solution",
-  "name": "Keboo React Application",
-  "description": "Creates a .NET Aspire solution with a React frontend, backend services, tests, and Azure deployment assets.",
+  "name": "Keboo Aspire Web Application",
+  "description": "Creates a .NET Aspire solution with a React or Vue frontend, backend services, tests, and Azure deployment assets.",
   "shortName": "keboo.react",
   "icon": "favicon.ico",
   "tags": {
@@ -65,11 +66,54 @@
       "valueSource": "name",
       "valueTransform": "identity",
       "replaces": "__PROJECT_NAME__"
+    },
+    "frontend": {
+      "type": "parameter",
+      "dataType": "choice",
+      "choices": [
+        {
+          "choice": "react",
+          "description": "Use React + Vite frontend"
+        },
+        {
+          "choice": "vue",
+          "description": "Use Vue + Vite frontend"
+        }
+      ],
+      "defaultValue": "react",
+      "description": "The frontend framework to use"
+    },
+    "useReact": {
+      "type": "computed",
+      "value": "(frontend == \"react\")"
+    },
+    "useVue": {
+      "type": "computed",
+      "value": "(frontend == \"vue\")"
     }
   },
   "sources": [
     {
-      "modifiers": []
+      "modifiers": [
+        {
+          "condition": "(useReact)",
+          "exclude": [
+            "ReactApp.Web.Vue/**",
+            "ReactApp.UITests.Vue/**"
+          ]
+        },
+        {
+          "condition": "(useVue)",
+          "exclude": [
+            "ReactApp.Web/**",
+            "ReactApp.UITests/**"
+          ],
+          "rename": {
+            "ReactApp.Web.Vue": "ReactApp.Web",
+            "ReactApp.UITests.Vue": "ReactApp.UITests"
+          }
+        }
+      ]
     }
   ]
 }
