@@ -16,7 +16,7 @@ This repo uses Central Package Management. All NuGet package versions are define
 
 **Files to update:**
 
-- `templates/Aspire/ReactApp/Directory.Packages.props`
+- `templates/Aspire/AspireApp/Directory.Packages.props`
 - `templates/Avalonia/AvaloniaSolution/Directory.Packages.props`
 - `templates/Console/ConsoleApp/Directory.Packages.props`
 - `templates/Library/NuGet/Directory.Packages.props`
@@ -49,7 +49,7 @@ Update tool versions in the dotnet tool manifest file.
 
 **Files to update:**
 
-- `templates/Aspire/ReactApp/.config/dotnet-tools.json`
+- `templates/Aspire/AspireApp/.config/dotnet-tools.json`
 
 Update the `version` field for each tool (`dotnet-ef`, `aspire.cli`, etc.) to the latest stable version. Keep tool versions aligned with their corresponding NuGet packages (e.g., `dotnet-ef` version should match `Microsoft.EntityFrameworkCore.*` versions, `aspire.cli` should match `Aspire.Hosting.*` versions).
 
@@ -59,12 +59,12 @@ Update pnpm dependencies for the React frontend in the Aspire template.
 
 **Files to update:**
 
-- `templates/Aspire/ReactApp/ReactApp.Web/package.json`
+- `templates/Aspire/AspireApp/AspireApp.Web/package.json`
 
 **How to update:**
 
 ```powershell
-cd templates/Aspire/ReactApp/ReactApp.Web
+cd templates/Aspire/AspireApp/AspireApp.Web
 pnpm dlx npm-check-updates -u
 pnpm install
 ```
@@ -86,8 +86,8 @@ Update all GitHub Action references in workflow files to their latest versions. 
 
 **Workflow files to update:**
 
-- `templates/Aspire/ReactApp/.github/workflows/build-and-deploy.yml`
-- `templates/Aspire/ReactApp/.github/workflows/deploy-infrastructure.yml`
+- `templates/Aspire/AspireApp/.github/workflows/build-and-deploy.yml`
+- `templates/Aspire/AspireApp/.github/workflows/deploy-infrastructure.yml`
 - `templates/Console/ConsoleApp/.github/workflows/build-and-deploy.yml`
 - `templates/Console/ConsoleApp/.github/workflows/pr-code-coverage-comment.yml`
 - `templates/Library/NuGet/.github/workflows/build-and-deploy.yml`
@@ -129,7 +129,7 @@ Update Terraform provider version constraints in the Aspire template.
 
 **Files to update:**
 
-- `templates/Aspire/ReactApp/Infra/providers.tf`
+- `templates/Aspire/AspireApp/Infra/providers.tf`
 
 **Providers to update:**
 
@@ -137,7 +137,7 @@ Update Terraform provider version constraints in the Aspire template.
 - `hashicorp/azurerm`
 - `hashicorp/random`
 
-Also check the `TERRAFORM_VERSION` environment variable in `templates/Aspire/ReactApp/.github/workflows/build-and-deploy.yml` and `deploy-infrastructure.yml` for the Terraform CLI version.
+Also check the `TERRAFORM_VERSION` environment variable in `templates/Aspire/AspireApp/.github/workflows/build-and-deploy.yml` and `deploy-infrastructure.yml` for the Terraform CLI version.
 
 ## 6. .NET SDK Version
 
@@ -146,7 +146,7 @@ Check if a newer .NET SDK version is available and update all `global.json` file
 **Files to update:**
 
 - `global.json`
-- `templates/Aspire/ReactApp/global.json`
+- `templates/Aspire/AspireApp/global.json`
 - `templates/Avalonia/AvaloniaSolution/global.json`
 - `templates/Console/ConsoleApp/global.json`
 - `templates/Library/NuGet/global.json`
@@ -159,6 +159,7 @@ All should use the same SDK version. Check https://dotnet.microsoft.com/download
 After all updates, verify the changes:
 
 1. Run `dotnet build` in each template directory to ensure NuGet packages resolve.
-2. Run `pnpm install --frozen-lockfile` in `templates/Aspire/ReactApp/ReactApp.Web/` to verify pnpm packages.
+2. Run `pnpm install --frozen-lockfile` in `templates/Aspire/AspireApp/AspireApp.Web/` to verify pnpm packages.
 3. Spot-check GitHub Actions versions are consistent across all workflow files.
 4. Optionally run `dotnet pack` at the repo root and test template instantiation using `TestLocal.ps1`.
+
