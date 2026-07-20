@@ -35,7 +35,6 @@ jobs:
           token: ${{ github.token }}
           filters: |
             shared:
-              - 'Templates.csproj'
               - 'global.json'
             console:
               - 'templates/Console/**'
