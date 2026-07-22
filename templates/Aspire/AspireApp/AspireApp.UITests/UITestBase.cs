@@ -86,7 +86,7 @@ public abstract class UITestBase : IAsyncDisposable
         }
 
         var appHost = await DistributedApplicationTestingBuilder
-            .CreateAsync<Projects.AspireApp_AppHost>([], (x, i) =>
+            .CreateAsync<Projects.__PROJECT_SAFE_NAME___AppHost>([], (x, i) =>
             {
                 i.Configuration!.AddInMemoryCollection(
                 [
@@ -324,4 +324,3 @@ public abstract class UITestBase : IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 }
-

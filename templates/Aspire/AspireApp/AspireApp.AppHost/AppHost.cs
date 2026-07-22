@@ -24,7 +24,7 @@ else
     db = sql.AddSqlDatabase();
 }
 
-var backend = builder.AddProject<Projects.AspireApp>(Resources.Backend)
+var backend = builder.AddProject<Projects.__PROJECT_SAFE_NAME__>(Resources.Backend)
     .WithDependency(db, ConnectionStrings.DatabaseKey)
     .WithUITests()
     .WithExternalHttpEndpoints()

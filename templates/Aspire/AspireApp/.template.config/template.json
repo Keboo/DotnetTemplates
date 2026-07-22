@@ -67,6 +67,12 @@
       "valueTransform": "identity",
       "replaces": "__PROJECT_NAME__"
     },
+    "projectSafeName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "lower_safe_name",
+      "replaces": "__PROJECT_SAFE_NAME__"
+    },
     "frontend": {
       "type": "parameter",
       "dataType": "choice",
@@ -117,4 +123,3 @@
     }
   ]
 }
-
