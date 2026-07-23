@@ -25,6 +25,7 @@ jobs:
       wpf: ${{ github.event_name != 'pull_request' || steps.filter.outputs.wpf == 'true' || steps.filter.outputs.shared == 'true' }}
       library: ${{ github.event_name != 'pull_request' || steps.filter.outputs.library == 'true' || steps.filter.outputs.shared == 'true' }}
       avalonia: ${{ github.event_name != 'pull_request' || steps.filter.outputs.avalonia == 'true' || steps.filter.outputs.shared == 'true' }}
+      aspire: ${{ github.event_name != 'pull_request' || steps.filter.outputs.aspire == 'true' || steps.filter.outputs.shared == 'true' }}
     steps:
       - name: Detect changed templates
         uses: dorny/paths-filter@v4
@@ -34,7 +35,6 @@ jobs:
           token: ${{ github.token }}
           filters: |
             shared:
-              - 'Templates.csproj'
               - 'global.json'
             console:
               - 'templates/Console/**'
@@ -44,6 +44,8 @@ jobs:
               - 'templates/Library/**'
             avalonia:
               - 'templates/Avalonia/**'
+            aspire:
+              - 'templates/Aspire/**'
 
   build:
     runs-on: windows-latest
@@ -689,10 +691,85 @@ jobs:
           dotnet workload restore
           dotnet build
 
+  test-aspire:
+    runs-on: ubuntu-latest
+    needs: [build, detect-changes]
+    if: needs.detect-changes.outputs.aspire == 'true'
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: "React frontend"
+            template-args: "--frontend react"
+            frontend-entry: "App.tsx"
+            app-name: "my-aspire.app-react"
+          - name: "Vue frontend"
+            template-args: "--frontend vue"
+            frontend-entry: "App.vue"
+            app-name: "my-aspire.app-vue"
+
+    steps:
+      - name: Download NuGet Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: NuGet
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20.x
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11
+
+      - name: Test Template - ${{ matrix.name }}
+        run: |
+          dotnet new install $(Get-ChildItem -Path "Keboo.Dotnet.Templates.*.nupkg").Name
+          mkdir TestAspire
+          Push-Location TestAspire
+          dotnet new keboo.react -n "${{ matrix.app-name }}" ${{ matrix.template-args }}
+
+      - name: Verify frontend scaffold
+        run: |
+          $appName = "${{ matrix.app-name }}"
+          $frontendPath = "TestAspire/$appName/$appName.Web/src"
+          $expectedFile = Join-Path $frontendPath "${{ matrix.frontend-entry }}"
+
+          if (-not (Test-Path $expectedFile)) {
+            throw "Expected frontend entry file not found: $expectedFile"
+          }
+
+          if ("${{ matrix.frontend-entry }}" -eq "App.vue" -and (Test-Path (Join-Path $frontendPath "App.tsx"))) {
+            throw "React entry file should not exist for Vue frontend"
+          }
+
+          if ("${{ matrix.frontend-entry }}" -eq "App.tsx" -and (Test-Path (Join-Path $frontendPath "App.vue"))) {
+            throw "Vue entry file should not exist for React frontend"
+          }
+
+      - name: Build frontend
+        run: |
+          $appName = "${{ matrix.app-name }}"
+          Push-Location "TestAspire/$appName/$appName.Web"
+          pnpm install --frozen-lockfile
+          pnpm run build
+
+      - name: Build generated solution
+        run: |
+          Push-Location "TestAspire/${{ matrix.app-name }}"
+          dotnet build
+
   all-tests:
     name: All Tests Summary
     runs-on: ubuntu-latest
-    needs: [test-console, test-wpf, test-library, test-avalonia]
+    needs: [test-console, test-wpf, test-library, test-avalonia, test-aspire]
     if: always()
     steps:
       - name: Check test results

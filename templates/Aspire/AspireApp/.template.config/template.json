@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Keboo",
+  "classifications": [
+    "Common",
+    "Aspire",
+    "React",
+    "Vue"
+  ],
+  "identity": "Keboo.Aspire.React.Solution",
+  "name": "Keboo Aspire Web Application",
+  "description": "Creates a .NET Aspire solution with a React or Vue frontend, backend services, tests, and Azure deployment assets.",
+  "shortName": "keboo.react",
+  "icon": "favicon.ico",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "constraints": {
+    "dotnet-10-sdk": {
+      "type": "sdk-version",
+      "args": [
+        "10.0.*",
+        "10.0.*-*"
+      ]
+    }
+  },
+  "preferNameDirectory": true,
+  "sourceName": "AspireApp",
+  "primaryOutputs": [
+    {
+      "path": "AspireApp.slnx"
+    },
+    {
+      "path": "AspireApp.AppHost/AspireApp.AppHost.csproj"
+    }
+  ],
+  "postActions": [
+    {
+      "condition": "(skipRestore != \"true\")",
+      "description": "Restore NuGet packages required by this solution.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore' in the created project directory."
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true,
+      "args": {
+        "files": [
+          "AspireApp/AspireApp.csproj",
+          "AspireApp.AppHost/AspireApp.AppHost.csproj",
+          "AspireApp.Core/AspireApp.Core.csproj",
+          "AspireApp.Core.Tests/AspireApp.Core.Tests.csproj",
+          "AspireApp.Data/AspireApp.Data.csproj",
+          "AspireApp.ServiceDefaults/AspireApp.ServiceDefaults.csproj",
+          "AspireApp.UITests/AspireApp.UITests.csproj",
+          "AspireApp.Web/AspireApp.Web.csproj"
+        ]
+      }
+    }
+  ],
+  "symbols": {
+    "projectName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "identity",
+      "replaces": "__PROJECT_NAME__"
+    },
+    "projectSafeName": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "lower_safe_name",
+      "replaces": "__PROJECT_SAFE_NAME__"
+    },
+    "frontend": {
+      "type": "parameter",
+      "dataType": "choice",
+      "choices": [
+        {
+          "choice": "react",
+          "description": "Use React + Vite frontend"
+        },
+        {
+          "choice": "vue",
+          "description": "Use Vue + Vite frontend"
+        }
+      ],
+      "defaultValue": "react",
+      "description": "The frontend framework to use"
+    },
+    "useReact": {
+      "type": "computed",
+      "value": "(frontend == \"react\")"
+    },
+    "useVue": {
+      "type": "computed",
+      "value": "(frontend == \"vue\")"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(useReact)",
+          "exclude": [
+            "AspireApp.Web.Vue/**",
+            "AspireApp.UITests.Vue/**"
+          ]
+        },
+        {
+          "condition": "(useVue)",
+          "exclude": [
+            "AspireApp.Web/**",
+            "AspireApp.UITests/**"
+          ],
+          "rename": {
+            "AspireApp.Web.Vue": "AspireApp.Web",
+            "AspireApp.UITests.Vue": "AspireApp.UITests"
+          }
+        }
+      ]
+    }
+  ]
+}

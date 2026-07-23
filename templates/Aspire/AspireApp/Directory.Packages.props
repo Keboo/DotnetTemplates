@@ -1,0 +1,50 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- https://learn.microsoft.com/nuget/consume-packages/Central-Package-Management?WT.mc_id=DT-MVP-5003472#transitive-pinning -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Aspire.Hosting.Azure" Version="13.4.6" />
+    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.4.6" />
+    <PackageVersion Include="Aspire.Hosting.Browsers" Version="13.4.6-preview.1.26319.6" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.4.6" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.4.6" />
+    <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.4.6" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.4.6" />
+    <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.5.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SqlServer.Extensions" Version="13.4.0" />
+    <PackageVersion Include="Deque.AxeCore.Playwright" Version="4.12.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.SpaProxy" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.7.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.7.0" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.61.0" />
+    <PackageVersion Include="Microsoft.TypeScript.MSBuild" Version="6.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
+    <PackageVersion Include="Moq.AutoMock" Version="4.0.2" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.16.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.16.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
+    <PackageVersion Include="Polly.Core" Version="8.7.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.19.1" />
+    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.2" />
+    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+    <PackageVersion Include="TUnit" Version="1.58.0" />
+  </ItemGroup>
+</Project>

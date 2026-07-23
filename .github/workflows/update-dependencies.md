@@ -55,11 +55,11 @@ safe-outputs:
       - templates/**/global.json
       - templates/**/Directory.Packages.props
       - templates/**/.config/dotnet-tools.json
-      - templates/Aspire/ReactApp/ReactApp.Web/package.json
-      - templates/Aspire/ReactApp/ReactApp.Web/pnpm-lock.yaml
+      - templates/Aspire/AspireApp/AspireApp.Web/package.json
+      - templates/Aspire/AspireApp/AspireApp.Web/pnpm-lock.yaml
       - templates/**/.github/workflows/*.yml
       - templates/**/.github/workflows/*.yaml
-      - templates/Aspire/ReactApp/Infra/providers.tf
+      - templates/Aspire/AspireApp/Infra/providers.tf
 ---
 
 # Update All Dependencies
@@ -74,7 +74,7 @@ Follow the update-dependencies prompt file at `.github/prompts/update-dependenci
 
 Use the NuGet MCP server tools to check for the latest stable versions of all packages. Update the `Version` attribute on every `<PackageVersion>` element in these `Directory.Packages.props` files:
 
-- `templates/Aspire/ReactApp/Directory.Packages.props`
+- `templates/Aspire/AspireApp/Directory.Packages.props`
 - `templates/Avalonia/AvaloniaSolution/Directory.Packages.props`
 - `templates/Console/ConsoleApp/Directory.Packages.props`
 - `templates/Library/NuGet/Directory.Packages.props`
@@ -91,7 +91,7 @@ Use the NuGet MCP server tools to check for the latest stable versions of all pa
 
 Search the entire repository for `.config/dotnet-tools.json` files and update every tool to its latest stable version. Currently the known file is:
 
-- `templates/Aspire/ReactApp/.config/dotnet-tools.json`
+- `templates/Aspire/AspireApp/.config/dotnet-tools.json`
 
 For each tool, use the NuGet MCP server or `dotnet tool search <tool-name>` to find the latest version, then update the `version` field.
 
@@ -102,10 +102,10 @@ For each tool, use the NuGet MCP server or `dotnet tool search <tool-name>` to f
 
 ### 3. pnpm Packages
 
-Update pnpm dependencies in `templates/Aspire/ReactApp/ReactApp.Web/package.json`:
+Update pnpm dependencies in `templates/Aspire/AspireApp/AspireApp.Web/package.json`:
 
 ```bash
-cd templates/Aspire/ReactApp/ReactApp.Web
+cd templates/Aspire/AspireApp/AspireApp.Web
 pnpm dlx npm-check-updates -u
 pnpm install
 ```
@@ -120,8 +120,8 @@ pnpm install
 Update all GitHub Action references in workflow files to their latest versions. Check the latest release tags for each action.
 
 **Workflow files to update:**
-- `templates/Aspire/ReactApp/.github/workflows/build-and-deploy.yml`
-- `templates/Aspire/ReactApp/.github/workflows/deploy-infrastructure.yml`
+- `templates/Aspire/AspireApp/.github/workflows/build-and-deploy.yml`
+- `templates/Aspire/AspireApp/.github/workflows/deploy-infrastructure.yml`
 - `templates/Console/ConsoleApp/.github/workflows/build-and-deploy.yml`
 - `templates/Console/ConsoleApp/.github/workflows/pr-code-coverage-comment.yml`
 - `templates/Library/NuGet/.github/workflows/build-and-deploy.yml`
@@ -135,7 +135,7 @@ Do not update top-level repo workflow files under `.github/workflows/` in this a
 
 ### 5. Terraform Providers (Aspire Template Only)
 
-Update Terraform provider versions in `templates/Aspire/ReactApp/Infra/providers.tf` for `hashicorp/azuread`, `hashicorp/azurerm`, and `hashicorp/random`.
+Update Terraform provider versions in `templates/Aspire/AspireApp/Infra/providers.tf` for `hashicorp/azuread`, `hashicorp/azurerm`, and `hashicorp/random`.
 
 ### 6. Verification
 
@@ -143,13 +143,13 @@ After all updates, verify the changes build:
 
 ```bash
 # Build each template to verify NuGet packages resolve
-for dir in templates/Console/ConsoleApp templates/Library/NuGet templates/Avalonia/AvaloniaSolution templates/WPF/WpfApp templates/Aspire/ReactApp; do
+for dir in templates/Console/ConsoleApp templates/Library/NuGet templates/Avalonia/AvaloniaSolution templates/WPF/WpfApp templates/Aspire/AspireApp; do
   echo "Building $dir..."
   cd "$dir" && dotnet build && cd -
 done
 
 # Verify pnpm packages
-cd templates/Aspire/ReactApp/ReactApp.Web && pnpm install --frozen-lockfile && cd -
+cd templates/Aspire/AspireApp/AspireApp.Web && pnpm install --frozen-lockfile && cd -
 ```
 
 ### 7. Create Pull Request
@@ -160,3 +160,4 @@ After making all changes, create a pull request with:
 - **Body**: A summary of all dependency updates organized by category (NuGet, pnpm, GitHub Actions, Terraform). Include a table or list showing old version → new version for each updated dependency.
 
 If no dependencies need updating, do nothing.
+
