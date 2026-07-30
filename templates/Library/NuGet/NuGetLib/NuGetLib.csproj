@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <!-- Bump this version to trigger publishing -->
+    <PackageVersion>0.0.0</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup Label="NuGet">

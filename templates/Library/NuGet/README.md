@@ -74,6 +74,8 @@ This template uses a `global.json` file to specify the required .NET SDK version
 ### GitHub Actions / Azure DevOps Pipeline
 Build, test, pack, and deploy pipelines are included. By default, package publishing targets NuGet.org; set `--github-packages true` to switch publishing to GitHub Packages instead.
 
+The package version is defined in `NuGetLib/NuGetLib.csproj` via the `PackageVersion` property. Update that value when preparing a new release.
+
 When using `--github-packages true`:
 - GitHub Actions publishes with `GITHUB_TOKEN`.
 - Azure DevOps expects `GITHUB_PACKAGES_OWNER` and secret `GITHUB_PACKAGES_TOKEN` pipeline variables.
