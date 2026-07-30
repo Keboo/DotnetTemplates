@@ -178,6 +178,12 @@
       "defaultValue": "github",
       "description": "The CI/CD provider to use"
     },
+    "github-packages": {
+      "type": "parameter",
+      "dataType": "bool",
+      "defaultValue": "false",
+      "description": "Publish packages to GitHub Packages instead of NuGet.org"
+    },
     "useGitHub": {
       "type": "computed",
       "value": "(pipeline == \"github\")"

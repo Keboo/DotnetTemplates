@@ -87,17 +87,29 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     needs: build
-    
+
+#if (github-packages)
+    permissions:
+      packages: write
+#else
     # Required for Trusted Publishing: allows GitHub to issue OIDC tokens for this job
     # This enables secure, keyless authentication with NuGet.org
     permissions:
       id-token: write
-    
+#endif
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v8
         with:
           name: NuGet
+
+#if (github-packages)
+      - name: Push NuGet package to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget push ${{ github.workspace }}/*nupkg --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ env.GITHUB_TOKEN }} --skip-duplicate
+#else
 
       # ====================================================================================
       # OPTION 1: Trusted Publishing (RECOMMENDED - Default)
@@ -152,3 +164,4 @@ jobs:
 
       # - name: Push NuGet (API Key)
       #   run: dotnet nuget push ${{ github.workspace }}/*nupkg --source https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+#endif

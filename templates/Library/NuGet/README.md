@@ -19,6 +19,7 @@ The generated projects are restored automatically after creation. Use `--skipRes
 | `--skipRestore` | Skip the automatic restore after template creation | `false` |
 | `--no-sln` | Do not include a solution file | `false` |
 | `--pipeline` | CI/CD provider to use. Options: `github`, `azuredevops`, `none` | `github` |
+| `--github-packages` | Publish packages to GitHub Packages instead of NuGet.org | `false` |
 | `--sln` | Use legacy .sln format instead of .slnx format | `false` |
 | `--tests` | Testing framework to use. Options: `xunit`, `mstest`, `tunit`, `none` | `tunit` |
 
@@ -30,6 +31,11 @@ The generated projects are restored automatically after creation. Use `--skipRes
 **Example with no CI/CD pipeline:**
 ```cli
 > dotnet new keboo.nuget --pipeline none
+```
+
+**Example publishing to GitHub Packages:**
+```cli
+> dotnet new keboo.nuget --github-packages true
 ```
 
 **Example with legacy .sln format:**
@@ -66,7 +72,11 @@ This template uses a `global.json` file to specify the required .NET SDK version
 [Docs](https://learn.microsoft.com/nuget/consume-packages/package-source-mapping?WT.mc_id=DT-MVP-5003472)
 
 ### GitHub Actions / Azure DevOps Pipeline
-Build, test, pack, and deploy to NuGet.org included. Use `--pipeline` parameter to choose between GitHub Actions (default) or Azure DevOps Pipelines.
+Build, test, pack, and deploy pipelines are included. By default, package publishing targets NuGet.org; set `--github-packages true` to switch publishing to GitHub Packages instead.
+
+When using `--github-packages true`:
+- GitHub Actions publishes with `GITHUB_TOKEN`.
+- Azure DevOps expects `GITHUB_PACKAGES_OWNER` and secret `GITHUB_PACKAGES_TOKEN` pipeline variables.
 
 ### Solution File Format (slnx)
 By default, this template uses the new `.slnx` (XML-based solution) format introduced in .NET 9. This modern format is more maintainable and easier to version control compared to the legacy `.sln` format.
