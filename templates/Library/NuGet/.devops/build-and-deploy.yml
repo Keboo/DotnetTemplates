@@ -95,15 +95,27 @@ stages:
               publishLocation: 'Container'
 
   - stage: Deploy
+#if (github-packages)
+    displayName: 'Deploy to GitHub Packages'
+#else
     displayName: 'Deploy to NuGet.org'
+#endif
     dependsOn: Build
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - deployment: DeployNuGet
+#if (github-packages)
+        displayName: 'Push to GitHub Packages'
+#else
         displayName: 'Push to NuGet.org'
+#endif
         pool:
           vmImage: 'ubuntu-latest'
+#if (github-packages)
+        environment: 'github-packages'
+#else
         environment: 'nuget-org'
+#endif
         strategy:
           runOnce:
             deploy:
@@ -111,6 +123,17 @@ stages:
                 - download: current
                   artifact: NuGet
 
+#if (github-packages)
+                # Configure these pipeline variables before use:
+                # - GITHUB_PACKAGES_OWNER: GitHub owner (org or user)
+                # - GITHUB_PACKAGES_TOKEN: Secret PAT with write:packages scope
+                - task: PowerShell@2
+                  displayName: 'Push NuGet Package to GitHub Packages'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      dotnet nuget push "$(Pipeline.Workspace)/NuGet/*.nupkg" --source "https://nuget.pkg.github.com/$(GITHUB_PACKAGES_OWNER)/index.json" --api-key "$(GITHUB_PACKAGES_TOKEN)" --skip-duplicate
+#else
                 - task: NuGetCommand@2
                   displayName: 'Push NuGet Package'
                   inputs:
@@ -118,3 +141,4 @@ stages:
                     packagesToPush: '$(Pipeline.Workspace)/NuGet/**/*.nupkg;!$(Pipeline.Workspace)/NuGet/**/*.symbols.nupkg'
                     nuGetFeedType: 'external'
                     publishFeedCredentials: 'NuGet.org'
+#endif
