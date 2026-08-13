@@ -6,7 +6,7 @@ This template creates a [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/
 Create a new app in your current directory by running.
 
 ```cli
-> dotnet new keboo.react
+> dotnet new keboo.aspire
 ```
 
 ### Parameters
@@ -22,22 +22,22 @@ This template includes TUnit-based test projects by default.
 
 **Example with Vue frontend:**
 ```cli
-> dotnet new keboo.react --frontend vue
+> dotnet new keboo.aspire --frontend vue
 ```
 
 **Example with Azure DevOps:**
 ```cli
-> dotnet new keboo.react --pipeline azuredevops
+> dotnet new keboo.aspire --pipeline azuredevops
 ```
 
 **Example with no CI/CD pipeline:**
 ```cli
-> dotnet new keboo.react --pipeline none
+> dotnet new keboo.aspire --pipeline none
 ```
 
 **Example with legacy .sln format:**
 ```cli
-> dotnet new keboo.react --sln true
+> dotnet new keboo.aspire --sln true
 ```
 
 

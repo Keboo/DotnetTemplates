@@ -7,10 +7,10 @@
     "React",
     "Vue"
   ],
-  "identity": "Keboo.Aspire.React.Solution",
+  "identity": "Keboo.Aspire.Solution",
   "name": "Keboo Aspire Web Application",
   "description": "Creates a .NET Aspire solution with a React or Vue frontend, backend services, tests, and Azure deployment assets.",
-  "shortName": "keboo.react",
+  "shortName": "keboo.aspire",
   "icon": "favicon.ico",
   "tags": {
     "language": "C#",
