@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageVersion>1.14.1</PackageVersion>
+    <PackageVersion>2.0.0</PackageVersion>
     <PackageId>Keboo.Dotnet.Templates</PackageId>
     <Title>Keboo's .NET Templates</Title>
     <Authors>Keboo</Authors>
@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/Keboo/DotnetTemplates</RepositoryUrl>
     <PackageProjectUrl>https://github.com/Keboo/DotnetTemplates</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Adds Vue frontend support to the Aspire template and improves package discoverability metadata.</PackageReleaseNotes>
+    <PackageReleaseNotes>Renamed the Aspire template short name from 'keboo.react' to 'keboo.aspire' (breaking change).</PackageReleaseNotes>
     <PackageIcon>NuGetIcon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <LocalizeTemplates>false</LocalizeTemplates>
