@@ -21,6 +21,7 @@ public static class Resources
     public static string Frontend => $"{ResourcePrefix}-frontend";
     public static string SqlServer => $"{ResourcePrefix}-sql";
     public static string Database => $"{ResourcePrefix}-db";
+    public static string Migrations => $"{ResourcePrefix}-migrations";
 
 
     extension(IDistributedApplicationBuilder builder)
@@ -298,13 +299,6 @@ public static class Resources
         {
             var database = sql.AddDatabase(Database);
 
-            database.OnResourceReady(async (resource, e, cancellationToken) =>
-            {
-                if (!await ApplyDatabaseMigrationsAsync(resource, e.Services, cancellationToken))
-                {
-                    throw new Exception("Failed to apply database migrations to the database");
-                }
-            });
             database.WithDotnetToolRestoreCommand();
 
             database.WithCommand("CreateMigration", "Create Migration", async ctx =>
@@ -398,13 +392,6 @@ public static class Resources
                 IconName = "TableDismiss",
             });
 
-            database.WithCommand("ApplyMigrations", "Apply Database Migrations",
-                async ctx => await ApplyDatabaseMigrationsAsync(database.Resource, ctx.ServiceProvider, ctx.CancellationToken)
-                    ? CommandResults.Success() : CommandResults.Failure("Failed to apply migrations"), new CommandOptions()
-                    {
-                        IconName = "DatabaseLightning"
-                    });
-
             return database;
         }
     }
@@ -422,66 +409,6 @@ public static class Resources
         };
 
         return await resource.ExecuteProcessAsync(services, psi);
-    }
-
-    private static async Task<bool> ApplyDatabaseMigrationsAsync(SqlServerDatabaseResource database, IServiceProvider services, CancellationToken cancellationToken)
-    {
-        string? connectionString = await database.ConnectionStringExpression.GetValueAsync(cancellationToken);
-        if (string.IsNullOrWhiteSpace(connectionString)) throw new InvalidOperationException("Connection string for database not available");
-
-        ILogger logger = services.GetResourceLogger(database);
-
-        logger.LogInformation("Applying any pending migrations to the database");
-
-        bool processResult = await ApplyMigrationsAsync();
-
-        if (!processResult && await RestoreDotnetToolsAsync(database, services))
-        {
-            processResult = await ApplyMigrationsAsync();
-        }
-
-        if (processResult)
-        {
-            logger.LogInformation("Applied migrations to the database");
-            return true;
-        }
-        else
-        {
-            logger.LogError("Failed to apply migrations to the database");
-            return false;
-        }
-
-        Task<bool> ApplyMigrationsAsync()
-        {
-            // Determine the build configuration to use
-            // Check common environment variable or default to Debug for local development
-            string configuration = Environment.GetEnvironmentVariable("DOTNET_BUILD_CONFIGURATION") 
-                ?? Environment.GetEnvironmentVariable("Configuration") 
-                ?? "Debug";
-            
-            ProcessStartInfo psi = new()
-            {
-                FileName = "dotnet",
-                ArgumentList = {
-                    "ef",
-                    "database",
-                    "update",
-                    "--no-build",
-                    "--configuration",
-                    configuration,
-                    "--startup-project",
-                    "./__PROJECT_NAME__.AppHost",
-                    "--project",
-                    "./__PROJECT_NAME__.Data",
-                },
-                WorkingDirectory = GetSolutionDirectory()?.FullName,
-                EnvironmentVariables =
-                {
-                    { $"ConnectionStrings__{ConnectionStrings.DatabaseKey}", connectionString }
-                }
-            };
-            return database.ExecuteProcessAsync(services, psi, cancellationToken);
-        }
     }
 
     private static void RefreshPathVariable()

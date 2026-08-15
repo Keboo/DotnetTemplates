@@ -25,10 +25,20 @@ else
 }
 
 var backend = builder.AddProject<Projects.__PROJECT_SAFE_NAME__>(Resources.Backend)
-    .WithDependency(db, ConnectionStrings.DatabaseKey)
+    .WithReference(db, ConnectionStrings.DatabaseKey)
     .WithUITests()
     .WithExternalHttpEndpoints()
     .PublishAsAzureContainerApp((infra, app) => app.Template.Scale.MaxReplicas = 1);
+
+var dbMigrations = backend.AddEFMigrations(Resources.Migrations, "AspireApp.Data.ApplicationDbContext")
+    .WithMigrationsProject<Projects.__PROJECT_SAFE_NAME___Data>()
+    .WaitFor(db)
+    .RunDatabaseUpdateOnStart();
+
+dbMigrations.PublishAsMigrationBundle(publishContainer: true)
+    .PublishAsAzureContainerAppJob();
+
+backend.WaitForCompletion(dbMigrations);
 
 #pragma warning disable ASPIREBROWSERLOGS001
 var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../__PROJECT_NAME__.Web", "dev")
@@ -40,13 +50,5 @@ var frontendApp = builder.AddJavaScriptApp(Resources.Frontend, "../__PROJECT_NAM
     .WithEnvironment("APP_BACKEND_HTTP", backend.GetEndpoint("http"))
     .WithEnvironment("APP_BACKEND_HTTPS", backend.GetEndpoint("https"));
 #pragma warning restore ASPIREBROWSERLOGS001
-
-if (builder.ExecutionContext.IsPublishMode)
-{
-    // Enable migrations on startup for Azure deployments
-    // Applying migrations on startup is not recommended for production scenarios.
-    // See: https://learn.microsoft.com/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli&WT.mc_id=DT-MVP-5003472
-    backend.WithEnvironment("RunMigrationsOnStartup", "true");
-}
 
 builder.Build().Run();

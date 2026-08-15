@@ -3,6 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
+    <!-- AspireApp.Data is referenced so the Projects.__PROJECT_SAFE_NAME___Data type is generated for
+         WithMigrationsProject<>(), even though it is a class library and not an executable resource. -->
+    <NoWarn>$(NoWarn);ASPIRE004</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +13,7 @@
     <PackageReference Include="Aspire.Hosting.Azure.AppContainers" />
     <PackageReference Include="Aspire.Hosting.Azure.Sql" />
     <PackageReference Include="Aspire.Hosting.Browsers" />
+    <PackageReference Include="Aspire.Hosting.EntityFrameworkCore" />
     <PackageReference Include="Aspire.Hosting.JavaScript" />
     <PackageReference Include="Aspire.Hosting.SqlServer" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.SqlServer.Extensions" />
@@ -21,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\__PROJECT_NAME__.Core\__PROJECT_NAME__.Core.csproj" IsAspireProjectResource="false" />
-    <ProjectReference Include="..\__PROJECT_NAME__.Data\__PROJECT_NAME__.Data.csproj" IsAspireProjectResource="false" />
+    <ProjectReference Include="..\__PROJECT_NAME__.Data\__PROJECT_NAME__.Data.csproj" />
     <ProjectReference Include="..\__PROJECT_NAME__\__PROJECT_NAME__.csproj" />
   </ItemGroup>
 
