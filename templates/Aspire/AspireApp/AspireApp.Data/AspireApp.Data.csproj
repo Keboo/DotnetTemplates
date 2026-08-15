@@ -13,5 +13,15 @@
       <IncludeAssets>runtime; build; native; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <!-- Microsoft.EntityFrameworkCore.SqlServer only requires Microsoft.Data.SqlClient
+         >= 6.1.1 transitively. Pin it explicitly to the same release line as
+         Extensions.Azure below to avoid an AmbiguousMatchException in
+         SqlAuthenticationProviderManager caused by mismatched versions. -->
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <!-- Required for "Authentication=Active Directory Default" / Entra ID connection strings.
+         Microsoft.Data.SqlClient 6+ moved Azure AD authentication providers into this
+         separate package; without it, ActiveDirectoryDefault connections fail with
+         "Cannot find an authentication provider for 'ActiveDirectoryDefault'". -->
+    <PackageReference Include="Microsoft.Data.SqlClient.Extensions.Azure" />
   </ItemGroup>
 </Project>
