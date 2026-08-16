@@ -35,5 +35,8 @@ module "prod" {
   acr_login_server = module.shared.acr_login_server
   location         = local.location
   tags             = local.default_tags
+
+  backend_custom_domain  = var.backend_custom_domain
+  frontend_custom_domain = var.frontend_custom_domain
 }
 

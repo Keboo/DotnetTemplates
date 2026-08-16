@@ -4,6 +4,13 @@ locals {
     {
       "Environment" = local.environment
   })
+
+  # CORS origins the backend should accept requests from: the Static Web
+  # App's auto-generated hostname, plus the frontend custom domain when set.
+  allowed_origins = compact([
+    "https://${module.static_web_app.default_host_name}",
+    var.frontend_custom_domain,
+  ])
 }
 
 resource "azurerm_resource_group" "resource_group" {
@@ -42,14 +49,16 @@ module "backend_container_app" {
   identity_id                     = azurerm_user_assigned_identity.app_identity.id
   container_registry_login_server = var.acr_login_server
 
-  env_vars = {
+  env_vars = merge({
     AZURE_CLIENT_ID = azurerm_user_assigned_identity.app_identity.client_id
     # Aspire uses ConnectionStrings__<key> naming convention
-    ConnectionStrings__Database = module.sql.connection_string
+    ConnectionStrings__Database           = module.sql.connection_string
     APPLICATIONINSIGHTS_CONNECTION_STRING = module.application_insights.application_insights.connection_string
-    # CORS: Allow the Static Web App origin
-    AllowedOrigins__0 = "https://${module.static_web_app.default_host_name}"
-  }
+    },
+    # CORS: Allow the Static Web App origin(s). Produces AllowedOrigins__0,
+    # AllowedOrigins__1, etc. matching the .NET config array binding.
+    { for i, origin in local.allowed_origins : "AllowedOrigins__${i}" => origin }
+  )
 
   depends_on = [module.sql, module.static_web_app]
 }

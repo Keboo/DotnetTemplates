@@ -29,13 +29,13 @@ output "static_web_app_api_key" {
 }
 
 output "static_web_app_url" {
-  description = "The URL of the deployed static web app"
-  value       = "https://${module.static_web_app.default_host_name}"
+  description = "The URL of the deployed static web app. Uses the custom domain when var.frontend_custom_domain is non-empty, otherwise falls back to the auto-generated Static Web App hostname."
+  value       = var.frontend_custom_domain != "" ? var.frontend_custom_domain : "https://${module.static_web_app.default_host_name}"
 }
 
 output "backend_url" {
-  description = "The URL of the backend API"
-  value       = "https://${module.backend_container_app.fqdn}"
+  description = "The URL of the backend API. Uses the custom domain when var.backend_custom_domain is non-empty, otherwise falls back to the auto-generated Container App FQDN."
+  value       = var.backend_custom_domain != "" ? var.backend_custom_domain : "https://${module.backend_container_app.fqdn}"
 }
 
 output "applicationinsights_connection_string" {
