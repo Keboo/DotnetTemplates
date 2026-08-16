@@ -56,6 +56,8 @@ jobs:
           TF_VAR_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID_INFRA }}
           TF_VAR_TENANT_ID: ${{ secrets.ARM_TENANT_ID_INFRA }}
           TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+          # TF_VAR_backend_custom_domain: 'https://api.example.com' # TODO: Uncomment and set if you configure a custom domain for the backend Container App
+          # TF_VAR_frontend_custom_domain: 'https://app.example.com' # TODO: Uncomment and set if you configure a custom domain for the frontend Static Web App
 
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v7
@@ -116,3 +118,5 @@ jobs:
           TF_VAR_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID_INFRA }}
           TF_VAR_TENANT_ID: ${{ secrets.ARM_TENANT_ID_INFRA }}
           TF_VAR_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID_INFRA }}
+          # TF_VAR_backend_custom_domain: 'https://api.example.com' # TODO: Uncomment and set if you configure a custom domain for the backend Container App
+          # TF_VAR_frontend_custom_domain: 'https://app.example.com' # TODO: Uncomment and set if you configure a custom domain for the frontend Static Web App

@@ -129,3 +129,25 @@ terraform init
 terraform plan
 ```
 
+### Custom Domains
+
+If you configure custom domains for the backend Container App and/or the
+frontend Static Web App, set the optional `backend_custom_domain` and
+`frontend_custom_domain` Terraform variables (both default to an empty
+string, which falls back to the auto-generated Azure hostnames):
+
+```bash
+terraform plan \
+  -var="backend_custom_domain=https://api.example.com" \
+  -var="frontend_custom_domain=https://app.example.com"
+```
+
+- `backend_custom_domain` overrides the `backend_url` output (used to
+  configure the frontend's API base URL at build time).
+- `frontend_custom_domain` overrides the `static_web_app_url` output and is
+  added as an additional allowed CORS origin on the backend, so requests
+  from the custom domain aren't rejected.
+
+In CI, uncomment and set the `TF_VAR_backend_custom_domain` /
+`TF_VAR_frontend_custom_domain` lines in
+`.github/workflows/deploy-infrastructure.yml`.
